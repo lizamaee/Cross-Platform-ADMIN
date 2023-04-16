@@ -1,5 +1,6 @@
 import { useState } from "react";
 import tcu from "../../public/images/bg.png";
+import { loginadmin } from "../api/auth"
 
 function login() {
   const [username, setUsername] = useState("");
@@ -9,7 +10,19 @@ function login() {
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
-    console.log(username, password);
+    //console.log(username, password);
+
+    try {
+      const res = await loginadmin(username, password)
+      localStorage.setItem('token', res.data.token);
+      //console.log(res.data.token);
+      //navigate to dashboard
+      console.log("Login Successfully");
+      
+    } catch (err: any) {
+      setError(err.response.data.error);
+      //console.error(err.response.data.error)
+    }
   };
 
   const handlePasswordToggle = () => {
