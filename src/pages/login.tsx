@@ -3,6 +3,8 @@ import tcu from "../images/bg.png";
 import { loginadmin } from "../api/auth"
 import { useAuthStore } from "../state";
 import { useNavigate } from "react-router-dom";
+import { FaEyeSlash,FaEye } from 'react-icons/fa';
+
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -60,20 +62,22 @@ export default function Login() {
 
         <div className="flex flex-col px-5">
           <label>Password</label>
-          <input
-            className="px-4 py-3 rounded-lg text-black text-md font-medium outline-none border-solid border-2 border-gray-300"
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button
-            className="text-sm font-bold text-right"
-            type="button"
-            onClick={handlePasswordToggle}
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
+          <div className="pb-7">
+            <input
+              className="w-full px-4 py-3 rounded-lg text-black text-md font-medium outline-none border-solid border-2 border-gray-300"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              className="text-sm font-bold absolute -translate-x-10 translate-y-4"
+              type="button"
+              onClick={handlePasswordToggle}
+            >
+              {showPassword ? <FaEyeSlash size={23}/> : <FaEye size={23}/>}
+            </button>
+          </div>
         </div>
         <div className="flex items-center flex-col">
           {error ? (
