@@ -33,7 +33,7 @@ export default function Login() {
     } catch (err: any) {
       setIsLoading(false)
       setError(err.response.data.error);
-      //console.error(err.response.data.error)
+      console.log(err)
     }
   };
 
@@ -42,14 +42,14 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen px-5 font-medium text-lg">
+    <div className="flex items-center justify-center h-screen p-10 font-medium text-lg">
       <form
         onSubmit={handleLogin}
-        className=" bg-[#F0F0F0] rounded-lg overflow-hidden text-[#3C486B] pb-5 shadow-2xl"
+        className=" bg-[#F0F0F0] rounded-lg overflow-hidden text-[#3C486B] pb-5 shadow-2xl md:max-w-md"
       >
         <img className="" src={tcu} height={400} alt="Taguig City University" />
         <div className="flex flex-col p-5">
-          <h2 className="text-2xl text-center font-sans">Login</h2>
+          <h2 className="text-2xl text-center font-sans font-bold">LOGIN</h2>
           <label>Username</label>
           <input
             className="px-4 py-3 rounded-lg text-black text-md font-medium outline-none border-solid border-2 border-gray-300"
@@ -95,7 +95,7 @@ export default function Login() {
           </button>)
           :
           (<button
-            className="text-center text-white px-4 py-2 rounded-lg w-[40%] bg-[#F45050]"
+            className="text-center text-white px-4 py-2 rounded-lg w-[40%] bg-[#F45050] shadow-md shadow-red-300"
             type="submit"
           >
             Login
