@@ -1,25 +1,35 @@
 import { useState } from "react";
 import tcu from "../images/bg.png";
 import { loginadmin } from "../api/auth"
+import { useAuthStore } from "../state";
+import { useNavigate } from "react-router-dom";
 
-function login() {
+export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
+  const { loginAdmin } = useAuthStore((state) => state);
+  const navigate = useNavigate();
+
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
     //console.log(username, password);
+    setIsLoading(true)
 
     try {
       const res = await loginadmin(username, password)
-      localStorage.setItem('token', res.data.token);
+      setIsLoading(false)
+      loginAdmin(res.data.token)
       //console.log(res.data.token);
       //navigate to dashboard
+      navigate("/dashboard")
       console.log("Login Successfully");
       
     } catch (err: any) {
+      setIsLoading(false)
       setError(err.response.data.error);
       //console.error(err.response.data.error)
     }
@@ -65,7 +75,7 @@ function login() {
             {showPassword ? "Hide" : "Show"}
           </button>
         </div>
-        <div className="max-w-sm flex items-center flex-col">
+        <div className="flex items-center flex-col">
           {error ? (
             <div className="text-red-400 text-center px-5 py-3 break-words">
               {error}
@@ -73,16 +83,21 @@ function login() {
           ) : (
             ""
           )}
-          <button
-            className="text-center text-white px-4 py-2 rounded-lg w-[30%] bg-[#F45050]"
+          {isLoading ? (<button
+            className="text-center text-white px-4 py-2 rounded-lg w-[30%] bg-[#F45050] break-words"
+            type="submit"
+          >
+            Loading...
+          </button>)
+          :
+          (<button
+            className="text-center text-white px-4 py-2 rounded-lg w-[40%] bg-[#F45050]"
             type="submit"
           >
             Login
-          </button>
+          </button>)}
         </div>
       </form>
     </div>
   );
 }
-
-export default login;

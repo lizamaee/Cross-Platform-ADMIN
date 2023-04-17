@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import Login from './pages/login'
-import Dashboard from './pages/dashboard'
+import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
 import './index.css'
 import {
   createBrowserRouter,

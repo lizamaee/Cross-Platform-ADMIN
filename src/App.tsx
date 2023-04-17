@@ -1,17 +1,21 @@
-import LoginPage from "./pages/login"
-import {
-  Outlet
-} from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 
 function App() {
-  
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    !token ? navigate("/") : navigate("/dashboard");
+  }, []);
+
   return (
     <div className="App">
       <div>
-        <Outlet/>
+        <Outlet />
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
