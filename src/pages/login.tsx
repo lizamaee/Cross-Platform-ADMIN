@@ -1,5 +1,5 @@
 import { useState } from "react";
-import tcu from "../../public/images/bg.png";
+import tcu from "../images/bg.png";
 import { loginadmin } from "../api/auth"
 
 function login() {
