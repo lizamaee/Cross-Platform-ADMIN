@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import tcu from "../images/bg.png";
 import { loginadmin } from "../api/auth"
 import { useAuthStore } from "../state";
@@ -14,6 +14,12 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const { loginAdmin } = useAuthStore((state) => state);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    !token ? navigate("/") : navigate("/dashboard");
+  }, []);
+
 
 
   const handleLogin = async (e: any) => {

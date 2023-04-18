@@ -14,7 +14,7 @@ export default function Dashboard() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  function handleLogout(e:MouseEvent){
+  function handleLogout(e: any){
     console.log("Logged out")
     logoutAdmin()
     navigate("/")
@@ -49,7 +49,7 @@ export default function Dashboard() {
           <ul className="px-3 pt-10 pop-medium tracking-wider">
             <li className="flex items-center gap-3 bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white px-5 py-3 rounded-md">
               <BiHomeAlt size={25}/>
-              <NavLink to="/">Dashboard</NavLink>
+              <NavLink to="/dashboard">Dashboard</NavLink>
             </li>
           </ul>
           
