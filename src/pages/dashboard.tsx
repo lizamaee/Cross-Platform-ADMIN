@@ -3,14 +3,24 @@ import { RxCross2,RxHamburgerMenu } from "react-icons/rx";
 import { BiHomeAlt } from "react-icons/bi";
 import { MdHowToVote } from "react-icons/md";
 import { HiOutlineLogout } from "react-icons/hi";
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../state";
 
 export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  const { logoutAdmin } = useAuthStore((state) => state) 
+  const navigate = useNavigate()
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  function handleLogout(e:MouseEvent){
+    console.log("Logged out")
+    logoutAdmin()
+    navigate("/")
+  }
+
+
   return (
     <div className="container min-h-screen max-w-screen-2xl flex bg-[#F0F0F0]">
       <nav
@@ -43,10 +53,10 @@ export default function Dashboard() {
             </li>
           </ul>
           
-          <div className="logout w-full text-lg flex justify-between items-center pop-semibold absolute p-5 bottom-0">
+          <button onClick={handleLogout} className="logout w-full text-lg flex justify-between items-center pop-semibold absolute p-5 bottom-0">
             <h3 className="text-[#2D2727]">Logout</h3>
             <HiOutlineLogout size={25} className="text-[#2D2727]"/>
-          </div>
+          </button>
           
         </div>
 
