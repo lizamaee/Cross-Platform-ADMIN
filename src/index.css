@@ -1,3 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.pop-extrabold{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+}
+
+.pop-bold{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+
+.pop-light{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+}
+.pop-regular{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+}
+.pop-semibold{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+.pop-medium{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
