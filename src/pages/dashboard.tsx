@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { RxCross2,RxHamburgerMenu } from "react-icons/rx";
+import { RxCross2 } from "react-icons/rx";
 import { BiHomeAlt } from "react-icons/bi";
+import { CgMenuLeftAlt } from "react-icons/cg";
 import { MdHowToVote } from "react-icons/md";
 import { HiOutlineLogout } from "react-icons/hi";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
@@ -22,20 +23,39 @@ export default function Dashboard() {
 
 
   return (
-    <div className="container min-h-screen max-w-screen-2xl flex bg-[#F0F0F0]">
+    <div className="container min-h-screen max-w-screen-2xl md:flex bg-[#FFFFFF]">
       <nav
-        className={` sidebar bg-white text-black shadow-2xl ${
+        className={` sidebar fixed md:static w-4/5 h-screen rounded-r-3xl md:rounded-r-lg bg-[#444A5E] text-white shadow-2xl ${
           isSidebarOpen ? 'translate-x-0 flex-[6]' : '-translate-x-full'
-        } transition-all duration-300 ease-in-out md:translate-x-0 md:flex-[2] lg:flex-1`}
+        } transition-all duration-300 ease-in-out md:w-auto md:translate-x-0 md:flex-[2] lg:flex-1`}
       >
 
         {/* MOBILE AND TABLET VIEW */}
         { isSidebarOpen && (
-          <ul className="md:hidden">
-            <li>
-              <NavLink to="/">Home</NavLink>
-            </li>
-          </ul>
+          <div className="md:hidden">
+            <div className="flex items-center justify-between px-5 py-4 shadow-sm">
+              <MdHowToVote size={40} className="text-[#7268EF]"/>
+              <h3 className="text-2xl pop-bold text-[#ffffff]">VS Admin</h3>
+              <button
+                className="md:hidden"
+                onClick={toggleSidebar}
+              >
+                {isSidebarOpen && (<RxCross2 size={28} className="text-[#444A5E] bg-white rounded-full"/>)}
+              </button>
+            </div>
+
+            <ul className="px-3 pt-10 pop-medium tracking-wider">
+              <li className="flex items-center gap-3 bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white px-5 py-3 rounded-md">
+                <BiHomeAlt size={25}/>
+                <NavLink to="/dashboard">Dashboard</NavLink>
+              </li>
+            </ul>
+            
+            <button onClick={handleLogout} className="logout w-full text-lg flex justify-between items-center pop-semibold absolute p-5 bottom-0">
+              <h3 className="text-[#ffffff]">Logout</h3>
+              <HiOutlineLogout size={25} className="text-[#ffffff]"/>
+            </button>
+          </div>
         )}
 
         {/* DESKTOP VIEW */}
@@ -43,7 +63,7 @@ export default function Dashboard() {
 
           <div className="flex items-center gap-2 px-5 py-4 shadow-sm">
             <MdHowToVote size={40} className="text-[#7268EF]"/>
-            <h3 className="text-2xl pop-bold text-[#2A2F4F]">VS Admin</h3>
+            <h3 className="text-2xl pop-bold text-[#ffffff]">VS Admin</h3>
           </div>
 
           <ul className="px-3 pt-10 pop-medium tracking-wider">
@@ -54,8 +74,8 @@ export default function Dashboard() {
           </ul>
           
           <button onClick={handleLogout} className="logout w-full text-lg flex justify-between items-center pop-semibold absolute p-5 bottom-0">
-            <h3 className="text-[#2D2727]">Logout</h3>
-            <HiOutlineLogout size={25} className="text-[#2D2727]"/>
+            <h3 className="text-[#ffffff]">Logout</h3>
+            <HiOutlineLogout size={25} className="text-[#ffffff]"/>
           </button>
           
         </div>
@@ -67,7 +87,7 @@ export default function Dashboard() {
           className="md:hidden"
           onClick={toggleSidebar}
         >
-          {isSidebarOpen ? (<RxCross2 size={35}/>) : (<RxHamburgerMenu size={35}/>)}
+          {isSidebarOpen ? (<RxCross2 size={35}/>) : (<CgMenuLeftAlt size={40} className="text-[#7268EF]" />)}
         </button>
         <div>
           <Outlet/>
