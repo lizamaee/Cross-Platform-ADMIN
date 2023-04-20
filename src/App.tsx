@@ -4,10 +4,11 @@ import { Outlet, useNavigate } from "react-router-dom";
 function App() {
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("adminToken");
+
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
     !token ? navigate("/login") : navigate("/");
-  }, []);
+  }, [navigate,token]);
 
   return (
     <div className="App">

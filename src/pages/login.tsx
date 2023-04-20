@@ -15,10 +15,11 @@ export default function Login() {
   const { loginAdmin } = useAuthStore((state) => state);
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("adminToken");
+
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    !token ? navigate("/login") : navigate("/");
-  }, []);
+    token ? navigate('/') : navigate('/login');
+  }, [navigate, token]);
 
 
 
@@ -33,7 +34,7 @@ export default function Login() {
       loginAdmin(res.data.token)
       //console.log(res.data.token);
       //navigate to dashboard
-      navigate("/")
+      navigate("/", {replace: true})
       console.log("Login Successfully");
       
     } catch (err: any) {

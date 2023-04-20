@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { RiSettings2Line } from "react-icons/ri";
 import { BiHomeAlt } from "react-icons/bi";
@@ -20,8 +20,15 @@ export default function Dashboard() {
   function handleLogout(e: any){
     console.log("Logged out")
     logoutAdmin()
-    navigate("/")
+    navigate("/login", {replace: true})
   }
+
+  const token = localStorage.getItem("adminToken");
+
+  useEffect(() => {
+    !token ? navigate('/login') : navigate('/');
+  }, [navigate, token]);
+
 
 
   return (
