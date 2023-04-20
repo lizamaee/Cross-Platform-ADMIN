@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
+import { RiSettings2Line } from "react-icons/ri";
 import { BiHomeAlt } from "react-icons/bi";
+import { BsCalendarEvent,BsListStars } from "react-icons/bs";
 import { CgMenuLeftAlt } from "react-icons/cg";
 import { MdHowToVote } from "react-icons/md";
 import { HiOutlineLogout } from "react-icons/hi";
@@ -45,7 +47,7 @@ export default function Dashboard() {
             </div>
 
             <ul className="px-3 pt-10 pop-medium tracking-wider">
-              <li className="flex items-center gap-3 bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white px-5 py-3 rounded-md">
+              <li className="flex items-center gap-3  text-white px-5 py-3 rounded-md">
                 <BiHomeAlt size={25}/>
                 <NavLink to="/dashboard">Dashboard</NavLink>
               </li>
@@ -66,14 +68,26 @@ export default function Dashboard() {
             <h3 className="text-2xl pop-bold text-[#ffffff]">VS Admin</h3>
           </div>
 
-          <ul className="px-3 pt-10 pop-medium tracking-wider">
-            <li className="flex items-center gap-3 bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white px-5 py-3 rounded-md">
+          <ul className="px-3 flex flex-col gap-4 pt-10 pop-medium tracking-wider">
+            <NavLink to="/dashboard" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
               <BiHomeAlt size={25}/>
-              <NavLink to="/dashboard">Dashboard</NavLink>
-            </li>
+              <h2>Dashboard</h2>
+            </NavLink>
+            <NavLink to="/election" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
+              <BsCalendarEvent size={20}/>
+              <h2>Election</h2>
+            </NavLink>
+            <NavLink to="/special-features" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+              <BsListStars size={25}/>
+              <h2>Special Features</h2>
+            </NavLink>
+            <NavLink to="/settings" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
+              <RiSettings2Line size={25}/>
+              <h2>Settings</h2>
+            </NavLink>
           </ul>
           
-          <button onClick={handleLogout} className="logout w-full text-lg flex justify-between items-center pop-semibold absolute p-5 bottom-0">
+          <button onClick={handleLogout} className="logout w-full text-lg hover:bg-[#4d5263] flex justify-between items-center pop-semibold absolute p-5 bottom-0">
             <h3 className="text-[#ffffff]">Logout</h3>
             <HiOutlineLogout size={25} className="text-[#ffffff]"/>
           </button>
