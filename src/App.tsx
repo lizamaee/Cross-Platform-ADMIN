@@ -6,7 +6,7 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
-    !token ? navigate("/") : navigate("/dashboard");
+    !token ? navigate("/login") : navigate("/");
   }, []);
 
   return (

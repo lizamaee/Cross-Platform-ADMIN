@@ -47,7 +47,7 @@ export default function Dashboard() {
             </div>
 
             <ul className="px-3 flex flex-col gap-4 pt-10 pop-medium tracking-wider">
-            <NavLink to="/dashboard" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+            <NavLink to="/" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
               <BiHomeAlt size={25}/>
               <h2>Dashboard</h2>
             </NavLink>
@@ -81,7 +81,7 @@ export default function Dashboard() {
           </div>
 
           <ul className="px-3 flex flex-col gap-4 pt-10 pop-medium tracking-wider">
-            <NavLink to="/dashboard" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+            <NavLink to="/" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
               <BiHomeAlt size={25}/>
               <h2>Dashboard</h2>
             </NavLink>
