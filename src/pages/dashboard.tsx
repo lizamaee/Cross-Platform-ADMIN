@@ -47,19 +47,19 @@ export default function Dashboard() {
             </div>
 
             <ul className="px-3 flex flex-col gap-4 pt-10 pop-medium tracking-wider">
-            <NavLink to="/" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+            <NavLink onClick={toggleSidebar} to="/" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
               <BiHomeAlt size={25}/>
               <h2>Dashboard</h2>
             </NavLink>
-            <NavLink to="/election" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
+            <NavLink onClick={toggleSidebar} to="/election" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
               <BsCalendarEvent size={20}/>
               <h2>Election</h2>
             </NavLink>
-            <NavLink to="/special-features" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+            <NavLink onClick={toggleSidebar} to="/special-features" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
               <BsListStars size={25}/>
               <h2>Special Features</h2>
             </NavLink>
-            <NavLink to="/settings" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
+            <NavLink onClick={toggleSidebar} to="/settings" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
               <RiSettings2Line size={25}/>
               <h2>Settings</h2>
             </NavLink>
