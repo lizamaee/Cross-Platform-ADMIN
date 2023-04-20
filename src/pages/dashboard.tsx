@@ -46,12 +46,24 @@ export default function Dashboard() {
               </button>
             </div>
 
-            <ul className="px-3 pt-10 pop-medium tracking-wider">
-              <li className="flex items-center gap-3  text-white px-5 py-3 rounded-md">
-                <BiHomeAlt size={25}/>
-                <NavLink to="/dashboard">Dashboard</NavLink>
-              </li>
-            </ul>
+            <ul className="px-3 flex flex-col gap-4 pt-10 pop-medium tracking-wider">
+            <NavLink to="/dashboard" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+              <BiHomeAlt size={25}/>
+              <h2>Dashboard</h2>
+            </NavLink>
+            <NavLink to="/election" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
+              <BsCalendarEvent size={20}/>
+              <h2>Election</h2>
+            </NavLink>
+            <NavLink to="/special-features" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+              <BsListStars size={25}/>
+              <h2>Special Features</h2>
+            </NavLink>
+            <NavLink to="/settings" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
+              <RiSettings2Line size={25}/>
+              <h2>Settings</h2>
+            </NavLink>
+          </ul>
             
             <button onClick={handleLogout} className="logout w-full text-lg flex justify-between items-center pop-semibold absolute p-5 bottom-0">
               <h3 className="text-[#ffffff]">Logout</h3>
