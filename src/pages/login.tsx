@@ -19,7 +19,7 @@ export default function Login() {
 
   useEffect(() => {
     token ? navigate('/') : navigate('/login');
-  }, [navigate, token]);
+  }, [token]);
 
 
 

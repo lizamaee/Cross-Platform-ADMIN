@@ -8,7 +8,7 @@ function App() {
 
   useEffect(() => {
     !token ? navigate("/login") : navigate("/");
-  }, [navigate,token]);
+  }, [token]);
 
   return (
     <div className="App">

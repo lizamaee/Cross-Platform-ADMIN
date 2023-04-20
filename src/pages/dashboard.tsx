@@ -27,7 +27,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     !token ? navigate('/login') : navigate('/');
-  }, [navigate, token]);
+  }, [token]);
 
 
 
