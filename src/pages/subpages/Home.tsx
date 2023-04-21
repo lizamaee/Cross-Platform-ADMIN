@@ -1,8 +1,20 @@
 import { TiGroup } from 'react-icons/ti'
 import { BsCalendar2EventFill } from 'react-icons/bs'
 import { FaPeopleCarry } from 'react-icons/fa'
+import { useLoaderData } from 'react-router-dom'
 
-export default function Home() {
+interface Election {
+  id: number;
+  title: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+}
+
+
+export const Home = () => {
+  const election = useLoaderData() as Election[]
+  
   return (
     <div className='home'>
 
@@ -43,7 +55,30 @@ export default function Home() {
 
       {/* PHASE II */}
       <div className="organizations-activities grid md:grid-row-2 lg:grid-cols-3 md:gap-5 ">
-        <div className="elections lg:col-span-2 bg-white rounded-md drop-shadow-md p-5 ">registered students per organizations</div>
+        <div className="elections lg:col-span-2 text-[#090650]">
+          <h3 className='text-center pop-bold shadow-sm mb-5 py-2' >Upcoming Elections</h3>
+          <table className='w-full h-full text-center pt-10 text-sm overflow-x-scroll'>
+            <thead>
+              <tr className='pop-semibold text-sm'>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {election.map((entry, index) => (
+                <tr key={entry.id} className={` rounded-md ${index % 2 === 0 ? 'bg-[#eaf4fc]' : 'bg-white'}`}>
+                  <td className=''>{entry.title}</td>
+                  <td>{entry.status}</td>
+                  <td>{new Date(entry.startDate).toLocaleDateString('en-US', {timeZone: 'Asia/Manila', day: 'numeric', month: 'short', year: 'numeric'})}</td>
+                  <td>{new Date(entry.endDate).toLocaleDateString('en-US', {timeZone: 'Asia/Manila', day: 'numeric', month: 'short', year: 'numeric'})}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+        </div>
         <div className="activities">
 
           <div className="activity-wrapper py-3 px-5 bg-white drop-shadow-md rounded-2xl">
@@ -77,4 +112,25 @@ export default function Home() {
       {/* PHASE II */}
     </div>
   )
+}
+
+export const homeLoader = async () => {
+  try {
+    const token = localStorage.getItem('adminToken');
+    const options = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+    
+    const res = await fetch("http://localhost:3000/election/status/upcoming", options);
+    const elections = await res.json();
+    
+    return elections
+
+  } catch (error: any) {
+    console.log(error.message);
+    return [ { error: error.message } ]
+    
+  }
 }
