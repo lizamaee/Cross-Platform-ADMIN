@@ -34,7 +34,7 @@ export default function Dashboard() {
 
 
   return (
-    <div className="container min-h-screen max-w-screen-2xl md:flex bg-[#FFFFFF]">
+    <div className="container md:overflow-hidden h-screen max-w-screen-2xl md:flex bg-[#FFFFFF]">
       <nav
         className={` sidebar fixed md:static w-4/5 h-screen rounded-r-3xl md:rounded-r-lg bg-[#444A5E] text-white shadow-2xl ${
           isSidebarOpen ? 'translate-x-0 flex-[6]' : '-translate-x-full'
@@ -129,7 +129,7 @@ export default function Dashboard() {
 
       </nav>
 
-      <div className="main flex-[2] md:flex-[6] lg:flex-[4] p-5 bg-[#f4f7ff] ">
+      <div className="main flex-[2] md:flex-[6] lg:flex-[4] p-5 bg-[#f4f7ff] md:overflow-y-auto ">
         <div className="wrapper flex items-center md:block">
           <button
             className="md:hidden"
