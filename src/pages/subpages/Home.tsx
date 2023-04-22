@@ -119,7 +119,7 @@ export const Home = () => {
         </div>
         <div className="activities">
 
-          <div className="activity-wrapper py-3 px-5 bg-white drop-shadow-md rounded-2xl">
+          <div className="activity-wrapper py-3 px-5 bg-white min-h-full drop-shadow-md rounded-2xl">
             
             <h3 className='pb-1 pop-semibold text-xs text-[#090650]'>Current Status</h3>
             
@@ -148,6 +148,38 @@ export const Home = () => {
         </div>
       </div>
       {/* PHASE II */}
+
+      {/* PHASE III */}
+        <div className="upcoming-election-wrapper">
+        <h3 className='text-center pop-bold shadow-sm mb-5 py-5' >Upcoming Elections</h3>
+          {/* Upcoming Elections Table */}
+          <table className='w-full h-full text-center pt-10 text-sm overflow-x-scroll'>
+            <thead>
+              <tr className='pop-semibold text-sm py-2'>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {election.map((entry, index) => (
+                <tr key={entry.id} className={` rounded-md align-middle ${index % 2 === 0 ? 'bg-[#eaf4fc]' : 'bg-white'}`}>
+                  <td className='py-5'>{entry.title}</td>
+                  <td className='py-5'>{entry.status}</td>
+                  <td className='py-5'>{new Date(entry.startDate).toLocaleDateString('en-US', {timeZone: 'Asia/Manila', day: 'numeric', month: 'short', year: 'numeric'})}</td>
+                  <td className='py-5'>{new Date(entry.endDate).toLocaleDateString('en-US', {timeZone: 'Asia/Manila', day: 'numeric', month: 'short', year: 'numeric'})}</td>
+                  <td>
+                    <button className='hover:bg-sky-800 border-2 border-blue-400 hover:text-white pop-medium text-center py-2 px-4 rounded-full'>activate</button>
+
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      {/* PHASE III */}
     </div>
   )
 }
@@ -164,6 +196,8 @@ export const homeLoader = async () => {
     const res = await fetch("http://localhost:3000/election/status/upcoming", options);
     const elections = await res.json();
     
+    if(!elections) throw new Error("Something Went Wrong")
+
     return elections
 
   } catch (error: any) {
