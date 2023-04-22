@@ -2,6 +2,10 @@ import { TiGroup } from 'react-icons/ti'
 import { BsCalendar2EventFill } from 'react-icons/bs'
 import { FaPeopleCarry } from 'react-icons/fa'
 import { useLoaderData } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react';
+import LineChart from '../../components/LineChart';
+
+
 
 interface Election {
   id: number;
@@ -14,7 +18,53 @@ interface Election {
 
 export const Home = () => {
   const election = useLoaderData() as Election[]
+  const [newUser, setNewUser] = useState([]);
+
+  const getDataDayAndCount = () => {
+    const dataDay:[] = [];
+    const dataCount:[] = [];
+
+    for (let i = 0; i < newUser.length; i++) {
+      dataDay.push(newUser[i][0]);
+      dataCount.push(newUser[i][1]);
+    }
+
+    return { dataDay, dataCount };
+  };
+
+  const { dataDay, dataCount } = getDataDayAndCount();
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/user-analytics")
+        const data = await response.json()
+        setNewUser(data)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    getData()
+  }, []);
+  //add newUser dependency above on production 
+
+  const data = {
+    labels: dataDay,
+    datasets: [
+      {
+        label: 'New Registered Voter',
+        data: dataCount,
+        fill: true,
+        backgroundColor: 'rgba(68,74,94,0.2)',
+        borderColor: '#766cf0',
+        borderWidth: 5
+      },
+    ],
+  };
   
+  
+  
+
   return (
     <div className='home'>
 
@@ -55,28 +105,16 @@ export const Home = () => {
 
       {/* PHASE II */}
       <div className="organizations-activities grid md:grid-row-2 lg:grid-cols-3 md:gap-5 ">
-        <div className="elections lg:col-span-2 text-[#090650]">
-          <h3 className='text-center pop-bold shadow-sm mb-5 py-2' >Upcoming Elections</h3>
-          <table className='w-full h-full text-center pt-10 text-sm overflow-x-scroll'>
-            <thead>
-              <tr className='pop-semibold text-sm'>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {election.map((entry, index) => (
-                <tr key={entry.id} className={` rounded-md ${index % 2 === 0 ? 'bg-[#eaf4fc]' : 'bg-white'}`}>
-                  <td className=''>{entry.title}</td>
-                  <td>{entry.status}</td>
-                  <td>{new Date(entry.startDate).toLocaleDateString('en-US', {timeZone: 'Asia/Manila', day: 'numeric', month: 'short', year: 'numeric'})}</td>
-                  <td>{new Date(entry.endDate).toLocaleDateString('en-US', {timeZone: 'Asia/Manila', day: 'numeric', month: 'short', year: 'numeric'})}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="elections lg:col-span-2 text-[#090650] rounded-lg hidden md:block md:shadow-lg">
+
+          <h1 className='pop-semibold text-sm pl-5'>Weekly New Voters</h1>
+
+          {/* Line Chart */}
+          <div className="chart-containera flex justify-center items-center h-full w-full">
+            <div className="chart-wrapper w-full flex justify-center pb-2 px-4">
+              <LineChart chartData={data}/>
+            </div>
+          </div>
 
         </div>
         <div className="activities">
@@ -90,7 +128,7 @@ export const Home = () => {
               <p className='opacity-50'>the votes used</p>
             </div>
 
-            
+            {/* Activities */}
             <h3 className='text-[#090650] pop-semibold text-xs text-center pt-4 pb-2 shadow-sm rounded-md'>Voting Activity</h3>
 
             <div className="voting-activity overflow-y-auto max-h-60 px-4">
@@ -103,7 +141,7 @@ export const Home = () => {
                 </div>
                 <h3 className='pop-semibold text-sm text-[#26d1ad]'>Voted</h3>
               </div>
-
+              
             </div>
 
           </div>
