@@ -1,9 +1,12 @@
+import axios from 'axios';
 import { TiGroup } from "react-icons/ti";
 import { BsCalendar2EventFill } from "react-icons/bs";
 import { FaPeopleCarry } from "react-icons/fa";
 import { useLoaderData } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LineChart from "../../components/LineChart";
+import { getAnalyticsData, getUpcomings, fetchData } from "../../api/home";
+
 
 interface Election {
   id: number;
@@ -14,14 +17,16 @@ interface Election {
 }
 
 export const Home = () => {
-  const { voters, elections, organizations, upcomings } = useLoaderData() as {
+  const [upcomings, setUpComings] = useState<Election[]>([])
+  const [newUser, setNewUser] = useState([]);
+  
+  const { voters, elections, organizations } = useLoaderData() as {
     voters: any[];
     elections: Election[];
     organizations: any[];
-    upcomings: Election[];
     error?: string;
   };
-  const [newUser, setNewUser] = useState([]);
+
 
   const getDataDayAndCount = () => {
     const dataDay: [] = [];
@@ -31,34 +36,26 @@ export const Home = () => {
       dataDay.push(newUser[i][0]);
       dataCount.push(newUser[i][1]);
     }
-
     return { dataDay, dataCount };
   };
-
   const { dataDay, dataCount } = getDataDayAndCount();
 
+
+
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const token = localStorage.getItem("adminToken");
-        const options = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        const response = await fetch(
-          "http://localhost:3000/user-analytics",
-          options
-        );
-        const data = await response.json();
-        setNewUser(data);
-      } catch (err) {
-        console.log(err);
-      }
+    const fetchUpcomings = async () => {
+      const data = await getUpcomings();
+      setUpComings(data);
     };
-    getData();
+    const fetchAnalyticsData = async () => {
+      const data = await getAnalyticsData();
+      setNewUser(data);
+    };
+
+    fetchUpcomings();
+    fetchAnalyticsData();
   }, []);
-  //add newUser dependency above on production
+  //add [ newUser, upcomings ] dependency above on production
 
   const data = {
     labels: dataDay,
@@ -73,6 +70,33 @@ export const Home = () => {
       },
     ],
   };
+
+
+  //Activate Election to Ongoing
+  const activateElection = (id: string) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      };
+      axios.patch(`http://localhost:3000/election/status/to-ongoing/${id}`, null, config)
+        .then(response => {
+          console.log(response.data);
+          // handle success
+        })
+        .catch(error => {
+          console.error(error);
+          // handle error
+        });
+    } catch (error) {
+      console.error(error);
+      // handle error
+    }
+  }
+  
 
   return (
     <div className="home">
@@ -213,7 +237,7 @@ export const Home = () => {
                   })}
                 </td>
                 <td>
-                  <button className="hover:bg-sky-800 border-2 border-blue-400 hover:text-white pop-medium text-center py-2 px-4 rounded-full">
+                  <button onClick={() => activateElection(String(entry.id))} className="hover:bg-sky-800 border-2 border-blue-400 hover:text-white pop-medium text-center py-2 px-4 rounded-full">
                     activate
                   </button>
                 </td>
@@ -227,37 +251,16 @@ export const Home = () => {
   );
 };
 
-const fetchData = async (endpoints: string) => {
-  try {
-    const token = localStorage.getItem("adminToken");
-    const options = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const response = await fetch(`http://localhost:3000/${endpoints}`, options);
-
-    if (!response) throw new Error("Something Went Wrong");
-
-    return response.json();
-  } catch (error: any) {
-    console.log(error.message);
-    return [{ error: error.message }];
-  }
-};
-
 export const homeLoader = async () => {
   const totalVotersData = fetchData("get-all-voters");
   const totalElectionsData = fetchData("election");
-  const UpcommingElectionsData = fetchData("election/status/upcoming");
   const totalOrganizationsData = fetchData("organization");
 
-  const [voters, elections, upcomings, organizations] = await Promise.all([
+  const [voters, elections, organizations] = await Promise.all([
     totalVotersData,
     totalElectionsData,
-    UpcommingElectionsData,
     totalOrganizationsData,
   ]);
 
-  return { voters, elections, upcomings, organizations };
+  return { voters, elections, organizations };
 };
