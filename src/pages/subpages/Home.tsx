@@ -6,6 +6,7 @@ import { useLoaderData } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LineChart from "../../components/LineChart";
 import { getAnalyticsData, getUpcomings, fetchData } from "../../api/home";
+import ElectionTable from '../../components/ElectionTable';
 
 
 interface Election {
@@ -19,6 +20,7 @@ interface Election {
 export const Home = () => {
   const [upcomings, setUpComings] = useState<Election[]>([])
   const [newUser, setNewUser] = useState([]);
+  const [asOfNow, setAsOfNow] = useState("");
   
   const { voters, elections, organizations } = useLoaderData() as {
     voters: any[];
@@ -54,6 +56,19 @@ export const Home = () => {
 
     fetchUpcomings();
     fetchAnalyticsData();
+
+      //DATE TODAY
+    const today = new Date();
+
+    function formatDate() {
+      const day = today.getDate().toString().padStart(2, '0');
+      const month = (today.getMonth() + 1).toString().padStart(2, '0');
+      const year = today.getFullYear().toString().substr(-2);
+      setAsOfNow(`${month}/${day}/${year}`)
+    }
+    formatDate()
+
+    
   }, []);
   //add [ newUser, upcomings ] dependency above on production
 
@@ -71,7 +86,7 @@ export const Home = () => {
     ],
   };
 
-
+  
   //Activate Election to Ongoing
   const activateElection = (id: string) => {
     try {
@@ -82,7 +97,7 @@ export const Home = () => {
           'Authorization': `Bearer ${token}`,
         },
       };
-      axios.patch(`http://localhost:3000/election/status/to-ongoing/${id}`, null, config)
+      axios.patch(`http://localhost:3000/election/status/to-ongoing/${id}`, {}, config)
         .then(response => {
           console.log(response.data);
           // handle success
@@ -96,7 +111,8 @@ export const Home = () => {
       // handle error
     }
   }
-  
+
+
 
   return (
     <div className="home">
@@ -144,8 +160,12 @@ export const Home = () => {
 
       {/* PHASE II */}
       <div className="organizations-activities grid md:grid-row-2 lg:grid-cols-3 md:gap-5 ">
-        <div className="elections lg:col-span-2 text-[#090650] rounded-lg hidden md:block md:shadow-lg">
-          <h1 className="pop-semibold text-sm pl-5">Weekly New Voters</h1>
+        <div className="elections lg:col-span-2 text-[#090650] md:bg-white md:py-3 rounded-lg hidden md:block md:shadow-lg">
+          
+          <div className="chart-heading flex items-center justify-between px-5">
+            <h1 className="pop-semibold text-sm">Daily New Voters</h1>
+            <h2 className="pop-semibold text-xs tracking-widest">{asOfNow}</h2>  
+          </div>
 
           {/* Line Chart */}
           <div className="chart-containera flex justify-center items-center h-full w-full">
@@ -200,51 +220,7 @@ export const Home = () => {
           Upcoming Elections
         </h3>
         {/* Upcoming Elections Table */}
-        <table className="w-full h-full text-center pt-10 text-sm overflow-x-scroll">
-          <thead>
-            <tr className="pop-semibold text-sm py-2">
-              <th>Title</th>
-              <th>Status</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {upcomings.map((entry, index) => (
-              <tr
-                key={entry.id}
-                className={` rounded-md align-middle ${
-                  index % 2 === 0 ? "bg-[#eaf4fc]" : "bg-white"
-                }`}
-              >
-                <td className="py-5">{entry.title}</td>
-                <td className="py-5">{entry.status}</td>
-                <td className="py-5">
-                  {new Date(entry.startDate).toLocaleDateString("en-US", {
-                    timeZone: "Asia/Manila",
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </td>
-                <td className="py-5">
-                  {new Date(entry.endDate).toLocaleDateString("en-US", {
-                    timeZone: "Asia/Manila",
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </td>
-                <td>
-                  <button onClick={() => activateElection(String(entry.id))} className="hover:bg-sky-800 border-2 border-blue-400 hover:text-white pop-medium text-center py-2 px-4 rounded-full">
-                    activate
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <ElectionTable election={upcomings} handleElection={activateElection}/>
       </div>
       {/* PHASE III */}
     </div>
