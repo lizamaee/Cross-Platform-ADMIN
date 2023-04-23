@@ -5,7 +5,7 @@ import { FaPeopleCarry } from "react-icons/fa";
 import { useLoaderData } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LineChart from "../../components/LineChart";
-import { getAnalyticsData, getUpcomings, fetchData, getOngoings } from "../../api/home";
+import { getAnalyticsData, getUpcomings, fetchData, getOngoings, getVotedActivities } from "../../api/home";
 import ElectionTable from '../../components/ElectionTable';
 
 
@@ -25,6 +25,17 @@ interface ElectionOrg {
   endDate: string;
 }
 
+interface Activity {
+  id: string;
+  type: string;
+  userId: string;
+  createdAt: string;
+  user: {
+    profile_picture: string;
+    fullname: string;
+  }
+}
+
 export const Home = () => {
   const [upcomings, setUpComings] = useState<Election[]>([])
   const [ongoings, setOngoings] = useState<Election[]>([])
@@ -33,8 +44,10 @@ export const Home = () => {
   const [upcomingTab, setUpcomingTab] = useState(true)
   const [ongoingTab, setOngoingTab] = useState(false)
   const [renderOrganizations, setrRenderOrganizations] = useState(false)
+  const [voted, setVoted] = useState("")
 
   const [electionOrgs, setElectionOrgs] = useState<ElectionOrg[]>([])
+  const [activities, setActivities] = useState<Activity[]>([])
 
   const { voters, elections, organizations } = useLoaderData() as {
     voters: any[];
@@ -71,6 +84,13 @@ export const Home = () => {
       const data = await getAnalyticsData()
       setNewUser(data)
     }
+    const fetchActivities = async () => {
+      const data = await getVotedActivities()
+      setVoted(String(data.count))
+      setActivities(data.activities)
+    }
+
+    fetchActivities()
     fetchOngoings()
     fetchUpcomings()
     fetchAnalyticsData()
@@ -142,7 +162,7 @@ export const Home = () => {
       };
       axios.get(`http://localhost:3000/election/${id}`, config)
         .then(response => {
-          console.log(response.data.organizations);
+          //console.log(response.data.organizations);
           setElectionOrgs(response.data.organizations)
           setrRenderOrganizations(true)
           // handle success
@@ -166,6 +186,22 @@ export const Home = () => {
     setOngoingTab(true)
     setUpcomingTab(false)
   }
+
+  // ACTIVITY TIMESTAMPS Format
+  const formatStamp = (stamp: string) => {
+    const date = new Date(stamp);
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+    const formattedDate = date.toLocaleString("en-US", options)
+    return formattedDate// Output: "Apr 23, 2023, 8:19 PM"
+    
+    }
 
   return (
     <div className="home">
@@ -235,8 +271,8 @@ export const Home = () => {
 
             <div className="card p-10 bg-[#090650] rounded-xl text-center text-white">
               <h2 className="text-2xl pop-bold">
-                <span className="text-[#00ffdf]">327 </span>
-                <span className="pop-regular">out of</span> 650
+                <span className="text-[#00ffdf]">{voted}</span>
+                <span className="pop-regular px-4">out of</span>{voters.length}
               </h2>
               <p className="opacity-50">the votes used</p>
             </div>
@@ -247,20 +283,22 @@ export const Home = () => {
             </h3>
 
             <div className="voting-activity overflow-y-auto max-h-60 px-4">
-              <div className="activity flex justify-between items-center pt-2 text-[#090650]">
-                <img
-                  className="w-8 h-8 rounded-full"
-                  src="https://media.licdn.com/dms/image/C4E03AQGyC0TkddKVzg/profile-displayphoto-shrink_800_800/0/1633844065823?e=2147483647&v=beta&t=7TguBF17gKMrVGw-mcrWkNmuInvG_N0hCVlY0j8arjw"
-                  alt="profile picture"
-                />
-                <div className="name-date">
-                  <h2 className="pop-semibold lg:text-xs">Menard Pajares</h2>
-                  <p className="opacity-50 pop-regular text-xs">
-                    01 apr 2023 12:00
-                  </p>
-                </div>
-                <h3 className="pop-semibold text-sm text-[#26d1ad]">Voted</h3>
-              </div>
+              {activities.map((activity) => (
+                  <div key={activity.id} className="activity flex justify-between items-center pt-2 text-[#090650]">
+                    <img
+                      className="w-8 h-8 rounded-full"
+                      src={activity.user.profile_picture}
+                      alt="profile picture"
+                    />
+                    <div className="name-date">
+                      <h2 className="pop-semibold lg:text-xs">{activity.user.fullname}</h2>
+                      <p className="opacity-50 pop-regular text-xs">
+                        {formatStamp(activity.createdAt)}
+                      </p>
+                    </div>
+                    <h3 className="pop-semibold text-sm text-[#26d1ad]">Voted</h3>
+                  </div>
+              ))}
             </div>
           </div>
         </div>

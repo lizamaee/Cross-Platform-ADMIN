@@ -26,6 +26,16 @@ export const getOngoings = async () => {
         console.log(err);
     }
 }
+
+export const getVotedActivities = async () => {
+  try {
+    const response = await fetchData('get-voted-activities')
+    return response
+} catch (err) {
+    console.log(err);
+}
+}
+
 export const fetchData = async (endpoints: string) => {
   try {
     const token = localStorage.getItem("adminToken");
