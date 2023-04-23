@@ -5,7 +5,7 @@ import { FaPeopleCarry } from "react-icons/fa";
 import { useLoaderData } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LineChart from "../../components/LineChart";
-import { getAnalyticsData, getUpcomings, fetchData } from "../../api/home";
+import { getAnalyticsData, getUpcomings, fetchData, getOngoings } from "../../api/home";
 import ElectionTable from '../../components/ElectionTable';
 
 
@@ -19,9 +19,12 @@ interface Election {
 
 export const Home = () => {
   const [upcomings, setUpComings] = useState<Election[]>([])
+  const [ongoings, setOngoings] = useState<Election[]>([])
   const [newUser, setNewUser] = useState([]);
   const [asOfNow, setAsOfNow] = useState("");
-  
+  const [upcomingTab, setUpcomingTab] = useState(true)
+  const [ongoingTab, setOngoingTab] = useState(false)
+
   const { voters, elections, organizations } = useLoaderData() as {
     voters: any[];
     elections: Election[];
@@ -46,19 +49,23 @@ export const Home = () => {
 
   useEffect(() => {
     const fetchUpcomings = async () => {
-      const data = await getUpcomings();
-      setUpComings(data);
-    };
+      const data = await getUpcomings()
+      setUpComings(data)
+    }
+    const fetchOngoings = async () => {
+      const data = await getOngoings()
+      setOngoings(data)
+    }
     const fetchAnalyticsData = async () => {
-      const data = await getAnalyticsData();
-      setNewUser(data);
-    };
-
-    fetchUpcomings();
-    fetchAnalyticsData();
+      const data = await getAnalyticsData()
+      setNewUser(data)
+    }
+    fetchOngoings()
+    fetchUpcomings()
+    fetchAnalyticsData()
 
       //DATE TODAY
-    const today = new Date();
+    const today = new Date()
 
     function formatDate() {
       const day = today.getDate().toString().padStart(2, '0');
@@ -86,7 +93,7 @@ export const Home = () => {
     ],
   };
 
-  
+
   //Activate Election to Ongoing
   const activateElection = (id: string) => {
     try {
@@ -112,7 +119,14 @@ export const Home = () => {
     }
   }
 
-
+  const handleUpcomingTab = () => {
+    setUpcomingTab(true)
+    setOngoingTab(false)
+  }
+  const handleOngoingTab = () => {
+    setOngoingTab(true)
+    setUpcomingTab(false)
+  }
 
   return (
     <div className="home">
@@ -159,8 +173,8 @@ export const Home = () => {
       {/* PHASE I */}
 
       {/* PHASE II */}
-      <div className="organizations-activities grid md:grid-row-2 lg:grid-cols-3 md:gap-5 ">
-        <div className="elections lg:col-span-2 text-[#090650] md:bg-white md:py-3 rounded-lg hidden md:block md:shadow-lg">
+      <div className="elections-activities grid md:grid-row-2 lg:grid-cols-3 md:gap-5 ">
+        <div className="elections lg:col-span-2 text-[#090650] md:bg-white md:py-3 rounded-lg hidden md:block md:drop-shadow-md">
           
           <div className="chart-heading flex items-center justify-between px-5">
             <h1 className="pop-semibold text-sm">Daily New Voters</h1>
@@ -216,11 +230,17 @@ export const Home = () => {
 
       {/* PHASE III */}
       <div className="upcoming-election-wrapper">
-        <h3 className="text-center pop-bold shadow-sm mb-5 py-5">
-          Upcoming Elections
-        </h3>
-        {/* Upcoming Elections Table */}
-        <ElectionTable election={upcomings} handleElection={activateElection}/>
+        <div className="eletion-tab flex justify-evenly gap-4 my-5">
+          <button onClick={handleUpcomingTab} className={`text-center text-xs md:text-lg pop-bold shadow-sm py-5 w-full ${ upcomingTab ? `bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white rounded-md ` : `` }`}>
+            Upcoming Elections
+          </button>
+          <button onClick={handleOngoingTab} className={`text-center text-xs md:text-lg pop-bold shadow-sm py-5 w-full ${ ongoingTab ? `bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white rounded-md ` : `` }`}>
+            Ongoing Elections
+          </button>
+        </div>
+        {/* Elections Table */}
+        { upcomingTab && <ElectionTable election={upcomings} handleElection={activateElection} action='activate' actionStyle='hover:bg-sky-800 border-2 border-blue-400 hover:text-white'/> }
+        { ongoingTab && <ElectionTable election={ongoings} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
       </div>
       {/* PHASE III */}
     </div>

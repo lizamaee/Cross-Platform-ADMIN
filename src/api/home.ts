@@ -18,6 +18,14 @@ export const getUpcomings = async () => {
         console.log(err);
     }
 }
+export const getOngoings = async () => {
+    try {
+        const response = await fetchData('election/status/ongoing')
+        return response
+    } catch (err) {
+        console.log(err);
+    }
+}
 export const fetchData = async (endpoints: string) => {
   try {
     const token = localStorage.getItem("adminToken");

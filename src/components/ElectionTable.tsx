@@ -10,10 +10,12 @@ interface Election {
   
   interface ElectionTableProps {
     election: Election[];
-    handleElection: (id: string) => void;
+    handleElection?: (id: string) => void;
+    action?: string;
+    actionStyle?: string;
   }
 
-const ElectionTable: React.FC<ElectionTableProps>  = ({ election, handleElection }) => {
+const ElectionTable: React.FC<ElectionTableProps>  = ({ election, handleElection, action, actionStyle }) => {
   return (
     <table className="w-full h-full text-center pt-10 text-sm overflow-x-scroll">
       <thead>
@@ -53,10 +55,10 @@ const ElectionTable: React.FC<ElectionTableProps>  = ({ election, handleElection
             </td>
             <td>
               <button
-                onClick={() => handleElection(String(entry.id))}
-                className="hover:bg-sky-800 border-2 border-blue-400 hover:text-white pop-medium text-center py-2 px-4 rounded-full"
+                onClick={() => handleElection && handleElection(String(entry.id))}
+                className={`pop-medium text-center py-2 px-4 rounded-full ${actionStyle}`}
               >
-                activate
+                { action }
               </button>
             </td>
           </tr>
