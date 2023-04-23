@@ -17,7 +17,7 @@ interface Election {
 
 const ElectionTable: React.FC<ElectionTableProps>  = ({ election, handleElection, action, actionStyle }) => {
   return (
-    <table className="w-full h-full text-center pt-10 text-sm overflow-x-scroll">
+    <table className="w-full h-full text-center pt-10 text-sm overflow-x-scroll drop-shadow-md mb-3">
       <thead>
         <tr className="pop-semibold text-sm py-2">
           <th>Title</th>

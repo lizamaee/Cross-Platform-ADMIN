@@ -17,6 +17,14 @@ interface Election {
   endDate: string;
 }
 
+interface ElectionOrg {
+  id: string;
+  org_name: string;
+  logo_url: string;
+  startDate: string;
+  endDate: string;
+}
+
 export const Home = () => {
   const [upcomings, setUpComings] = useState<Election[]>([])
   const [ongoings, setOngoings] = useState<Election[]>([])
@@ -24,6 +32,9 @@ export const Home = () => {
   const [asOfNow, setAsOfNow] = useState("");
   const [upcomingTab, setUpcomingTab] = useState(true)
   const [ongoingTab, setOngoingTab] = useState(false)
+  const [renderOrganizations, setrRenderOrganizations] = useState(false)
+
+  const [electionOrgs, setElectionOrgs] = useState<ElectionOrg[]>([])
 
   const { voters, elections, organizations } = useLoaderData() as {
     voters: any[];
@@ -64,7 +75,7 @@ export const Home = () => {
     fetchUpcomings()
     fetchAnalyticsData()
 
-      //DATE TODAY
+    //DATE TODAY
     const today = new Date()
 
     function formatDate() {
@@ -119,9 +130,37 @@ export const Home = () => {
     }
   }
 
+  //Get All organization of passed election id
+  const getOrganizations = (id: string) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      };
+      axios.get(`http://localhost:3000/election/${id}`, config)
+        .then(response => {
+          console.log(response.data.organizations);
+          setElectionOrgs(response.data.organizations)
+          setrRenderOrganizations(true)
+          // handle success
+        })
+        .catch(error => {
+          console.error(error);
+          // handle error
+        });
+    } catch (error) {
+      console.error(error);
+      // handle error
+    }
+  }
+
   const handleUpcomingTab = () => {
     setUpcomingTab(true)
     setOngoingTab(false)
+    setrRenderOrganizations(false)
   }
   const handleOngoingTab = () => {
     setOngoingTab(true)
@@ -240,7 +279,37 @@ export const Home = () => {
         </div>
         {/* Elections Table */}
         { upcomingTab && <ElectionTable election={upcomings} handleElection={activateElection} action='activate' actionStyle='hover:bg-sky-800 border-2 border-blue-400 hover:text-white'/> }
-        { ongoingTab && <ElectionTable election={ongoings} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
+        { ongoingTab && <ElectionTable election={ongoings} handleElection={getOrganizations} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
+      
+
+        {renderOrganizations && <h2 className='text-sm pop-bold bg-white py-4 mt-2 text-sky-950 w-full text-center'>Active Organizations Election</h2>}
+
+        <div className="election-per-organizations py-3 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {!renderOrganizations ? "" : (electionOrgs.map((org) => (
+          <div className="single-or bg-white rounded-lg drop-shadow-md p-4 text-xs pop-medium" key={org.id}>
+            <div className="org-img-container p-1 flex justify-center">
+              <img className='rounded-full h-[60px]' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
+            </div>
+            <h1 className='text-sm text-center py-3'>{org.org_name}</h1>
+            <div className="time-date-container flex justify-between px-2 opacity-60">
+              <p>Start: {new Date(org.startDate).toLocaleDateString("en-US", {
+                  timeZone: "Asia/Manila",
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}</p>
+              <p className='text-right'>End: {new Date(org.endDate).toLocaleDateString("en-US", {
+                  timeZone: "Asia/Manila",
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}</p>
+            </div>
+          </div>
+
+        )))}
+      </div>
+
       </div>
       {/* PHASE III */}
     </div>
