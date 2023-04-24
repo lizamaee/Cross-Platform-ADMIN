@@ -21,7 +21,7 @@ const ElectionTable: React.FC<ElectionTableProps>  = ({ election, handleElection
   return (
     <table className="w-full h-full text-center pt-10 text-sm overflow-x-scroll drop-shadow-md mb-3">
       <thead>
-        <tr className="pop-semibold text-sm py-2">
+        <tr className="pop-semibold text-sm py-2 dark:text-gray-200">
           <th>Title</th>
           <th>Status</th>
           <th>Start Date</th>
@@ -32,14 +32,14 @@ const ElectionTable: React.FC<ElectionTableProps>  = ({ election, handleElection
       <tbody>
       { error && (
         <tr>
-          <td colSpan={5} className="pop-semibold text-sm tracking-widest pt-5 opacity-50">{error}</td>
+          <td colSpan={5} className="pop-semibold text-sm tracking-widest pt-5 opacity-50 dark:text-gray-200">{error}</td>
         </tr>
       )}
       { !error && election?.map((entry, index) => (
         <tr
           key={index}
           className={` rounded-md align-middle ${
-            index % 2 === 0 ? "bg-[#eaf4fc]" : "bg-white"
+            index % 2 === 0 ? "bg-[#eaf4fc]" : "bg-white dark:bg-[#4a4a4a]"
           }`}
         >
           <td className="py-5">{entry.title}</td>

@@ -34,9 +34,9 @@ export default function Dashboard() {
 
 
   return (
-    <div className="container md:overflow-hidden h-screen max-w-screen-2xl md:flex bg-[#FFFFFF]">
+    <div className="container md:overflow-hidden h-screen max-w-screen-2xl md:flex">
       <nav
-        className={` sidebar fixed md:static w-4/5 h-screen rounded-r-3xl md:rounded-r-lg  ${isNight ? 'bg-[#303030]' : 'bg-[#444A5E]'}  text-white shadow-2xl ${
+        className={` sidebar fixed md:static w-4/5 h-screen rounded-r-3xl md:rounded-r-lg bg-[#444A5E] dark:bg-[#303030] text-white shadow-2xl ${
           isSidebarOpen ? 'translate-x-0 flex-[6]' : '-translate-x-full'
         } transition-all duration-300 ease-in-out md:w-auto md:translate-x-0 md:flex-[2] lg:flex-1`}
       >
@@ -129,7 +129,7 @@ export default function Dashboard() {
 
       </nav>
 
-      <div className={`main flex-[2] md:flex-[6] lg:flex-[4] p-5 md:overflow-y-auto`}>
+      <div className={`main flex-[2] md:flex-[6] lg:flex-[4] p-5 md:overflow-y-auto bg-[#f4f7ff] dark:bg-[#2B2B2B]`}>
         <div className="wrapper flex items-center md:block">
           <button
             className="md:hidden"
@@ -138,12 +138,12 @@ export default function Dashboard() {
             {isSidebarOpen ? (<RxCross2 size={35}/>) : (<CgMenuLeftAlt size={40} className="text-[#7268EF]" />)}
           </button>
           <div className="navigation flex-1 flex md:block justify-center">
-            <h3 className='pop-semibold hidden md:block text-[0.5rem] md:text-[0.7rem] text-sky-800'>Pages / {pageName}</h3>
+            <h3 className='pop-semibold hidden md:block text-[0.5rem] md:text-[0.7rem] text-sky-800 dark:text-sky-200'>Pages / {pageName}</h3>
             <div className="divider flex justify-between">
-              <h1 className='text-xl md:text-3xl pop-semibold text-sky-950'>{pageTitle}</h1>
-              <div className="hero hidden md:flex gap-5 bg-white items-center py-1 px-3 rounded-full">
+              <h1 className='text-xl md:text-3xl pop-semibold text-sky-950 dark:text-sky-100'>{pageTitle}</h1>
+              <div className="hero hidden md:flex gap-5 bg-white dark:bg-[#333333] items-center py-1 px-3 rounded-full">
                 <span onClick={switchMode}>
-                  { isNight ? ( <BsFillSunFill className='text-[#bd4141]' size={18}/>) : ( < BsMoonFill className='text-[#a3aed0]' size={18} /> )}
+                  { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={18}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={18} /> )}
                   
                 </span>
 

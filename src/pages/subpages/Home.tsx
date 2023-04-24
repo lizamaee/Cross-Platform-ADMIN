@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import LineChart from "../../components/LineChart";
 import { getAnalyticsData, getUpcomings, fetchData, getOngoings, getVotedActivities, getOrganizationsBasedOnId } from "../../api/home";
 import ElectionTable from '../../components/ElectionTable';
+import { useAuthStore } from '../../state';
 
 
 interface Election {
@@ -52,6 +53,9 @@ export const Home = () => {
 
   const [electionOrgs, setElectionOrgs] = useState<ElectionOrg[]>([])
   const [activities, setActivities] = useState<Activity[]>([])
+
+
+  const { isNight } = useAuthStore((state) => state)
 
   const { voters, elections, organizations } = useLoaderData() as {
     voters: any[];
@@ -140,7 +144,7 @@ export const Home = () => {
         label: "New Registered Voter",
         data: dataCount,
         fill: true,
-        backgroundColor: "rgba(68,74,94,0.2)",
+        backgroundColor: isNight ? "rgba(68,74,94,0.2)" : "#A75DE1",
         borderColor: "#766cf0",
         borderWidth: 5,
       },
@@ -215,7 +219,7 @@ export const Home = () => {
     <div className="home">
       {/* PHASE I */}
       <div className="boxes py-5 grid md:grid-cols-3 gap-5">
-        <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-orange-400 rounded-xl text-white text-center md:text-left">
+        <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#A75DE1] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
             <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
               {voters.length}
@@ -227,7 +231,7 @@ export const Home = () => {
           </div>
         </div>
 
-        <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-blue-400 rounded-xl text-white text-center md:text-left">
+        <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#2F92F0] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
             <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
               {elections.length}
@@ -239,7 +243,7 @@ export const Home = () => {
           </div>
         </div>
 
-        <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-green-400 rounded-xl text-white text-center md:text-left">
+        <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#1AB98C] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
             <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
               {organizations.length}
@@ -257,7 +261,7 @@ export const Home = () => {
 
       {/* PHASE II */}
       <div className="elections-activities grid md:grid-row-2 lg:grid-cols-3 md:gap-5 ">
-        <div className="elections lg:col-span-2 text-[#090650] md:bg-white md:py-3 rounded-lg hidden md:block md:drop-shadow-md">
+        <div className="elections lg:col-span-2 text-[#090650] dark:text-gray-200 md:bg-white dark:bg-[#333333] md:py-3 rounded-lg hidden md:block md:drop-shadow-md">
           
           <div className="chart-heading flex items-center justify-between px-5">
             <h1 className="pop-semibold text-sm">Daily New Voters</h1>
@@ -272,21 +276,21 @@ export const Home = () => {
           </div>
         </div>
         <div className="activities">
-          <div className="activity-wrapper py-3 px-5 bg-white min-h-full drop-shadow-md rounded-2xl">
-            <h3 className="pb-1 pop-semibold text-xs text-[#090650]">
+          <div className="activity-wrapper py-3 px-5 bg-white dark:bg-[#333333] min-h-full drop-shadow-md rounded-2xl">
+            <h3 className="pb-1 pop-semibold text-xs text-[#090650] dark:text-gray-200">
               Current Election Turnout
             </h3>
 
-            <div className="card p-10 bg-[#090650] rounded-xl text-center text-white">
+            <div className="card p-10 bg-[#090650] dark:bg-[#4a4a4a] rounded-xl text-center text-white">
               <h2 className="text-2xl pop-bold">
-                <span className="text-[#00ffdf]">{voted}</span>
+                <span className="text-[#00ffdf] dark:text-sky-600">{voted}</span>
                 <span className="pop-regular px-4">out of</span>{voters.length}
               </h2>
               <p className="opacity-50">the votes used</p>
             </div>
 
             {/* Activities */}
-            <h3 className="text-[#090650] pop-semibold text-xs text-center pt-4 pb-2 shadow-sm rounded-md">
+            <h3 className="text-[#090650] dark:text-gray-200 pop-semibold text-xs text-center pt-4 pb-2 shadow-sm rounded-md">
               Voting Activity
             </h3>
 
@@ -314,8 +318,8 @@ export const Home = () => {
       {/* PHASE II */}
 
       {/* PHASE III */}
-      <div className="election-wrapper rounded-md bg-white">
-        <div className="eletion-tab flex justify-evenly gap-4 my-5">
+      <div className="election-wrapper rounded-md bg-white dark:bg-[#333333]">
+        <div className="eletion-tab flex justify-evenly dark:text-gray-100 gap-4 my-5">
           <button onClick={handleUpcomingTab} className={`text-center text-xs md:text-lg pop-bold shadow-sm py-5 w-full ${ upcomingTab ? `bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white rounded-md ` : `` }`}>
             Upcoming Elections
           </button>
@@ -328,7 +332,7 @@ export const Home = () => {
         { ongoingTab && <ElectionTable election={ongoings} error={ongoingsError} handleElection={getOrganizations} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
       
 
-        {renderOrganizations && <h2 className='text-sm pop-bold bg-white py-4 mt-2 text-sky-950 w-full text-center'>Active Organizations Election</h2>}
+        {renderOrganizations && <h2 className='text-sm pop-bold bg-white py-4 mt-2 text-sky-950 dark:text-gray-200 w-full text-center'>Active Organizations Election</h2>}
 
         <div className="election-per-organizations px-5 py-3 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
         
