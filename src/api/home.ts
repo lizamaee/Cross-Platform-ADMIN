@@ -13,17 +13,18 @@ export const getAnalyticsData = async () => {
 export const getUpcomings = async () => {
     try {
         const response = await fetchData('election/status/upcoming')
+        //console.log(response);
         return response
-    } catch (err) {
-        console.log(err);
+    } catch (err: any) {
+        throw err
     }
 }
 export const getOngoings = async () => {
     try {
         const response = await fetchData('election/status/ongoing')
         return response
-    } catch (err) {
-        console.log(err);
+    } catch (err: any) {
+        throw err
     }
 }
 
@@ -31,9 +32,18 @@ export const getVotedActivities = async () => {
   try {
     const response = await fetchData('get-voted-activities')
     return response
-} catch (err) {
-    console.log(err);
+  } catch (err) {
+      console.log(err);
+  }
 }
+
+export const getOrganizationsBasedOnId = async (id:string) => {
+  try {
+    const response = await fetchData(`election/${id}`)
+    return response
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 export const fetchData = async (endpoints: string) => {
@@ -47,7 +57,7 @@ export const fetchData = async (endpoints: string) => {
     const response = await axios.get(`http://localhost:3000/${endpoints}`, config);
     return response.data
   } catch (error: any) {
-    console.log(error.message);
+    //console.log(error.response.data.error)
     return [{ error: error.message }];
   }
 }
