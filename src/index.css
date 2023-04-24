@@ -8,14 +8,6 @@
     background-image: linear-gradient(to right, #7268EF, #9D93F6)
 }
 
-.night{
-  background-color: #2B2B2B;
-}
-
-.daylight{
-  background-color: #f4f7ff;
-}
-
 .pop-extrabold{
     font-family: 'Poppins', sans-serif;
     font-weight: 800;
