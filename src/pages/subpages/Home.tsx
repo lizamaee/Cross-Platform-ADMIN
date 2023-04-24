@@ -5,7 +5,7 @@ import { FaPeopleCarry } from "react-icons/fa";
 import { useLoaderData } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LineChart from "../../components/LineChart";
-import { getAnalyticsData, getUpcomings, fetchData, getOngoings, getVotedActivities } from "../../api/home";
+import { getAnalyticsData, getUpcomings, fetchData, getOngoings, getVotedActivities, getOrganizationsBasedOnId } from "../../api/home";
 import ElectionTable from '../../components/ElectionTable';
 
 
@@ -36,15 +36,19 @@ interface Activity {
   }
 }
 
+
 export const Home = () => {
   const [upcomings, setUpComings] = useState<Election[]>([])
   const [ongoings, setOngoings] = useState<Election[]>([])
   const [newUser, setNewUser] = useState([]);
-  const [asOfNow, setAsOfNow] = useState("");
-  const [upcomingTab, setUpcomingTab] = useState(true)
-  const [ongoingTab, setOngoingTab] = useState(false)
-  const [renderOrganizations, setrRenderOrganizations] = useState(false)
-  const [voted, setVoted] = useState("")
+  const [asOfNow, setAsOfNow] = useState<string>("");
+  const [upcomingTab, setUpcomingTab] = useState<boolean>(true)
+  const [ongoingTab, setOngoingTab] = useState<boolean>(false)
+  const [renderOrganizations, setRenderOrganizations] = useState<boolean>(false)
+  const [voted, setVoted] = useState<string>("")
+
+  const [upcomingsError, setUpcomingsError] = useState<string>("")
+  const [ongoingsError, setOngoingsError] = useState<string>("")
 
   const [electionOrgs, setElectionOrgs] = useState<ElectionOrg[]>([])
   const [activities, setActivities] = useState<Activity[]>([])
@@ -72,21 +76,40 @@ export const Home = () => {
 
 
   useEffect(() => {
+
     const fetchUpcomings = async () => {
       const data = await getUpcomings()
+
       setUpComings(data)
+
+      if(data[0].error === "Request failed with status code 404"){
+        setUpcomingsError("No Upcoming Elections")
+      }else{
+        setUpcomingsError(data[0].error)
+      }
+      
     }
+
     const fetchOngoings = async () => {
       const data = await getOngoings()
+
       setOngoings(data)
+
+      if(data[0].error === "Request failed with status code 404"){
+        setOngoingsError("No Ongoing Elections")
+      }else{
+        setOngoingsError(data[0].error)
+      }
     }
+
     const fetchAnalyticsData = async () => {
       const data = await getAnalyticsData()
       setNewUser(data)
     }
+
     const fetchActivities = async () => {
       const data = await getVotedActivities()
-      setVoted(String(data.count))
+      setVoted(String(data.count ?? "0"))
       setActivities(data.activities)
     }
 
@@ -151,36 +174,16 @@ export const Home = () => {
   }
 
   //Get All organization of passed election id
-  const getOrganizations = (id: string) => {
-    try {
-      const token = localStorage.getItem("adminToken");
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      };
-      axios.get(`http://localhost:3000/election/${id}`, config)
-        .then(response => {
-          //console.log(response.data.organizations);
-          setElectionOrgs(response.data.organizations)
-          setrRenderOrganizations(true)
-          // handle success
-        })
-        .catch(error => {
-          console.error(error);
-          // handle error
-        });
-    } catch (error) {
-      console.error(error);
-      // handle error
-    }
+  const getOrganizations = async (id: string) => {
+    const response = await getOrganizationsBasedOnId(id)
+    setElectionOrgs(response.organizations)
+    setRenderOrganizations(true)
   }
 
   const handleUpcomingTab = () => {
     setUpcomingTab(true)
     setOngoingTab(false)
-    setrRenderOrganizations(false)
+    setRenderOrganizations(false)
   }
   const handleOngoingTab = () => {
     setOngoingTab(true)
@@ -189,19 +192,24 @@ export const Home = () => {
 
   // ACTIVITY TIMESTAMPS Format
   const formatStamp = (stamp: string) => {
-    const date = new Date(stamp);
-    const options = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    };
-    const formattedDate = date.toLocaleString("en-US", options)
-    return formattedDate// Output: "Apr 23, 2023, 8:19 PM"
-    
+    try {
+      const date = new Date(stamp);
+      const options: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      };
+      const formattedDate = date.toLocaleString("en-US", options);
+      return formattedDate; // Output: "Apr 23, 2023, 8:19 PM"
+    } catch (error:any) {
+      console.log(error.message);
+      return "Invalid Date";
     }
+  };
+  
 
   return (
     <div className="home">
@@ -266,7 +274,7 @@ export const Home = () => {
         <div className="activities">
           <div className="activity-wrapper py-3 px-5 bg-white min-h-full drop-shadow-md rounded-2xl">
             <h3 className="pb-1 pop-semibold text-xs text-[#090650]">
-              Current Status
+              Current Election Turnout
             </h3>
 
             <div className="card p-10 bg-[#090650] rounded-xl text-center text-white">
@@ -283,7 +291,7 @@ export const Home = () => {
             </h3>
 
             <div className="voting-activity overflow-y-auto max-h-60 px-4">
-              {activities.map((activity) => (
+              {activities?.map((activity) => (
                   <div key={activity.id} className="activity flex justify-between items-center pt-2 text-[#090650]">
                     <img
                       className="w-8 h-8 rounded-full"
@@ -306,7 +314,7 @@ export const Home = () => {
       {/* PHASE II */}
 
       {/* PHASE III */}
-      <div className="upcoming-election-wrapper">
+      <div className="election-wrapper rounded-md bg-white">
         <div className="eletion-tab flex justify-evenly gap-4 my-5">
           <button onClick={handleUpcomingTab} className={`text-center text-xs md:text-lg pop-bold shadow-sm py-5 w-full ${ upcomingTab ? `bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white rounded-md ` : `` }`}>
             Upcoming Elections
@@ -316,38 +324,39 @@ export const Home = () => {
           </button>
         </div>
         {/* Elections Table */}
-        { upcomingTab && <ElectionTable election={upcomings} handleElection={activateElection} action='activate' actionStyle='hover:bg-sky-800 border-2 border-blue-400 hover:text-white'/> }
-        { ongoingTab && <ElectionTable election={ongoings} handleElection={getOrganizations} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
+        { upcomingTab && <ElectionTable election={upcomings} error={upcomingsError} handleElection={activateElection} action='activate' actionStyle='hover:bg-sky-800 border-2 border-blue-400 hover:text-white'/> }
+        { ongoingTab && <ElectionTable election={ongoings} error={ongoingsError} handleElection={getOrganizations} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
       
 
         {renderOrganizations && <h2 className='text-sm pop-bold bg-white py-4 mt-2 text-sky-950 w-full text-center'>Active Organizations Election</h2>}
 
-        <div className="election-per-organizations py-3 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {!renderOrganizations ? "" : (electionOrgs.map((org) => (
-          <div className="single-or bg-white rounded-lg drop-shadow-md p-4 text-xs pop-medium" key={org.id}>
-            <div className="org-img-container p-1 flex justify-center">
-              <img className='rounded-full h-[60px]' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
+        <div className="election-per-organizations px-5 py-3 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+        
+        {!renderOrganizations ? "" : (electionOrgs?.map((org) => (
+            
+            <div className="single-or bg-white rounded-lg drop-shadow-md p-4 text-xs pop-medium" key={org.id}>
+              <div className="org-img-container p-1 flex justify-center">
+                <img className='rounded-full h-[60px]' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
+              </div>
+              <h1 className='text-sm text-center py-3'>{org.org_name}</h1>
+              <div className="time-date-container flex justify-between px-2 opacity-60">
+                <p>Start: {new Date(org.startDate).toLocaleDateString("en-US", {
+                    timeZone: "Asia/Manila",
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}</p>
+                <p className='text-right'>End: {new Date(org.endDate).toLocaleDateString("en-US", {
+                    timeZone: "Asia/Manila",
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}</p>
+              </div>
             </div>
-            <h1 className='text-sm text-center py-3'>{org.org_name}</h1>
-            <div className="time-date-container flex justify-between px-2 opacity-60">
-              <p>Start: {new Date(org.startDate).toLocaleDateString("en-US", {
-                  timeZone: "Asia/Manila",
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}</p>
-              <p className='text-right'>End: {new Date(org.endDate).toLocaleDateString("en-US", {
-                  timeZone: "Asia/Manila",
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}</p>
-            </div>
-          </div>
 
-        )))}
-      </div>
-
+          )))}
+        </div>
       </div>
       {/* PHASE III */}
     </div>
