@@ -5,12 +5,15 @@ type AuthState = {
     token: string | null;
     loginAdmin: (token: string) => void;
     logoutAdmin: () => void;
+    isNight: boolean;
+    switchMode: () => void;
 }
 
   
 export const useAuthStore = create<AuthState>((set) => ({
     isAuthenticated: false,
     token: null,
+    isNight: false,
   
     //Login
     loginAdmin: (token: string) => {
@@ -22,5 +25,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     logoutAdmin: () => {
       localStorage.removeItem('adminToken');
       set({ isAuthenticated: false, token: null });
-    }
+    },
+
+    //Light Mode / Dark Mode
+    switchMode: () => set((state) => ({ isNight: !state.isNight })),
+
   }));

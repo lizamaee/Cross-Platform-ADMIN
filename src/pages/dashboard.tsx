@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { RiSettings2Line } from "react-icons/ri";
 import { BiHomeAlt } from "react-icons/bi";
-import { BsCalendarEvent,BsListStars } from "react-icons/bs";
+import { BsCalendarEvent,BsListStars, BsSunFill } from "react-icons/bs";
 import { CgMenuLeftAlt, CgInfo } from "react-icons/cg";
 import {BsFillSunFill,BsMoonFill, BsPersonCircle} from 'react-icons/bs'
 import { MdHowToVote } from "react-icons/md";
@@ -14,7 +14,7 @@ export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [pageName, setPageName] = useState("Dashboard");
   const [pageTitle, setPageTitle] = useState("Dashboard");
-  const { logoutAdmin } = useAuthStore((state) => state) 
+  const { logoutAdmin, isNight, switchMode } = useAuthStore((state) => state) 
   const navigate = useNavigate()
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -36,7 +36,7 @@ export default function Dashboard() {
   return (
     <div className="container md:overflow-hidden h-screen max-w-screen-2xl md:flex bg-[#FFFFFF]">
       <nav
-        className={` sidebar fixed md:static w-4/5 h-screen rounded-r-3xl md:rounded-r-lg bg-[#444A5E] text-white shadow-2xl ${
+        className={` sidebar fixed md:static w-4/5 h-screen rounded-r-3xl md:rounded-r-lg  ${isNight ? 'bg-[#303030]' : 'bg-[#444A5E]'}  text-white shadow-2xl ${
           isSidebarOpen ? 'translate-x-0 flex-[6]' : '-translate-x-full'
         } transition-all duration-300 ease-in-out md:w-auto md:translate-x-0 md:flex-[2] lg:flex-1`}
       >
@@ -129,7 +129,7 @@ export default function Dashboard() {
 
       </nav>
 
-      <div className="main flex-[2] md:flex-[6] lg:flex-[4] p-5 bg-[#f4f7ff] md:overflow-y-auto ">
+      <div className={`main flex-[2] md:flex-[6] lg:flex-[4] p-5 md:overflow-y-auto`}>
         <div className="wrapper flex items-center md:block">
           <button
             className="md:hidden"
@@ -142,8 +142,9 @@ export default function Dashboard() {
             <div className="divider flex justify-between">
               <h1 className='text-xl md:text-3xl pop-semibold text-sky-950'>{pageTitle}</h1>
               <div className="hero hidden md:flex gap-5 bg-white items-center py-1 px-3 rounded-full">
-                <span>
-                  < BsMoonFill className='text-[#a3aed0]' size={18} />
+                <span onClick={switchMode}>
+                  { isNight ? ( <BsFillSunFill className='text-[#bd4141]' size={18}/>) : ( < BsMoonFill className='text-[#a3aed0]' size={18} /> )}
+                  
                 </span>
 
                 <span>
