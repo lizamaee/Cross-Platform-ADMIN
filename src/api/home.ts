@@ -16,7 +16,7 @@ export const getUpcomings = async () => {
         //console.log(response);
         return response
     } catch (err: any) {
-        throw err
+        throw err.error.message
     }
 }
 export const getOngoings = async () => {
@@ -24,7 +24,7 @@ export const getOngoings = async () => {
         const response = await fetchData('election/status/ongoing')
         return response
     } catch (err: any) {
-        throw err
+        throw err.error.message
     }
 }
 
@@ -33,7 +33,8 @@ export const getVotedActivities = async () => {
     const response = await fetchData('get-voted-activities')
     return response
   } catch (err: any) {
-      throw err
+      throw err.error.message
+      
   }
 }
 
@@ -57,7 +58,7 @@ export const fetchData = async (endpoints: string) => {
     const response = await axios.get(`http://localhost:3000/${endpoints}`, config);
     return response.data
   } catch (error: any) {
-    //console.log(error.response.data.error)
+    //console.log(error.response.data.error.message)
     return [{ error: error.message }];
   }
 }

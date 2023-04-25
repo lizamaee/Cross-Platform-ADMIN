@@ -87,6 +87,8 @@ export const Home = () => {
 
       setUpComings(data)
 
+      //console.log(data[0])
+
       if(data[0].error === "Request failed with status code 404"){
         setUpcomingsError("No Upcoming Elections")
       }else{
@@ -114,14 +116,16 @@ export const Home = () => {
 
     const fetchActivities = async () => {
       const data = await getVotedActivities()
+
       setVoted(String(data.count ?? "0"))
       setActivities(data.activities)
+      //console.log(data[0].error);
 
       if(data[0].error === "Request failed with status code 404"){
         setActivitiesError("No Activity")
       }else{
         setActivitiesError(data[0].error)
-      }
+      }  
     }
 
     fetchActivities()
@@ -358,7 +362,7 @@ export const Home = () => {
 
       {/* PHASE III */}
       <div className="election-wrapper rounded-md bg-white dark:bg-[#333333]">
-        <div className="eletion-tab flex justify-evenly dark:text-gray-100 gap-4 my-5">
+        <div className="eletion-tab flex justify-evenly dark:text-gray-100 gap-4 mt-5">
           <button onClick={handleUpcomingTab} className={`text-center text-xs md:text-lg pop-bold shadow-sm py-5 w-full ${ upcomingTab ? `bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white rounded-md ` : `` }`}>
             Upcoming Elections
           </button>
@@ -371,13 +375,13 @@ export const Home = () => {
         { ongoingTab && <ElectionTable election={ongoings} error={ongoingsError} handleElection={getOrganizations} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
       
 
-        {renderOrganizations && <h2 className='text-sm pop-bold bg-white py-4 mt-2 text-sky-950 dark:text-gray-200 w-full text-center'>Active Organizations Election</h2>}
+        {renderOrganizations && <h2 className='text-sm pop-bold py-4 mt-2 text-sky-950 dark:text-gray-200 w-full text-center'>Active Organizations Election</h2>}
 
-        <div className="election-per-organizations px-5 py-3 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="election-per-organizations px-5 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
         
         {!renderOrganizations ? "" : (electionOrgs?.map((org) => (
             
-            <div className="single-or bg-white rounded-lg drop-shadow-md p-4 text-xs pop-medium" key={org.id}>
+            <div className="single-or bg-white dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-4 text-xs pop-medium" key={org.id}>
               <div className="org-img-container p-1 flex justify-center">
                 <img className='rounded-full h-[60px]' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
               </div>
