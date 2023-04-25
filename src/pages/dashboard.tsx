@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { RiSettings2Line } from "react-icons/ri";
 import { BiHomeAlt } from "react-icons/bi";
-import { BsCalendarEvent,BsListStars, BsSunFill } from "react-icons/bs";
-import { CgMenuLeftAlt, CgInfo } from "react-icons/cg";
-import {BsFillSunFill,BsMoonFill, BsPersonCircle} from 'react-icons/bs'
+import { BsCalendarEvent,BsListStars } from "react-icons/bs";
+import { CgMenuLeftAlt } from "react-icons/cg";
 import { MdHowToVote } from "react-icons/md";
 import { HiOutlineLogout } from "react-icons/hi";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
@@ -12,9 +11,7 @@ import { useAuthStore } from "../state";
 
 export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [pageName, setPageName] = useState("Dashboard");
-  const [pageTitle, setPageTitle] = useState("Dashboard");
-  const { logoutAdmin, isNight, switchMode } = useAuthStore((state) => state) 
+  const { logoutAdmin } = useAuthStore((state) => state) 
   const navigate = useNavigate()
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -56,27 +53,19 @@ export default function Dashboard() {
             </div>
 
             <ul className="px-3 flex flex-col gap-4 pt-10 pop-medium tracking-wider">
-            <NavLink onClick={() => {setPageName("Dashboard")
-          setPageTitle("Dashboard") 
-          toggleSidebar()}} to="/" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+            <NavLink onClick={() => toggleSidebar()} to="/" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
               <BiHomeAlt size={25}/>
               <h2>Dashboard</h2>
             </NavLink>
-            <NavLink onClick={() => {setPageName("Election")
-          setPageTitle("Election") 
-          toggleSidebar()}} to="/election" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
+            <NavLink onClick={() => toggleSidebar()} to="/election" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
               <BsCalendarEvent size={20}/>
               <h2>Election</h2>
             </NavLink>
-            <NavLink onClick={() => {setPageName("Special Features")
-          setPageTitle("Special Features") 
-          toggleSidebar()}} to="/special-features" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+            <NavLink onClick={() => toggleSidebar()} to="/special-features" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
               <BsListStars size={25}/>
               <h2>Special Features</h2>
             </NavLink>
-            <NavLink onClick={() => {setPageName("Settings")
-          setPageTitle("Settings") 
-          toggleSidebar()}} to="/settings" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
+            <NavLink onClick={() => toggleSidebar()} to="/settings" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
               <RiSettings2Line size={25}/>
               <h2>Settings</h2>
             </NavLink>
@@ -98,23 +87,19 @@ export default function Dashboard() {
           </div>
 
           <ul className="px-3 flex flex-col gap-4 pt-10 pop-medium tracking-wider">
-            <NavLink onClick={() => {setPageName("Dashboard") 
-            setPageTitle("Dashboard")}} to="/" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+            <NavLink to="/" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
               <BiHomeAlt size={25}/>
               <h2>Dashboard</h2>
             </NavLink>
-            <NavLink onClick={() => {setPageName("Election") 
-          setPageTitle("Election")}} to="/election" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
+            <NavLink to="/election" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
               <BsCalendarEvent size={20}/>
               <h2>Election</h2>
             </NavLink>
-            <NavLink onClick={() => {setPageName("Special Features")
-          setPageTitle("Special Features")}} to="/special-features" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
+            <NavLink to="/special-features" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
               <BsListStars size={25}/>
               <h2>Special Features</h2>
             </NavLink>
-            <NavLink onClick={() => {setPageName("Settings")
-          setPageTitle("Settings")}} to="/settings" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
+            <NavLink to="/settings" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
               <RiSettings2Line size={25}/>
               <h2>Settings</h2>
             </NavLink>
@@ -137,26 +122,7 @@ export default function Dashboard() {
           >
             {isSidebarOpen ? (<RxCross2 size={35}/>) : (<CgMenuLeftAlt size={40} className="text-[#7268EF]" />)}
           </button>
-          <div className="navigation flex-1 flex md:block justify-center">
-            <h3 className='pop-semibold hidden md:block text-[0.5rem] md:text-[0.7rem] text-sky-800 dark:text-sky-200'>Pages / {pageName}</h3>
-            <div className="divider flex justify-between">
-              <h1 className='text-xl md:text-3xl pop-semibold text-sky-950 dark:text-sky-100'>{pageTitle}</h1>
-              <div className="hero hidden md:flex gap-5 bg-white dark:bg-[#333333] items-center py-1 px-3 rounded-full">
-                <span onClick={switchMode}>
-                  { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={18}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={18} /> )}
-                  
-                </span>
 
-                <span>
-                  < CgInfo className='text-[#a3aed0]' size={20} />
-                </span>
-
-                <span>
-                  < BsPersonCircle className='text-[#a3aed0]'  size={20} />
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
         <div>
           <Outlet/>

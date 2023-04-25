@@ -29,13 +29,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     //Light Mode / Dark Mode
     switchMode: () => {
-      if (useAuthStore.getState().isNight) {
-        localStorage.theme = 'light';
-        useAuthStore.setState({ isNight: false })
-      } else {
-        localStorage.theme = 'dark';
-        useAuthStore.setState({ isNight: true })
-      }
+      const isNight = useAuthStore.getState().isNight;
+      const theme = isNight ? 'light' : 'dark';
+      localStorage.theme = theme;
+      useAuthStore.setState({ isNight: !isNight });
     }
 
   }));
