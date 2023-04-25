@@ -144,12 +144,39 @@ export const Home = () => {
         label: "New Registered Voter",
         data: dataCount,
         fill: true,
-        backgroundColor: isNight ? "rgba(68,74,94,0.2)" : "#A75DE1",
-        borderColor: "#766cf0",
-        borderWidth: 5,
+        backgroundColor: "rgba(68,74,94,0.2)",
+        borderColor: "#A75DE1",
+        borderWidth: 3,
       },
     ],
   };
+
+  const options = {
+    layout:{padding:5},
+    scales: {
+      y:{
+        ticks:{
+          color: isNight ? "rgb(156 163 175)" : "#090650"
+        },
+        grid:{
+          color: isNight ? "rgb(75 85 99)" : "rgb(209 213 219)"
+        }
+      },
+      x:{
+        ticks:{
+          color:isNight ? "rgb(243 244 246)" : "#090650"
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        labels: {
+          color: isNight ? "rgb(243 244 246)" : "rgb(75 85 99)",
+        },
+      },
+    },
+    
+  }; 
 
 
   //Activate Election to Ongoing
@@ -271,7 +298,7 @@ export const Home = () => {
           {/* Line Chart */}
           <div className="chart-containera flex justify-center items-center h-full w-full">
             <div className="chart-wrapper w-full flex justify-center pb-2 px-4">
-              <LineChart chartData={data} />
+              <LineChart chartData={data} options={options} />
             </div>
           </div>
         </div>

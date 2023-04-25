@@ -1,21 +1,16 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartData, ChartOptions } from "chart.js";
 import { Line } from "react-chartjs-2";
-import 'chart.js/auto';
+import "chart.js/auto";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register([ArcElement, Tooltip, Legend]);
 
-interface ChartData {
-    labels: string[],
-    datasets: {
-      label: string,
-      data: number[],
-      fill?: boolean,
-      backgroundColor?: string,
-      borderColor?: string,
-      borderWidth?: number,
-    }[],
-  }
-
-export default function LineChart({chartData}: {chartData: ChartData}) {
-  return <Line data={chartData}/>
+type LineChartProps = {
+  options: ChartOptions<"line">,
+  chartData: ChartData<"line", (number | null | undefined)[]>,
 }
+
+const LineChart = ({ chartData, options }: LineChartProps) => {
+  return <Line className="text-red-500" data={chartData} options={options} />;
+};
+
+export default LineChart;
