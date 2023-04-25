@@ -2,12 +2,12 @@ import axios from 'axios';
 import { TiGroup } from "react-icons/ti";
 import { BsCalendar2EventFill } from "react-icons/bs";
 import { FaPeopleCarry } from "react-icons/fa";
-import { useLoaderData } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LineChart from "../../components/LineChart";
 import { getAnalyticsData, getUpcomings, fetchData, getOngoings, getVotedActivities, getOrganizationsBasedOnId } from "../../api/home";
 import ElectionTable from '../../components/ElectionTable';
 import { useAuthStore } from '../../state';
+import NavBar from '../../components/NavBar';
 
 
 interface Election {
@@ -38,7 +38,7 @@ interface Activity {
 }
 
 
-export const Home = () => {
+export default function Home(){
   const [upcomings, setUpComings] = useState<Election[]>([])
   const [ongoings, setOngoings] = useState<Election[]>([])
   const [newUser, setNewUser] = useState([]);
@@ -58,13 +58,9 @@ export const Home = () => {
 
   const { isNight } = useAuthStore((state) => state)
 
-  const { voters, elections, organizations } = useLoaderData() as {
-    voters: any[];
-    elections: Election[];
-    organizations: any[];
-    error?: string;
-  };
-
+  const [voters, setVoters] = useState([])
+  const [elections, setElections] = useState([])
+  const [organizations, setOrganizations] = useState([])
 
   const getDataDayAndCount = () => {
     const dataDay: [] = [];
@@ -78,30 +74,23 @@ export const Home = () => {
   };
   const { dataDay, dataCount } = getDataDayAndCount();
 
-
-
   useEffect(() => {
-
+    //fetch upcoming elections
     const fetchUpcomings = async () => {
       const data = await getUpcomings()
-
       setUpComings(data)
-
       //console.log(data[0])
-
       if(data[0].error === "Request failed with status code 404"){
         setUpcomingsError("No Upcoming Elections")
       }else{
         setUpcomingsError(data[0].error)
       }
-      
     }
 
+    //fetch ongoing elections
     const fetchOngoings = async () => {
       const data = await getOngoings()
-
       setOngoings(data)
-
       if(data[0].error === "Request failed with status code 404"){
         setOngoingsError("No Ongoing Elections")
       }else{
@@ -109,25 +98,46 @@ export const Home = () => {
       }
     }
 
+    //fetch daily registration analytics data
     const fetchAnalyticsData = async () => {
       const data = await getAnalyticsData()
       setNewUser(data)
     }
 
+    //fetch voted activities 
     const fetchActivities = async () => {
-      const data = await getVotedActivities()
-
-      setVoted(String(data.count ?? "0"))
-      setActivities(data.activities)
-      //console.log(data[0].error);
-
-      if(data[0].error === "Request failed with status code 404"){
-        setActivitiesError("No Activity")
-      }else{
-        setActivitiesError(data[0].error)
-      }  
+      try {
+        const data = await getVotedActivities()
+        setVoted(String(data.count ?? "0"))
+        setActivities(data.activities)
+        //console.log(data[0].error);
+        if(data[0].error === "Request failed with status code 404"){
+          setActivitiesError("No Activity")
+        }else{
+          setActivitiesError(data[0].error)
+        }  
+      } catch (error) {}
     }
 
+    //fetch voters, election, organizations total
+    const parallelFetch = async () => {
+      const totalVotersData = fetchData("get-all-voters");
+      const totalElectionsData = fetchData("election");
+      const totalOrganizationsData = fetchData("organization");
+    
+      const [voters, elections, organizations] = await Promise.all([
+        totalVotersData,
+        totalElectionsData,
+        totalOrganizationsData,
+      ]);
+
+      setVoters(voters)
+      setElections(elections)
+      setOrganizations(organizations)
+    }
+
+    //invoke Fetch
+    parallelFetch()
     fetchActivities()
     fetchOngoings()
     fetchUpcomings()
@@ -135,7 +145,6 @@ export const Home = () => {
 
     //DATE TODAY
     const today = new Date()
-
     function formatDate() {
       const day = today.getDate().toString().padStart(2, '0');
       const month = (today.getMonth() + 1).toString().padStart(2, '0');
@@ -144,9 +153,8 @@ export const Home = () => {
     }
     formatDate()
 
-    
   }, []);
-  //add [ newUser, upcomings ] dependency above on production
+  //add [ newUser, upcomings, voters, elections, organizations ] dependency above on production
 
   const data = {
     labels: dataDay,
@@ -166,29 +174,20 @@ export const Home = () => {
     layout:{padding:5},
     scales: {
       y:{
-        ticks:{
-          color: isNight ? "rgb(156 163 175)" : "#090650"
-        },
-        grid:{
-          color: isNight ? "rgb(75 85 99)" : "rgb(209 213 219)"
-        }
+        ticks:{color: isNight ? "rgb(156 163 175)" : "#090650"},
+        grid:{color: isNight ? "rgb(75 85 99)" : "rgb(209 213 219)"}
       },
       x:{
-        ticks:{
-          color:isNight ? "rgb(243 244 246)" : "#090650"
-        }
+        ticks:{color:isNight ? "rgb(243 244 246)" : "#090650"}
       }
     },
     plugins: {
       legend: {
-        labels: {
-          color: isNight ? "rgb(243 244 246)" : "rgb(75 85 99)",
-        },
+        labels: {color: isNight ? "rgb(243 244 246)" : "rgb(75 85 99)"}
       },
     },
     
   }; 
-
 
   //Activate Election to Ongoing
   const activateElection = (id: string) => {
@@ -255,6 +254,9 @@ export const Home = () => {
 
   return (
     <div className="home">
+      {/* DASHBOARD */}
+        <NavBar pageName='Dashboard'/>
+      {/* DASHBOARD */}
       {/* PHASE I */}
       <div className="boxes py-5 grid md:grid-cols-3 gap-5">
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#A75DE1] rounded-xl text-white text-center md:text-left">
@@ -407,19 +409,5 @@ export const Home = () => {
       </div>
       {/* PHASE III */}
     </div>
-  );
-};
-
-export const homeLoader = async () => {
-  const totalVotersData = fetchData("get-all-voters");
-  const totalElectionsData = fetchData("election");
-  const totalOrganizationsData = fetchData("organization");
-
-  const [voters, elections, organizations] = await Promise.all([
-    totalVotersData,
-    totalElectionsData,
-    totalOrganizationsData,
-  ]);
-
-  return { voters, elections, organizations };
-};
+  )
+}

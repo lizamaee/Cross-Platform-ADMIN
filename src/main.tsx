@@ -4,7 +4,7 @@ import App from './App'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import NotFound from './pages/NotFound'
-import { Home, homeLoader } from './pages/subpages/Home'
+import Home from './pages/subpages/Home'
 import Election from './pages/subpages/Election'
 import SFeatures from './pages/subpages/SFeatures'
 import Settings from './pages/subpages/Settings'
@@ -27,8 +27,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Home/>,
-            loader: homeLoader
+            element: <Home/>
           },
           {
             path: "/election",
