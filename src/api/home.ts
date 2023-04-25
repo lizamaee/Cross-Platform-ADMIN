@@ -32,8 +32,8 @@ export const getVotedActivities = async () => {
   try {
     const response = await fetchData('get-voted-activities')
     return response
-  } catch (err) {
-      console.log(err);
+  } catch (err: any) {
+      throw err
   }
 }
 

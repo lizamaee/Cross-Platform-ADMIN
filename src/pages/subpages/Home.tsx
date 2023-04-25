@@ -50,6 +50,7 @@ export const Home = () => {
 
   const [upcomingsError, setUpcomingsError] = useState<string>("")
   const [ongoingsError, setOngoingsError] = useState<string>("")
+  const [activitiesError, setActivitiesError] = useState<string>("")
 
   const [electionOrgs, setElectionOrgs] = useState<ElectionOrg[]>([])
   const [activities, setActivities] = useState<Activity[]>([])
@@ -115,6 +116,12 @@ export const Home = () => {
       const data = await getVotedActivities()
       setVoted(String(data.count ?? "0"))
       setActivities(data.activities)
+
+      if(data[0].error === "Request failed with status code 404"){
+        setActivitiesError("No Activity")
+      }else{
+        setActivitiesError(data[0].error)
+      }
     }
 
     fetchActivities()
@@ -304,13 +311,13 @@ export const Home = () => {
         </div>
         <div className="activities">
           <div className="activity-wrapper py-3 px-5 bg-white dark:bg-[#333333] min-h-full drop-shadow-md rounded-2xl">
-            <h3 className="pb-1 pop-semibold text-xs text-[#090650] dark:text-gray-200">
+            <h3 className="pb-2 pop-semibold text-sm text-[#090650] dark:text-gray-200">
               Current Election Turnout
             </h3>
 
             <div className="card p-10 bg-[#090650] dark:bg-[#4a4a4a] rounded-xl text-center text-white">
               <h2 className="text-2xl pop-bold">
-                <span className="text-[#00ffdf] dark:text-sky-600">{voted}</span>
+                <span className="text-[#00ffdf] dark:text-[#49ecd6]">{voted}</span>
                 <span className="pop-regular px-4">out of</span>{voters.length}
               </h2>
               <p className="opacity-50">the votes used</p>
@@ -318,15 +325,20 @@ export const Home = () => {
 
             {/* Activities */}
             <h3 className="text-[#090650] dark:text-gray-200 pop-semibold text-xs text-center pt-4 pb-2 shadow-sm rounded-md">
-              Voting Activity
+              Latest voting activity
             </h3>
 
             <div className="voting-activity overflow-y-auto max-h-60 px-4">
-              {activities?.map((activity) => (
-                  <div key={activity.id} className="activity flex justify-between items-center pt-2 text-[#090650]">
+
+              { activitiesError && (
+
+                  <h3 className="pop-normal w-full text-center text-sm tracking-wide pt-5 opacity-50 dark:text-gray-200">{activitiesError}</h3>
+              )}
+              {!activitiesError && activities?.map((activity) => (
+                  <div key={activity.id} className="activity flex justify-between items-center pt-2 text-[#090650] dark:text-gray-400">
                     <img
                       className="w-8 h-8 rounded-full"
-                      src={activity.user.profile_picture}
+                      src={activity.user.profile_picture === "" || activity.user.profile_picture === null ? "https://bit.ly/3LpSOvc" : activity.user.profile_picture}
                       alt="profile picture"
                     />
                     <div className="name-date">
@@ -335,7 +347,7 @@ export const Home = () => {
                         {formatStamp(activity.createdAt)}
                       </p>
                     </div>
-                    <h3 className="pop-semibold text-sm text-[#26d1ad]">Voted</h3>
+                    <h3 className="pop-semibold text-sm text-[#26d1ad] dark:text-[#50cbae]">{activity.type}</h3>
                   </div>
               ))}
             </div>

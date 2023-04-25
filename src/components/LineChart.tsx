@@ -10,7 +10,7 @@ type LineChartProps = {
 }
 
 const LineChart = ({ chartData, options }: LineChartProps) => {
-  return <Line className="text-red-500" data={chartData} options={options} />;
+  return <Line data={chartData} options={options} />;
 };
 
 export default LineChart;
