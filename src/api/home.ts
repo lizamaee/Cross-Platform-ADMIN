@@ -49,6 +49,16 @@ export const getOrganizationsBasedOnId = async (id:string) => {
   }
 }
 
+export const getCandidatesBasedOnOrgId = async (id: string) => {
+  try {
+    const response = await fetchData(`seat/org-seat-candidates/${id}`)
+    return response
+    
+  } catch (error) {
+    throw error
+  }
+}
+
 export const fetchData = async (endpoints: string) => {
   try {
     const token = localStorage.getItem("adminToken");

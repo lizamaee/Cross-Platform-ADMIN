@@ -4,10 +4,11 @@ import { BsCalendar2EventFill } from "react-icons/bs";
 import { FaPeopleCarry } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import LineChart from "../../components/LineChart";
-import { getAnalyticsData, getUpcomings, fetchData, getOngoings, getVotedActivities, getOrganizationsBasedOnId } from "../../api/home";
+import { getAnalyticsData, getUpcomings, fetchData, getOngoings, getVotedActivities, getOrganizationsBasedOnId, getCandidatesBasedOnOrgId } from "../../api/home";
 import ElectionTable from '../../components/ElectionTable';
 import { useAuthStore } from '../../state';
 import NavBar from '../../components/NavBar';
+import CandidatesResults from '../../components/CandidatesResults';
 
 
 interface Election {
@@ -37,6 +38,16 @@ interface Activity {
   }
 }
 
+interface seatCandidate{
+  id: string;
+  position: string;
+  candidates: {
+      id: string;
+      fullname: string;
+      party: string;
+      count: number;
+  }[];
+}
 
 export default function Home(){
   const [upcomings, setUpComings] = useState<Election[]>([])
@@ -54,6 +65,8 @@ export default function Home(){
 
   const [electionOrgs, setElectionOrgs] = useState<ElectionOrg[]>([])
   const [activities, setActivities] = useState<Activity[]>([])
+  const [seatCandidates, setSeatCandidates] = useState<seatCandidate[]>([])
+  const [renderCandidates, setRenderCandidates] = useState(false)
 
 
   const { isNight } = useAuthStore((state) => state)
@@ -218,6 +231,18 @@ export default function Home(){
     setRenderOrganizations(true)
   }
 
+  const getCandidates = async (id: string) => {
+    const response = await getCandidatesBasedOnOrgId(id)
+    //console.log(response.seats);
+    if(!response.seats) {
+      console.log("Empty response");
+      
+    }else{
+      setSeatCandidates(response.seats)
+      setRenderCandidates(true)
+    }
+  }
+
   const handleUpcomingTab = () => {
     setUpcomingTab(true)
     setOngoingTab(false)
@@ -254,6 +279,11 @@ export default function Home(){
       {/* DASHBOARD */}
         <NavBar pageName='Dashboard'/>
       {/* DASHBOARD */}
+
+
+      { !renderCandidates ? "" : <CandidatesResults seatCandidates={seatCandidates}/>}
+
+
       {/* PHASE I */}
       <div className="boxes py-5 grid md:grid-cols-3 gap-5">
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#A75DE1] rounded-xl text-white text-center md:text-left">
@@ -380,7 +410,7 @@ export default function Home(){
         
         {!renderOrganizations ? "" : (electionOrgs?.map((org) => (
             
-            <div className="single-or bg-white dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-4 text-xs pop-medium" key={org.id}>
+            <div onClick={() => getCandidates(org.id)} className="single-or cursor-pointer bg-white hover:bg-[#dcdcdc] dark:hover:bg-[#6d6d6d] dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-4 text-xs pop-medium" key={org.id}>
               <div className="org-img-container p-1 flex justify-center">
                 <img className='rounded-full h-[60px]' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
               </div>
