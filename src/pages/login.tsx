@@ -38,9 +38,15 @@ export default function Login() {
       console.log("Login Successfully");
       
     } catch (err: any) {
-      setIsLoading(false)
-      setError(err.response.data.error);
-      console.log(err)
+      //console.log(err.message)
+
+      if(err.message === "Network Error"){
+        setIsLoading(false)
+        setError(err.message)
+      }else{
+        setIsLoading(false)
+        setError(err.response.data.error);
+      }  
     }
   };
 
@@ -49,17 +55,17 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen p-10 font-medium text-lg">
+    <div className="flex items-center justify-center min-h-screen p-10 font-medium text-lg">
       <form
         onSubmit={handleLogin}
-        className=" bg-[#F0F0F0] rounded-lg overflow-hidden text-[#3C486B] pb-5 shadow-2xl md:max-w-md"
+        className=" bg-[#F0F0F0] dark:bg-[#333333] dark:text-gray-200 rounded-3xl overflow-hidden text-[#3C486B] pb-5 shadow-2xl md:max-w-md"
       >
         <img className="" src={tcu} height={400} alt="Taguig City University" />
         <div className="flex flex-col p-5">
-          <h2 className="text-2xl text-center font-sans font-bold">LOGIN</h2>
-          <label>Username</label>
+          <h2 className="text-2xl text-center font-sans pop-bold dark:text-white tracking-widest">LOGIN</h2>
+          <label className="pop-regular opacity-80 text-sm">Username</label>
           <input
-            className="px-4 py-3 rounded-lg text-black text-md font-medium outline-none border-solid border-2 border-gray-300"
+            className="px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -68,10 +74,10 @@ export default function Login() {
         </div>
 
         <div className="flex flex-col px-5">
-          <label>Password</label>
+          <label className="pop-regular opacity-80 text-sm">Password</label>
           <div className="pb-7">
             <input
-              className="w-full px-4 py-3 rounded-lg text-black text-md font-medium outline-none border-solid border-2 border-gray-300"
+              className="w-full px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -95,14 +101,14 @@ export default function Login() {
             ""
           )}
           {isLoading ? (<button
-            className="text-center text-white px-4 py-2 rounded-lg w-[30%] bg-[#F45050] break-words"
+            className="text-center text-white px-4 py-2 rounded-lg w-[30%] bg-[#F45050] dark:bg-red-600 shadow-md break-words shadow-red-300 dark:shadow-red-700"
             type="submit"
           >
             Loading...
           </button>)
           :
           (<button
-            className="text-center text-white px-4 py-2 rounded-lg w-[40%] bg-[#F45050] shadow-md shadow-red-300"
+            className="text-center text-white px-4 py-2 rounded-lg w-[40%] bg-[#F45050] dark:bg-red-600 shadow-md break-words shadow-red-300 dark:shadow-red-700"
             type="submit"
           >
             Login

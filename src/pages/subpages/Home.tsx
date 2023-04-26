@@ -334,16 +334,16 @@ export default function Home(){
               Latest voting activity
             </h3>
 
-            <div className="voting-activity overflow-y-auto max-h-60 px-4">
+            <div className="voting-activity overflow-y-auto max-h-60 px-2">
 
               { activitiesError && (
 
                   <h3 className="pop-normal w-full text-center text-sm tracking-wide pt-5 opacity-50 dark:text-gray-200">{activitiesError}</h3>
               )}
               {!activitiesError && activities?.map((activity) => (
-                  <div key={activity.id} className="activity flex justify-between items-center pt-2 text-[#090650] dark:text-gray-400">
+                  <div key={activity.id} className="activity flex justify-between items-center shadow-sm py-1 text-[#090650] dark:text-gray-400">
                     <img
-                      className="w-8 h-8 rounded-full"
+                      className="w-6 h-6 rounded-full"
                       src={activity.user.profile_picture === "" || activity.user.profile_picture === null ? "https://bit.ly/3LpSOvc" : activity.user.profile_picture}
                       alt="profile picture"
                     />
