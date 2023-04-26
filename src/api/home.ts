@@ -6,7 +6,7 @@ export const getAnalyticsData = async () => {
       const response = await fetchData('user-analytics')
       return response
     } catch (err) {
-      console.log(err);
+      throw err
     }
   };
 
@@ -16,7 +16,7 @@ export const getUpcomings = async () => {
         //console.log(response);
         return response
     } catch (err: any) {
-        throw err.error.message
+        throw err
     }
 }
 export const getOngoings = async () => {
@@ -24,17 +24,18 @@ export const getOngoings = async () => {
         const response = await fetchData('election/status/ongoing')
         return response
     } catch (err: any) {
-        throw err.error.message
+        throw err
     }
 }
 
 export const getVotedActivities = async () => {
   try {
     const response = await fetchData('get-voted-activities')
+    //console.log(response);
     return response
   } catch (err: any) {
-      throw err.error.message
-      
+      //console.log(err.response);
+      throw err
   }
 }
 
@@ -43,7 +44,8 @@ export const getOrganizationsBasedOnId = async (id:string) => {
     const response = await fetchData(`election/${id}`)
     return response
   } catch (err) {
-    console.log(err);
+    throw err
+    //console.log(err);
   }
 }
 
@@ -59,6 +61,17 @@ export const fetchData = async (endpoints: string) => {
     return response.data
   } catch (error: any) {
     //console.log(error.response.data.error.message)
-    return [{ error: error.message }];
+    
+
+    if (error.response) {
+      // ✅ log status code here
+      //Live Server Return
+      //console.log(error.response.status);
+      
+      return [error.response.data ];
+    }
+
+    //Dead Server Return
+    return [{error: error.message }];
   }
 }

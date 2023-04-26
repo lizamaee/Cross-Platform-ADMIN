@@ -79,23 +79,15 @@ export default function Home(){
     const fetchUpcomings = async () => {
       const data = await getUpcomings()
       setUpComings(data)
-      //console.log(data[0])
-      if(data[0].error === "Request failed with status code 404"){
-        setUpcomingsError("No Upcoming Elections")
-      }else{
-        setUpcomingsError(data[0].error)
-      }
+      //console.log(data[0].error)
+      setUpcomingsError(data[0].error)
     }
-
+    
     //fetch ongoing elections
     const fetchOngoings = async () => {
       const data = await getOngoings()
       setOngoings(data)
-      if(data[0].error === "Request failed with status code 404"){
-        setOngoingsError("No Ongoing Elections")
-      }else{
-        setOngoingsError(data[0].error)
-      }
+      setOngoingsError(data[0].error)
     }
 
     //fetch daily registration analytics data
@@ -106,18 +98,23 @@ export default function Home(){
 
     //fetch voted activities 
     const fetchActivities = async () => {
-      try {
-        const data = await getVotedActivities()
-        setVoted(String(data.count ?? "0"))
-        setActivities(data.activities)
-        //console.log(data[0].error);
-        if(data[0].error === "Request failed with status code 404"){
+      const data = await getVotedActivities()
+      setVoted(String(data.count ?? "0"))
+      //console.log(data[0].error);
+      if(data.activities){
+        const act_count = data.activities
+        //console.log(act_count.length);
+
+        if(act_count.length === 0){
           setActivitiesError("No Activity")
         }else{
-          setActivitiesError(data[0].error)
-        }  
-      } catch (error) {}
+          setActivities(data.activities)
+        }
+      }else{
+        setActivitiesError(String(data[0].error))
+      } 
     }
+    
 
     //fetch voters, election, organizations total
     const parallelFetch = async () => {
