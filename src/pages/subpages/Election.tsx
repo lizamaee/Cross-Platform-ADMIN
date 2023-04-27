@@ -46,12 +46,12 @@ export default function Election() {
       {/* ELECTION */}
       <div className="election-page py-5">
         {/* PHASE I */}
-        <div className="phase1 flex gap-10 text-gray-700 pop-semibold text-md">
+        <div className="phase1 flex lg:gap-10 text-gray-700 pop-semibold text-xs md:text-sm lg:text:md bg-white rounded-t-lg ">
           <nav className='flex gap-5'>
-            <button onClick={handleElectionTab} className={`election outline-none tracking-wide ${electionTab ? `text-[#7a6ff0] border-b-2 border-[#7a6ff0]` : ``}`}>Election</button>
-            <button onClick={handleOrganizationTab} className={`organization outline-none tracking-wide ${organizationTab ? `text-[#7a6ff0] border-b-2 border-[#7a6ff0]` : ``}`}>Organization</button>
-            <button onClick={handlePositionTab} className={`posion outline-none tracking-wide ${positionTab ? `text-[#7a6ff0] border-b-2 border-[#7a6ff0]` : ``}`}>Position</button>
-            <button onClick={handleCandidateTab} className={`candidate outline-none tracking-wide ${candidateTab ? `text-[#7a6ff0] border-b-2 border-[#7a6ff0]` : ``}`}>Candidate</button>
+            <button onClick={handleElectionTab} className={`election outline-none tracking-wide ml-3 py-3 ${electionTab ? `text-[#7a6ff0] border-b-2 border-[#7a6ff0]` : ``}`}>Election</button>
+            <button onClick={handleOrganizationTab} className={`organization outline-none tracking-wide py-3 ${organizationTab ? `text-[#7a6ff0] border-b-2 border-[#7a6ff0]` : ``}`}>Organization</button>
+            <button onClick={handlePositionTab} className={`posion outline-none tracking-wide py-3 ${positionTab ? `text-[#7a6ff0] border-b-2 border-[#7a6ff0]` : ``}`}>Position</button>
+            <button onClick={handleCandidateTab} className={`candidate outline-none tracking-wide py-3 ${candidateTab ? `text-[#7a6ff0] border-b-2 border-[#7a6ff0]` : ``}`}>Candidate</button>
           </nav>
         </div>
         <div className="tab-ouput">
