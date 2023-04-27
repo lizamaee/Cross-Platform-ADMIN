@@ -67,7 +67,7 @@ export const fetchData = async (endpoints: string) => {
         Authorization: `Bearer ${token}`,
       },
     };
-    const response = await axios.get(`http://localhost:3000/${endpoints}`, config);
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}${endpoints}`, config);
     return response.data
   } catch (error: any) {
     //console.log(error.response.data.error.message)

@@ -209,7 +209,7 @@ export default function Home(){
           'Authorization': `Bearer ${token}`,
         },
       };
-      axios.patch(`http://localhost:3000/election/status/to-ongoing/${id}`, {}, config)
+      axios.patch(`${import.meta.env.VITE_API_URL}election/status/to-ongoing/${id}`, {}, config)
         .then(response => {
           console.log(response.data);
           // handle success
@@ -272,6 +272,10 @@ export default function Home(){
       return "Invalid Date";
     }
   };
+
+  const closeCandidateTable = () => {
+    setRenderCandidates(false);
+  };
   
 
   return (
@@ -281,7 +285,7 @@ export default function Home(){
       {/* DASHBOARD */}
 
 
-      { !renderCandidates ? "" : <CandidatesResults seatCandidates={seatCandidates}/>}
+      { !renderCandidates ? "" : <CandidatesResults handleClose={closeCandidateTable} seatCandidates={seatCandidates}/>}
 
 
       {/* PHASE I */}
