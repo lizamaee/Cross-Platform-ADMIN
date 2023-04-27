@@ -35,7 +35,22 @@
     font-weight: 500;
 }
 
-/* HOME ACTIVITY Webkit-based browsers */
+/* Candidates table  scrollbar Webkit-based browsers */
+.centered::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  
+  .centered::-webkit-scrollbar-thumb {
+    background-color: rgba(65, 65, 65, 0.5);
+    border-radius: 3px;
+  }
+  
+  .centered::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+  }
+
+/* Candidates table  scrollbar Webkit-based browsers */
 .voting-activity::-webkit-scrollbar {
     width: 3px;
     height: 3px;
