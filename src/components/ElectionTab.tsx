@@ -4,11 +4,13 @@ import {BsPlus} from 'react-icons/bs'
 import Pagination from './Pagination';
 import Table from './Table';
 import { fetchData } from '../api/home';
+import CreateElection from './CreateElection';
 
 export default function ElectionTab() {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(5);
+  const [renderCreate, setRenderCreate] = useState(false)
 
   useEffect(() => {
     const fetchElections = async () => {
@@ -35,17 +37,24 @@ export default function ElectionTab() {
     const response = await axios.delete(`${import.meta.env.VITE_API_URL}election/${id}`, config)
     //console.log(response.data.message);  
   }
+
+  const closeCreateForm = () => {
+    setRenderCreate(false)
+  }
+
   
   return (
     <div className='Election bg-white rounded-b-lg shadow-md'>
       {/* CREATE BUTTON */}
       <div className="top flex pb-4 justify-end px-3">
-        <button className='flex justify-center items-center py-2 pr-3 pl-1 text-white pop-medium bg-[#3961ee] rounded-2xl'>
+        <button onClick={()=> setRenderCreate(true)} className='flex justify-center items-center py-1 md:py-2 pr-3 pl-1 text-white pop-medium bg-[#3961ee] rounded-2xl'>
           <BsPlus size={30} />
-          <h3>Create Election</h3>
+          <h3 className='text-sm md:text-md'>Create Election</h3>
         </button>
       </div>
       {/* CREATE BUTTON */}
+
+      {renderCreate && (<CreateElection title='Create Election' handleClose={closeCreateForm}/>)}
 
       {/* ALL ELECTIONS */}
       <div className="container mx-auto px-4 overflow-x-auto">
