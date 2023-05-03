@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment"
+import axios from "axios";
 
 interface Props {
   handleClose: () => void;
@@ -13,7 +15,10 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [electionTitle, setElectionTitle] = useState<string>("");
 
-  const [selectedValue, setSelectedValue] = useState("upcoming");
+  const [selectedValue, setSelectedValue] = useState<string>("upcoming");
+
+  const [isCreating, setIsCreating] = useState<boolean>(false)
+  const [message, setMessage] = useState<string>("")
 
   function handleChange(event: any) {
     setSelectedValue(event.target.value);
@@ -21,8 +26,41 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
 
   const handleCreate = (e: any) => {
     e.preventDefault();
-    console.log(electionTitle, selectedValue, startDate, endDate);
+    setIsCreating(true)
+
+    const token = localStorage.getItem('adminToken');
+
+    const data = {
+        title: electionTitle,
+        startDate: moment(startDate).utc().format('YYYY-MM-DD'),
+        endDate: moment(endDate).utc().format('YYYY-MM-DD')
+    }
+    const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }
+
+    axios.post(`${import.meta.env.VITE_API_URL}election`, data, { headers })
+    .then((response) => {
+        //console.log('Success:', response.data);
+        setIsCreating(false)
+        slideSucess()
+        
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        setIsCreating(false)
+    });
+      
+    //console.log(electionTitle, selectedValue, start, end);
   };
+
+  const slideSucess = () => {
+    setMessage("Election Created")
+    setTimeout(() => {
+        setMessage("")
+    }, 4000)
+  }
 
   return (
     <>
@@ -41,7 +79,8 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
           <div className="centered relative w-5/6 md:w-3/6 bg-white dark:bg-[#4a4a4a] h-5/6 md:h-4/6 rounded-b-2xl">
             <div className="form-container">
               <form>
-                <div className="election-title py-10 px-5 gap-4 md:flex items-center justify-between">
+                <div className="election-title py-10 px-5 gap-4 md:flex items-center justify-between relative overflow-hidden">
+                    <span className={`absolute bg-gray-100 px-2 py-1 text-green-400 pop-medium rounded-l-sm border-l-2 border-green-300 top-1 right-0 transition-all duration-500 ease-in-out ${message ? 'translate-x-0' : 'translate-x-full' }`}>{message}</span>
                   <div className="title-wrapper flex-1 py-3">
                     <label className="pop-semibold">Title</label>
                     <br />
@@ -106,13 +145,20 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
                   </div>
                 </div>
                 <div className="btn-wrapper flex justify-center items-center py-5">
-                  <button
+                  {isCreating && (<button
+                    onClick={handleCreate}
+                    type="submit"
+                    className="py-3 px-4 md:px-6 rounded-3xl text-white pop-semibold shadow-xl hover:bg-blue-800 bg-[#3961ee]"
+                  >
+                    Creating...
+                  </button>)}
+                  {!isCreating && (<button
                     onClick={handleCreate}
                     type="submit"
                     className="py-3 px-4 md:px-6 rounded-3xl text-white pop-semibold shadow-xl hover:bg-blue-800 bg-[#3961ee]"
                   >
                     Create
-                  </button>
+                  </button>)}
                 </div>
               </form>
             </div>
