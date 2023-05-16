@@ -23,10 +23,22 @@ export default function Dashboard() {
     navigate("/login", {replace: true})
   }
 
-  const token = localStorage.getItem("adminToken");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    !token ? navigate('/login') : navigate('/');
+    if(token){
+      const parsedToken = JSON.parse(token)
+      
+      if (parsedToken.role === "admin") {
+        navigate('/admin');
+      }else {
+        navigate('/');
+      }
+    }else{
+      console.log("No token found");
+      navigate('/login');
+      
+    }
   }, [token]);
 
 

@@ -61,10 +61,17 @@ export const getCandidatesBasedOnOrgId = async (id: string) => {
 
 export const fetchData = async (endpoints: string) => {
   try {
-    const token = localStorage.getItem("adminToken");
+    const tok = localStorage.getItem("token")
+    let token
+    if(tok){
+      token = JSON.parse(tok)
+    }else{
+      console.log("No token found");
+      
+    }
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token.token}`,
       },
     };
     const response = await axios.get(`${import.meta.env.VITE_API_URL}${endpoints}`, config);

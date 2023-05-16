@@ -6,10 +6,22 @@ function App() {
   const navigate = useNavigate();
   const { isNight } = useAuthStore((state) => state)
 
-  const token = localStorage.getItem("adminToken");
+  const token = localStorage.getItem("token")
+
 
   useEffect(() => {
-    !token ? navigate("/login") : navigate("/");
+    if(token){
+      const parsedToken = JSON.parse(token)
+      
+      if (parsedToken.role === "admin") {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    }else{
+      console.log("No token found");
+      
+    }
 
     // On page load or when changing themes, best to add inline in `head` to avoid FOUC
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -20,7 +32,7 @@ function App() {
       useAuthStore.setState({isNight: false})
     }
 
-  }, [token, isNight]);
+  }, [isNight]);
 
   return (
     <div className="App bg-[#f4f7ff] dark:bg-[#2B2B2B]">

@@ -7,7 +7,7 @@ import { FaEyeSlash,FaEye } from 'react-icons/fa';
 
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
@@ -15,11 +15,23 @@ export default function Login() {
   const { loginAdmin } = useAuthStore((state) => state);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("adminToken");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    token ? navigate('/') : navigate('/login');
-  }, [token]);
+    if(token){
+      const parsedToken = JSON.parse(token)
+      
+      if (parsedToken.role === "admin") {
+        navigate('/admin');
+      }else {
+        navigate('/');
+      }
+    }else{
+      console.log("No token found");
+      
+    }
+  }, []);
+  
 
 
 
@@ -29,16 +41,20 @@ export default function Login() {
     setIsLoading(true)
 
     try {
-      const res = await loginadmin(username, password)
+      const res = await loginadmin(id, password)
       setIsLoading(false)
-      loginAdmin(res.data.token)
-      //console.log(res.data.token);
+      loginAdmin(res.data)
+      console.log(res.data);
       //navigate to dashboard
-      navigate("/", {replace: true})
+      if(res.data.role === 'admin'){
+        navigate("/admin", {replace: true})
+      }else{
+        navigate("/", {replace: true})
+      }
       console.log("Login Successfully");
       
     } catch (err: any) {
-      //console.log(err.message)
+      console.log(err.message)
 
       if(err.message === "Network Error"){
         setIsLoading(false)
@@ -63,12 +79,12 @@ export default function Login() {
         <img className="" src={tcu} height={400} alt="Taguig City University" />
         <div className="flex flex-col p-5">
           <h2 className="text-2xl text-center font-sans pop-bold dark:text-white tracking-widest">LOGIN</h2>
-          <label className="pop-regular opacity-80 text-sm">Username</label>
+          <label className="pop-regular opacity-80 text-sm">Student ID</label>
           <input
             className="px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={id}
+            onChange={(e) => setId(e.target.value)}
             required
           />
         </div>

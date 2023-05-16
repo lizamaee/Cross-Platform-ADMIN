@@ -3,7 +3,7 @@ import { create } from "zustand"
 type AuthState = {
     isAuthenticated: boolean;
     token: string | null;
-    loginAdmin: (token: string) => void;
+    loginAdmin: (token: {}) => void;
     logoutAdmin: () => void;
     isNight: boolean;
     switchMode: () => void;
@@ -16,14 +16,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     isNight: false,
   
     //Login
-    loginAdmin: (token: string) => {
-      localStorage.setItem('adminToken', token);
-      set({ isAuthenticated: true, token });
+    loginAdmin: (token: {}) => {
+      localStorage.setItem('token', JSON.stringify(token));
+      set({ isAuthenticated: true, token: JSON.stringify(token) });
     },
     
     //Logout
     logoutAdmin: () => {
-      localStorage.removeItem('adminToken');
+      localStorage.removeItem('token');
       set({ isAuthenticated: false, token: null });
     },
 

@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
+import AdminDashboard from './pages/AdminDashboard'
 import NotFound from './pages/NotFound'
 import Home from './pages/subpages/Home'
 import Election from './pages/subpages/Election'
@@ -13,6 +13,7 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import VoterDashboard from './pages/VoterDashboard'
 
 
 
@@ -21,28 +22,33 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [  
+      
       {
         path: '',
-        element: <Dashboard />,
+        element: <VoterDashboard/>
+      },
+      {
+        path: '/admin',
+        element: <AdminDashboard />,
         children: [
           {
             index: true,
             element: <Home/>
           },
           {
-            path: "/election",
+            path: "/admin/election",
             element: <Election/>,
           },
           {
-            path: "/special-features",
+            path: "/admin/special-features",
             element: <SFeatures/>,
           },
           {
-            path: "/settings",
+            path: "/admin/settings",
             element: <Settings/>,
           }
         ]
-      },
+      },  
       {
         path: "login",
         element: <Login/>
