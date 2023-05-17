@@ -32,7 +32,7 @@ export default function Dashboard() {
       if (parsedToken.role === "admin") {
         navigate('/admin/dashboard');
       }else {
-        navigate('/');
+        navigate('/dashboard');
       }
     }else{
       console.log("No token found");
