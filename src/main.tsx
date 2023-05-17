@@ -16,50 +16,54 @@ import {
 import VoterDashboard from './pages/VoterDashboard'
 
 
-
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    children: [  
-      
+    children: [
       {
         path: '',
-        element: <VoterDashboard/>
+        element: <VoterDashboard />
       },
       {
-        path: '/admin',
+        path: 'admin',
         element: <AdminDashboard />,
         children: [
           {
-            index: true,
+            path: '*',
             element: <Home/>
           },
           {
-            path: "/admin/election",
-            element: <Election/>,
+            path: "dashboard",
+            index: true,
+            element: <Home />
           },
           {
-            path: "/admin/special-features",
-            element: <SFeatures/>,
+            path: "election",
+            element: <Election />,
           },
           {
-            path: "/admin/settings",
-            element: <Settings/>,
-          }
+            path: "special-features",
+            element: <SFeatures />,
+          },
+          {
+            path: "settings",
+            element: <Settings />,
+          },
         ]
-      },  
+      },
       {
         path: "login",
-        element: <Login/>
+        element: <Login />
       },
       {
         path: "*",
         element: <NotFound />
       }
     ],
-  }
+  },
 ]);
+
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

@@ -14,7 +14,7 @@ function App() {
       const parsedToken = JSON.parse(token)
       
       if (parsedToken.role === "admin") {
-        navigate('/admin');
+        navigate('/admin/dashboard');
       } else {
         navigate('/');
       }

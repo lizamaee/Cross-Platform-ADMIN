@@ -22,7 +22,7 @@ export default function Login() {
       const parsedToken = JSON.parse(token)
       
       if (parsedToken.role === "admin") {
-        navigate('/admin');
+        navigate('/admin/dashboard');
       }else {
         navigate('/');
       }
@@ -47,7 +47,7 @@ export default function Login() {
       console.log(res.data);
       //navigate to dashboard
       if(res.data.role === 'admin'){
-        navigate("/admin", {replace: true})
+        navigate("/admin/dashboard", {replace: true})
       }else{
         navigate("/", {replace: true})
       }
@@ -61,7 +61,9 @@ export default function Login() {
         setError(err.message)
       }else{
         setIsLoading(false)
-        setError(err.response.data.error);
+        console.log(err.response);
+        
+        setError(err.response.data.message);
       }  
     }
   };
@@ -85,13 +87,15 @@ export default function Login() {
             type="text"
             value={id}
             onChange={(e) => setId(e.target.value)}
+            maxLength={7}
+            minLength={7}
             required
           />
         </div>
 
         <div className="flex flex-col px-5">
           <label className="pop-regular opacity-80 text-sm">Password</label>
-          <div className="pb-7">
+          <div className="pb-2">
             <input
               className="w-full px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
               type={showPassword ? "text" : "password"}
