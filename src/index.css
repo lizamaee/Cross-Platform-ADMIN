@@ -5,7 +5,11 @@
 
 
 .active{
-    background-image: linear-gradient(to right, #7268EF, #9D93F6)
+    background-image: linear-gradient(to right, #7268EF, #9D93F6);
+    color: #fff;
+}
+.active .voter-icon{
+  color: #fff;
 }
 
 .pop-extrabold{
