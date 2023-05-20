@@ -6,11 +6,11 @@ import { CgMenuLeftAlt } from "react-icons/cg";
 import { FaVoteYea } from "react-icons/fa";
 import { HiHome, HiUserGroup } from "react-icons/hi";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../state";
+import { useAuthStore } from "../hooks/state";
 
 export default function VoterDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { logoutAdmin } = useAuthStore((state) => state) 
+  const { logoutAdmin, token } = useAuthStore((state) => state) 
   const navigate = useNavigate()
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -22,16 +22,18 @@ export default function VoterDashboard() {
     navigate("/login", {replace: true})
   }
 
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
     if(token){
       const parsedToken = JSON.parse(token)
       
-      if (parsedToken.role === "admin") {
+      if (parsedToken.role === 'admin') {
         navigate('/admin/dashboard');
-      }else {
+      }else if (parsedToken.role === 'user') {
         navigate('/dashboard');
+      }
+      else {
+        console.log("Here at Voter Dashboard");
+        
       }
     }else{
       console.log("No token found");

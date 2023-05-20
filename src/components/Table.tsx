@@ -24,8 +24,8 @@ export default function Table({ data, handleElectionDelete }: TableProps) {
         </tr>
       </thead>
       <tbody>
-        {data.map((item) => (
-          <tr className="" key={item.id}>
+        {data.map((item, index) => (
+          <tr className="" key={index}>
             <td className=" px-4 py-2">{item.title}</td>
             <td className=" px-4 py-2">{item.status}</td>
             <td className=" px-4 py-2">

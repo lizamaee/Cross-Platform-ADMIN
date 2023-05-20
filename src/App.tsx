@@ -1,19 +1,17 @@
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useAuthStore } from "./state";
+import { useAuthStore } from "./hooks/state";
 
 function App() {
   const navigate = useNavigate();
-  const { isNight } = useAuthStore((state) => state)
-
-  const token = localStorage.getItem("token")
+  const { isNight, token } = useAuthStore((state) => state)
 
 
   useEffect(() => {
     if(token){
       const parsedToken = JSON.parse(token)
       
-      if (parsedToken.role === "admin") {
+      if (parsedToken.role === 'admin') {
         navigate('/admin/dashboard');
       } else {
         navigate('/dashboard');

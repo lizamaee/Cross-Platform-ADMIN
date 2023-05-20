@@ -4,11 +4,11 @@ import { BsCalendar2EventFill } from "react-icons/bs";
 import { FaPeopleCarry } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import LineChart from "../../components/LineChart";
-import { getAnalyticsData, getUpcomings, fetchData, getOngoings, getVotedActivities, getOrganizationsBasedOnId, getCandidatesBasedOnOrgId } from "../../api/home";
 import ElectionTable from '../../components/ElectionTable';
-import { useAuthStore } from '../../state';
+import { useAuthStore } from '../../hooks/state';
 import NavBar from '../../components/NavBar';
 import CandidatesResults from '../../components/CandidatesResults';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 
 interface Election {
@@ -68,6 +68,7 @@ export default function Home(){
   const [seatCandidates, setSeatCandidates] = useState<seatCandidate[]>([])
   const [renderCandidates, setRenderCandidates] = useState(false)
 
+  const axiosPrivate = useAxiosPrivate()
 
   const { isNight } = useAuthStore((state) => state)
 
@@ -87,8 +88,34 @@ export default function Home(){
   };
   const { dataDay, dataCount } = getDataDayAndCount();
 
+  const fetchData = async (endpoints: string) => {
+    try {
+      const response = await axiosPrivate.get(`/${endpoints}`);
+      return response.data
+    } catch (error: any) {
+      //console.log(error.response.data.error.message)
+      if (error.response) {
+        // ✅ log status code here
+        //Live Server Return
+        //console.log(error.response.status);
+        return [error.response.data ];
+      }
+      //Dead Server Return
+      return [{error: error.message }];
+    }
+  }
+
   useEffect(() => {
     //fetch upcoming elections
+    const getUpcomings = async () => {
+      try {
+          const response = await fetchData('election/status/upcoming')
+          //console.log(response);
+          return response
+      } catch (err: any) {
+          throw err
+      }
+    }
     const fetchUpcomings = async () => {
       const data = await getUpcomings()
       setUpComings(data)
@@ -97,6 +124,14 @@ export default function Home(){
     }
     
     //fetch ongoing elections
+    const getOngoings = async () => {
+      try {
+          const response = await fetchData('election/status/ongoing')
+          return response
+      } catch (err: any) {
+          throw err
+      }
+    }
     const fetchOngoings = async () => {
       const data = await getOngoings()
       setOngoings(data)
@@ -104,12 +139,30 @@ export default function Home(){
     }
 
     //fetch daily registration analytics data
+    const getAnalyticsData = async () => {
+      try {
+        const response = await fetchData('user-analytics')
+        return response
+      } catch (err) {
+        throw err
+      }
+    };
     const fetchAnalyticsData = async () => {
       const data = await getAnalyticsData()
       setNewUser(data)
     }
 
-    //fetch voted activities 
+    //fetch voted activities
+    const getVotedActivities = async () => {
+      try {
+        const response = await fetchData('get-voted-activities')
+        //console.log(response);
+        return response
+      } catch (err: any) {
+          //console.log(err.response);
+          throw err
+      }
+    } 
     const fetchActivities = async () => {
       const data = await getVotedActivities()
       setVoted(String(data.count ?? "0"))
@@ -124,6 +177,8 @@ export default function Home(){
           setActivities(data.activities)
         }
       }else{
+        console.log(data);
+        
         setActivitiesError(String(data[0].error))
       } 
     }
@@ -202,14 +257,7 @@ export default function Home(){
   //Activate Election to Ongoing
   const activateElection = (id: string) => {
     try {
-      const token = localStorage.getItem("adminToken");
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      };
-      axios.patch(`${import.meta.env.VITE_API_URL}election/status/to-ongoing/${id}`, {}, config)
+      axiosPrivate.patch(`${import.meta.env.VITE_API_URL}election/status/to-ongoing/${id}`, {},)
         .then(response => {
           console.log(response.data);
           // handle success
@@ -225,6 +273,25 @@ export default function Home(){
   }
 
   //Get All organization of passed election id
+  const getCandidatesBasedOnOrgId = async (id: string) => {
+    try {
+      const response = await fetchData(`seat/org-seat-candidates/${id}`)
+      return response
+      
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const getOrganizationsBasedOnId = async (id:string) => {
+    try {
+      const response = await fetchData(`election/${id}`)
+      return response
+    } catch (err) {
+      throw err
+      //console.log(err);
+    }
+  }
   const getOrganizations = async (id: string) => {
     const response = await getOrganizationsBasedOnId(id)
     setElectionOrgs(response.organizations)

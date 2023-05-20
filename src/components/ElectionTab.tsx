@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import {BsPlus} from 'react-icons/bs'
 import Pagination from './Pagination';
 import Table from './Table';
-import { fetchData } from '../api/home';
 import CreateElection from './CreateElection';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 
 export default function ElectionTab() {
   const [data, setData] = useState([]);
@@ -12,7 +12,30 @@ export default function ElectionTab() {
   const [dataPerPage] = useState(5);
   const [renderCreate, setRenderCreate] = useState(false)
 
+  const axiosPrivate = useAxiosPrivate()
+
   useEffect(() => {
+    const fetchData = async (endpoints: string) => {
+      try {
+    
+        const response = await axiosPrivate.get(`/${endpoints}`);
+        return response.data
+      } catch (error: any) {
+        //console.log(error.response.data.error.message)
+        
+    
+        if (error.response) {
+          // ✅ log status code here
+          //Live Server Return
+          //console.log(error.response.status);
+          
+          return [error.response.data ];
+        }
+    
+        //Dead Server Return
+        return [{error: error.message }];
+      }
+    }
     const fetchElections = async () => {
       const response = await fetchData('election')
       //console.log(response);
@@ -34,7 +57,7 @@ export default function ElectionTab() {
         Authorization: `Bearer ${token}`,
       },
     };
-    const response = await axios.delete(`${import.meta.env.VITE_API_URL}election/${id}`, config)
+    const response = await axiosPrivate.delete(`${import.meta.env.VITE_API_URL}election/${id}`, config)
     //console.log(response.data.message);  
   }
 

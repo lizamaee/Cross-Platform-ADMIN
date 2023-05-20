@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import tcu from "../images/bg.png";
 import { loginadmin } from "../api/auth"
-import { useAuthStore } from "../state";
+import { useAuthStore } from "../hooks/state";
 import { useNavigate } from "react-router-dom";
 import { FaEyeSlash,FaEye } from 'react-icons/fa';
 
@@ -12,19 +12,21 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
-  const { loginAdmin } = useAuthStore((state) => state);
+  const { token, setToken } = useAuthStore((state) => state);
   const navigate = useNavigate();
-
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if(token){
       const parsedToken = JSON.parse(token)
       
-      if (parsedToken.role === "admin") {
+      if (parsedToken.role === 'admin') {
         navigate('/admin/dashboard');
-      }else {
+      }else if (parsedToken.role === 'user') {
         navigate('/dashboard');
+      }
+      else {
+        console.log("Here at Login useE");
+        
       }
     }else{
       console.log("No token found");
@@ -43,28 +45,32 @@ export default function Login() {
     try {
       const res = await loginadmin(id, password)
       setIsLoading(false)
-      loginAdmin(res.data)
-      console.log(res.data);
+      setToken(res.data)
+      console.log(res.data.role);
       //navigate to dashboard
-      if(res.data.role === 'admin'){
-        navigate("/admin/dashboard", {replace: true})
-      }else{
-        navigate("/", {replace: true})
+      if (res.data.role === 'admin') {
+        navigate('/admin/dashboard');
+      }else if (res.data.role === 'user') {
+        navigate('/dashboard');
+      }
+      else {
+        console.log("Here Login function");
+        
       }
       console.log("Login Successfully");
       
     } catch (err: any) {
-      console.log(err.message)
+        console.log(err)
 
-      if(err.message === "Network Error"){
-        setIsLoading(false)
-        setError(err.message)
-      }else{
-        setIsLoading(false)
-        console.log(err.response);
-        
-        setError(err.response.data.message);
-      }  
+        if(err.message === "Network Error"){
+          setIsLoading(false)
+          setError(err.message)
+        }else{
+          setIsLoading(false)
+          console.log(err.response);
+          
+          setError(err.response.data.message);
+        }  
     }
   };
 

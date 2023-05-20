@@ -1,4 +1,4 @@
-import { useAuthStore } from "../state"
+import { useAuthStore } from "../hooks/state"
 import { CgInfo } from "react-icons/cg";
 import {BsFillSunFill,BsMoonFill, BsPersonCircle} from 'react-icons/bs'
 
