@@ -3,7 +3,7 @@ import { IoClose } from "react-icons/io5";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment"
-import axios from "axios";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 interface Props {
   handleClose: () => void;
@@ -14,11 +14,10 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [electionTitle, setElectionTitle] = useState<string>("");
-
   const [selectedValue, setSelectedValue] = useState<string>("upcoming");
-
   const [isCreating, setIsCreating] = useState<boolean>(false)
   const [message, setMessage] = useState<string>("")
+  const axiosPrivate = useAxiosPrivate()
 
   function handleChange(event: any) {
     setSelectedValue(event.target.value);
@@ -28,19 +27,13 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
     e.preventDefault();
     setIsCreating(true)
 
-    const token = localStorage.getItem('adminToken');
-
     const data = {
         title: electionTitle,
         startDate: moment(startDate).utc().format('YYYY-MM-DD'),
         endDate: moment(endDate).utc().format('YYYY-MM-DD')
     }
-    const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    }
 
-    axios.post(`${import.meta.env.VITE_API_URL}election`, data, { headers })
+    axiosPrivate.post('/election', data)
     .then((response) => {
         //console.log('Success:', response.data);
         setIsCreating(false)

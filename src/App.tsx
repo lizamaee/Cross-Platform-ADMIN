@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuthStore } from "./hooks/state";
 import useRefreshToken from "./hooks/useRefreshToken";
+import Lottie from "lottie-react";
+import ballot from "./assets/ballot.json"
 
 function App() {
   const navigate = useNavigate();
@@ -65,7 +67,11 @@ function App() {
   return (
     <div className="App bg-[#f4f7ff] dark:bg-[#2B2B2B]">
       <div className="Container bg-[#f4f7ff] dark:bg-[#2B2B2B] min-h-screen">
-        {isLoading ? <p>Loading...</p> : <Outlet />}
+        {isLoading 
+          ? <div className="div w-full h-screen absolute flex justify-center items-center">
+              <Lottie animationData={ballot} loop={true} />
+            </div>
+          : <Outlet />}
       </div>
     </div>
   );
