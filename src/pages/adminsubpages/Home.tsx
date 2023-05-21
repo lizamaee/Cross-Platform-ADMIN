@@ -9,6 +9,7 @@ import { useAuthStore } from '../../hooks/state';
 import NavBar from '../../components/NavBar';
 import CandidatesResults from '../../components/CandidatesResults';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 interface Election {
@@ -69,6 +70,8 @@ export default function Home(){
   const [renderCandidates, setRenderCandidates] = useState(false)
 
   const axiosPrivate = useAxiosPrivate()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const { isNight } = useAuthStore((state) => state)
 
@@ -93,11 +96,15 @@ export default function Home(){
       const response = await axiosPrivate.get(`/${endpoints}`);
       return response.data
     } catch (error: any) {
+
       //console.log(error.response.data.error.message)
       if (error.response) {
         // ✅ log status code here
         //Live Server Return
         //console.log(error.response.status);
+        if(error.response.status === 403){
+          navigate('/login', {state: {from: location}, replace: true});
+        }
         return [error.response.data ];
       }
       //Dead Server Return
@@ -177,7 +184,7 @@ export default function Home(){
           setActivities(data.activities)
         }
       }else{
-        console.log(data);
+        //console.log(data);
         
         setActivitiesError(String(data[0].error))
       } 
@@ -259,7 +266,7 @@ export default function Home(){
     try {
       axiosPrivate.patch(`${import.meta.env.VITE_API_URL}election/status/to-ongoing/${id}`, {},)
         .then(response => {
-          console.log(response.data);
+          //console.log(response.data);
           // handle success
         })
         .catch(error => {
@@ -335,7 +342,7 @@ export default function Home(){
       const formattedDate = date.toLocaleString("en-US", options);
       return formattedDate; // Output: "Apr 23, 2023, 8:19 PM"
     } catch (error:any) {
-      console.log(error.message);
+      //console.log(error.message);
       return "Invalid Date";
     }
   };

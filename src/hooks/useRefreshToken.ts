@@ -17,7 +17,7 @@ export default function useRefreshToken() {
     } 
     
     setToken(response.data)
-    console.log(response.data.accessToken);
+    console.log(response.data);
 
     return response.data.accessToken
     

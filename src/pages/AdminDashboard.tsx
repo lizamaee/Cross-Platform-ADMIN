@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { RiSettings2Line } from "react-icons/ri";
 import { BiHomeAlt } from "react-icons/bi";
@@ -22,26 +22,6 @@ export default function Dashboard() {
     logoutAdmin()
     navigate("/login", {replace: true})
   }
-
-  useEffect(() => {
-    if(token){
-      const parsedToken = JSON.parse(token)
-      
-      if (parsedToken.role === 'admin') {
-        navigate('/admin/dashboard');
-      }else if (parsedToken.role === 'user') {
-        navigate('/dashboard');
-      }
-      else {
-        console.log("Here at Admin Dashboard");
-        
-      }
-    }else{
-      console.log("No token found");
-      navigate('/login');
-      
-    }
-  }, [token]);
 
 
   return (

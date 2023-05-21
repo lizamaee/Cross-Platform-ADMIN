@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import tcu from "../images/bg.png";
 import { loginadmin } from "../api/auth"
 import { useAuthStore } from "../hooks/state";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FaEyeSlash,FaEye } from 'react-icons/fa';
 
 
@@ -12,28 +12,10 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
-  const { token, setToken } = useAuthStore((state) => state);
+  const { setToken } = useAuthStore((state) => state);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if(token){
-      const parsedToken = JSON.parse(token)
-      
-      if (parsedToken.role === 'admin') {
-        navigate('/admin/dashboard');
-      }else if (parsedToken.role === 'user') {
-        navigate('/dashboard');
-      }
-      else {
-        console.log("Here at Login useE");
-        
-      }
-    }else{
-      console.log("No token found");
-      
-    }
-  }, []);
-  
+  const location = useLocation()
+  const from = location.state?.from?.pathname || ""
 
 
 
@@ -46,10 +28,10 @@ export default function Login() {
       const res = await loginadmin(id, password)
       setIsLoading(false)
       setToken(res.data)
-      console.log(res.data.role);
+      //console.log(res.data.role);
       //navigate to dashboard
       if (res.data.role === 'admin') {
-        navigate('/admin/dashboard');
+        navigate(from, {replace: true});
       }else if (res.data.role === 'user') {
         navigate('/dashboard');
       }
@@ -60,14 +42,14 @@ export default function Login() {
       console.log("Login Successfully");
       
     } catch (err: any) {
-        console.log(err)
+        //console.log(err)
 
         if(err.message === "Network Error"){
           setIsLoading(false)
           setError(err.message)
         }else{
           setIsLoading(false)
-          console.log(err.response);
+          //console.log(err.response);
           
           setError(err.response.data.message);
         }  

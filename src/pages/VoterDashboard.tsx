@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { RiHistoryLine, RiSettings2Fill,RiLogoutCircleRFill } from "react-icons/ri";
 import { BsShieldLockFill } from "react-icons/bs";
@@ -10,7 +10,7 @@ import { useAuthStore } from "../hooks/state";
 
 export default function VoterDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { logoutAdmin, token } = useAuthStore((state) => state) 
+  const { logoutAdmin } = useAuthStore((state) => state) 
   const navigate = useNavigate()
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -21,27 +21,6 @@ export default function VoterDashboard() {
     logoutAdmin()
     navigate("/login", {replace: true})
   }
-
-  useEffect(() => {
-    if(token){
-      const parsedToken = JSON.parse(token)
-      
-      if (parsedToken.role === 'admin') {
-        navigate('/admin/dashboard');
-      }else if (parsedToken.role === 'user') {
-        navigate('/dashboard');
-      }
-      else {
-        console.log("Here at Voter Dashboard");
-        
-      }
-    }else{
-      console.log("No token found");
-      navigate('/login');
-      
-    }
-  }, [token]);
-
 
   return (
     <div className="container md:overflow-hidden h-screen max-w-screen-2xl md:flex">

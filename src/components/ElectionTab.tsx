@@ -5,6 +5,7 @@ import Pagination from './Pagination';
 import Table from './Table';
 import CreateElection from './CreateElection';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function ElectionTab() {
   const [data, setData] = useState([]);
@@ -13,6 +14,8 @@ export default function ElectionTab() {
   const [renderCreate, setRenderCreate] = useState(false)
 
   const axiosPrivate = useAxiosPrivate()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     const fetchData = async (endpoints: string) => {
@@ -28,7 +31,9 @@ export default function ElectionTab() {
           // ✅ log status code here
           //Live Server Return
           //console.log(error.response.status);
-          
+          if(error.response.status === 403){
+            navigate('/login', {state: {from: location}, replace: true});
+          }
           return [error.response.data ];
         }
     
