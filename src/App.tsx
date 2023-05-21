@@ -65,8 +65,8 @@ function App() {
   }, [isLoading, token])
 
   return (
-    <div className="App bg-[#f4f7ff] dark:bg-[#2B2B2B]">
-      <div className="Container bg-[#f4f7ff] dark:bg-[#2B2B2B] min-h-screen">
+    <div className="App bg-[#E5E0FF] dark:bg-[#2B2B2B]">
+      <div className="Container bg-[#E5E0FF] dark:bg-[#2B2B2B] min-h-screen">
         {isLoading 
           ? <div className="div w-full h-screen absolute flex justify-center items-center">
               <Lottie animationData={ballot} loop={true} />

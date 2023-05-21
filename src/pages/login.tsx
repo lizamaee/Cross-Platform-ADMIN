@@ -4,6 +4,7 @@ import { loginadmin } from "../api/auth"
 import { useAuthStore } from "../hooks/state";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaEyeSlash,FaEye } from 'react-icons/fa';
+import { NavLink } from "react-router-dom";
 
 
 export default function Login() {
@@ -24,7 +25,6 @@ export default function Login() {
     //console.log(username, password);
     setStudentID(id)
     setIsLoading(true)
-
     try {
       const res = await loginadmin(id, password)
       setIsLoading(false)
@@ -38,20 +38,16 @@ export default function Login() {
       }
       else {
         console.log("Here Login function");
-        
       }
-      console.log("Login Successfully");
-      
+      console.log("Login Successfully"); 
     } catch (err: any) {
         //console.log(err)
-
         if(err.message === "Network Error"){
           setIsLoading(false)
           setError(err.message)
         }else{
           setIsLoading(false)
           //console.log(err.response);
-          
           setError(err.response.data.message);
         }  
     }
@@ -62,46 +58,50 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-10 font-medium text-lg">
+    <div className="md:flex md:items-center md:justify-center md:min-h-screen md:p-10 font-medium text-lg">
       <form
         onSubmit={handleLogin}
-        className=" bg-[#F0F0F0] dark:bg-[#333333] dark:text-gray-200 rounded-3xl overflow-hidden text-[#3C486B] pb-5 shadow-2xl md:max-w-md"
+        className=" bg-[#E5E0FF] dark:bg-[#2b2b2b] dark:text-gray-200 md:rounded-3xl overflow-hidden text-[#3C486B] pb-5 md:shadow-2xl md:max-w-md"
       >
         <img className="" src={tcu} height={400} alt="Taguig City University" />
-        <div className="flex flex-col p-5">
-          <h2 className="text-2xl text-center font-sans pop-bold dark:text-white tracking-widest">LOGIN</h2>
-          <label className="pop-regular opacity-80 text-sm">Student ID</label>
-          <input
-            className="px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
-            type="text"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            maxLength={7}
-            minLength={7}
-            required
-          />
-        </div>
-
-        <div className="flex flex-col px-5">
-          <label className="pop-regular opacity-80 text-sm">Password</label>
-          <div className="pb-2">
+        <div className="inputs-container -translate-y-10 md:translate-y-0 bg-[#E5E0FF] dark:bg-[#2b2b2b] rounded-[50px] md:rounded-t-0">
+          <div className=" flex flex-col p-5">
+            <h2 className="text-3xl py-6 md:py-3 text-center font-sans pop-bold text-[#4C7CE5] dark:text-white tracking-widest">Login</h2>
+            <label className="pop-regular opacity-80 text-sm">Student ID</label>
             <input
-              className="w-full px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              className="bg-[#E5E0FF] px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
+              type="text"
+              value={id}
+              placeholder="ex. 1234567"
+              onChange={(e) => setId(e.target.value)}
+              maxLength={7}
+              minLength={7}
               required
             />
-            <button
-              className="text-sm font-bold absolute -translate-x-10 translate-y-4"
-              type="button"
-              onClick={handlePasswordToggle}
-            >
-              {showPassword ? <FaEyeSlash size={23}/> : <FaEye size={23}/>}
-            </button>
+          </div>
+
+          <div className="flex flex-col px-5">
+            <label className="pop-regular opacity-80 text-sm">Password</label>
+            <div className="pb-2">
+              <input
+                className="bg-[#E5E0FF] w-full px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                placeholder="••••••••"
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                className="text-sm font-bold absolute -translate-x-10 translate-y-4"
+                type="button"
+                onClick={handlePasswordToggle}
+              >
+                {showPassword ? <FaEyeSlash size={23}/> : <FaEye size={23}/>}
+              </button>
+            </div>
           </div>
         </div>
-        <div className="flex items-center flex-col">
+        <div className="flex items-center flex-col px-5">
           {error ? (
             <div className="text-red-400 text-center px-5 py-3 break-words">
               {error}
@@ -110,18 +110,27 @@ export default function Login() {
             ""
           )}
           {isLoading ? (<button
-            className="text-center text-white px-4 py-2 rounded-lg w-[30%] bg-[#F45050] dark:bg-red-600 shadow-md break-words shadow-red-300 dark:shadow-red-700"
+            className="text-center text-white px-4 py-3 rounded-lg w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
             type="submit"
           >
             Loading...
           </button>)
           :
           (<button
-            className="text-center text-white px-4 py-2 rounded-lg w-[40%] bg-[#F45050] dark:bg-red-600 shadow-md break-words shadow-red-300 dark:shadow-red-700"
+            className="text-center text-white px-4 py-3 rounded-lg w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
             type="submit"
           >
             Login
           </button>)}
+
+          <ul className="forgot-register-container flex justify-between w-full dark:text-gray-400">
+              <NavLink to='/forgot-password'>
+                <p className="pop-regular text-sm py-4 underline">Forgot Password</p>
+              </NavLink>
+              <NavLink to='/register'>
+                <p className="pop-regular text-sm py-4 underline">Register</p>
+              </NavLink>
+          </ul>
         </div>
       </form>
     </div>
