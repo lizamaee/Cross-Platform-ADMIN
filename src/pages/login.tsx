@@ -12,7 +12,7 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
-  const { setToken } = useAuthStore((state) => state);
+  const { setToken,setStudentID } = useAuthStore((state) => state);
   const navigate = useNavigate();
   const location = useLocation()
   const from = location.state?.from?.pathname || ""
@@ -22,6 +22,7 @@ export default function Login() {
   const handleLogin = async (e: any) => {
     e.preventDefault();
     //console.log(username, password);
+    setStudentID(id)
     setIsLoading(true)
 
     try {

@@ -7,19 +7,19 @@ import { CgMenuLeftAlt } from "react-icons/cg";
 import { MdHowToVote } from "react-icons/md";
 import { HiOutlineLogout } from "react-icons/hi";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../hooks/state";
+import useLogout from "../hooks/useLogout";
 
 export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { logoutAdmin, token } = useAuthStore((state) => state) 
   const navigate = useNavigate()
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+  const logout = useLogout()
 
-  function handleLogout(e: any){
+  async function handleLogout(){
+    await logout()
     console.log("Logged out")
-    logoutAdmin()
     navigate("/login", {replace: true})
   }
 

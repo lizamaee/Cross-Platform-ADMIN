@@ -3,8 +3,9 @@ import { create } from "zustand"
 type AuthState = {
     isAuthenticated: boolean;
     token: string | null;
+    student_id: string | null;
     setToken: (token: {}) => void;
-    logoutAdmin: () => void;
+    setStudentID: (id: string) => void;
     isNight: boolean;
     switchMode: () => void;
 }
@@ -13,16 +14,16 @@ type AuthState = {
 export const useAuthStore = create<AuthState>((set) => ({
     isAuthenticated: false,
     token: null,
+    student_id: '',
     isNight: false,
   
     //Login
     setToken: (token: {}) => {
       set({ token: JSON.stringify(token) });
     },
-    
-    //Logout
-    logoutAdmin: () => {
-      set({ isAuthenticated: false, token: null });
+
+    setStudentID: (id: string) =>{
+      set({student_id: id})
     },
 
     //Light Mode / Dark Mode

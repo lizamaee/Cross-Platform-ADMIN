@@ -6,19 +6,19 @@ import { CgMenuLeftAlt } from "react-icons/cg";
 import { FaVoteYea } from "react-icons/fa";
 import { HiHome, HiUserGroup } from "react-icons/hi";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../hooks/state";
+import useLogout from "../hooks/useLogout";
 
 export default function VoterDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { logoutAdmin } = useAuthStore((state) => state) 
   const navigate = useNavigate()
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+  const logout = useLogout()
 
-  function handleLogout(e: any){
+  async function handleLogout(){
+    await logout()
     console.log("Logged out")
-    logoutAdmin()
     navigate("/login", {replace: true})
   }
 
@@ -118,7 +118,7 @@ export default function VoterDashboard() {
             </NavLink>
           </ul>
           
-          <div className="logout-container px-3 bottom-0 mt-16">
+          <div className="logout-container px-3 bottom-0 mt-8">
             <button onClick={handleLogout} className="logout w-full text-md hover:bg-[#C1D0F5] rounded-md flex justify-between items-center pop-semibold p-5">
               <h3 className="text-[#414141]">Logout</h3>
               <RiLogoutCircleRFill size={25} className="text-[#4C7CE5] voter-icon"/>

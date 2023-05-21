@@ -11,13 +11,13 @@ export default function useRefreshToken() {
     })
     if(token){
       const parsedToken = JSON.parse(token)
-      console.log(parsedToken);
+      //console.log(parsedToken);
     }else{
       console.log("No token found");
     } 
     
     setToken(response.data)
-    console.log(response.data);
+    //console.log(response.data);
 
     return response.data.accessToken
     
