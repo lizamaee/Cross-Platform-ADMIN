@@ -8,6 +8,9 @@ type AuthState = {
     setStudentID: (id: string) => void;
     isNight: boolean;
     switchMode: () => void;
+    tempPassword: string;
+    tempMobileNumber: string;
+    tempPin: string;
 }
 
   
@@ -16,6 +19,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     token: null,
     student_id: '',
     isNight: false,
+    tempMobileNumber: '',
+    tempPassword: '',
+    tempPin: '',
   
     //Login
     setToken: (token: {}) => {

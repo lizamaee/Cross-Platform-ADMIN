@@ -14,3 +14,27 @@ export const loginadmin = async (id: string, password: string) => {
     throw err;
   }
 };
+
+export const checkStudentID = async (student_id: string) => {
+  try {
+    const res = await axios.get('http://localhost:3000/id', { params: { student_id } });
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const confirmNumberSendOTP = async (new_number: string) => {
+  try {
+    const res = await axios.post('http://localhost:3000/otp/send', 
+    JSON.stringify({ mobile_number: new_number }),
+    {
+      headers: { "Content-Type": "application/json"},
+      withCredentials: true
+    }
+    );
+    return res;
+  } catch (err) {
+    throw err;
+  }
+}
