@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment"
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { message } from "antd";
 
 interface Props {
   handleClose: () => void;
@@ -16,16 +17,21 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
   const [electionTitle, setElectionTitle] = useState<string>("");
   const [selectedValue, setSelectedValue] = useState<string>("upcoming");
   const [isCreating, setIsCreating] = useState<boolean>(false)
-  const [message, setMessage] = useState<string>("")
   const axiosPrivate = useAxiosPrivate()
 
   function handleChange(event: any) {
     setSelectedValue(event.target.value);
   }
 
+  const key = 'createElectionKEY';
+
   const handleCreate = (e: any) => {
     e.preventDefault();
-    setIsCreating(true)
+    message.open({
+      key,
+      type: 'loading',
+      content: 'Creating...',
+    });
 
     const data = {
         title: electionTitle,
@@ -36,8 +42,14 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
     axiosPrivate.post('/election', data)
     .then((response) => {
         //console.log('Success:', response.data);
-        setIsCreating(false)
-        slideSucess()
+        message.open({
+          key,
+          type: 'success',
+          content: 'Election Successfully Created',
+          duration: 2,
+        });
+        handleClose()
+
         
     })
     .catch((error) => {
@@ -48,12 +60,6 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
     //console.log(electionTitle, selectedValue, start, end);
   };
 
-  const slideSucess = () => {
-    setMessage("Election Created")
-    setTimeout(() => {
-        setMessage("")
-    }, 4000)
-  }
 
   return (
     <>
@@ -73,9 +79,8 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
             <div className="form-container">
               <form>
                 <div className="election-title py-10 px-5 gap-4 md:flex items-center justify-between relative overflow-hidden">
-                    <span className={`absolute bg-gray-100 px-2 py-1 text-green-400 pop-medium rounded-l-sm border-l-2 border-green-300 top-1 right-0 transition-all duration-500 ease-in-out ${message ? 'translate-x-0' : 'translate-x-full' }`}>{message}</span>
                   <div className="title-wrapper flex-1 py-3">
-                    <label className="pop-semibold">Title</label>
+                    <label className="pop-semibold dark:text-gray-400">Title</label>
                     <br />
                     <input
                       value={electionTitle}
@@ -87,7 +92,7 @@ const CandidatesResults: React.FC<Props> = ({ handleClose, title }) => {
                     />
                   </div>
                   <div className="status-wrapper">
-                    <label className="pop-semibold">Status</label>
+                    <label className="pop-semibold dark:text-gray-400">Status</label>
                     <br />
                     <select
                       value={selectedValue}
