@@ -10,6 +10,7 @@ import NavBar from '../../components/NavBar';
 import CandidatesResults from '../../components/CandidatesResults';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Skeleton } from 'antd'
 
 
 interface Election {
@@ -78,6 +79,7 @@ export default function Home(){
   const [voters, setVoters] = useState([])
   const [elections, setElections] = useState([])
   const [organizations, setOrganizations] = useState([])
+  const [isNumbersLoading, setIsNumbersLoading] = useState(true)
 
   const getDataDayAndCount = () => {
     const dataDay: [] = [];
@@ -206,6 +208,7 @@ export default function Home(){
       setVoters(voters)
       setElections(elections)
       setOrganizations(organizations)
+      setIsNumbersLoading(false)
     }
 
     //invoke Fetch
@@ -366,9 +369,17 @@ export default function Home(){
       <div className="boxes py-5 grid md:grid-cols-3 gap-5">
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#A75DE1] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
-            <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
-              {voters.length}
-            </h1>
+          {isNumbersLoading ? (
+            <Skeleton.Avatar active shape='circle' size='large' />
+          ) : (
+            <div>
+              <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
+                {voters.length}
+              </h1>
+            </div>
+          )}
+
+            
             <h3 className="pop-medium text-sm md:text-md">Registered Voters</h3>
           </div>
           <div className="icon flex justify-center items-center">
@@ -378,9 +389,15 @@ export default function Home(){
 
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#2F92F0] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
-            <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
-              {elections.length}
-            </h1>
+            {isNumbersLoading ? (
+              <Skeleton.Avatar active shape='circle' size='large' />
+            ) : (
+              <div>
+                <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
+                  {elections.length}
+                </h1>
+              </div>
+            )}
             <h3 className="pop-medium text-sm md:text-md">No. of Elections</h3>
           </div>
           <div className="icon flex justify-center items-center">
@@ -390,9 +407,15 @@ export default function Home(){
 
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#1AB98C] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
-            <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
-              {organizations.length}
-            </h1>
+            {isNumbersLoading ? (
+              <Skeleton.Avatar active shape='circle' size='large' />
+            ) : (
+              <div>
+                <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
+                  {organizations.length}
+                </h1>
+              </div>
+            )}
             <h3 className="pop-medium text-sm md:text-md">
               No. of Organizations
             </h3>
