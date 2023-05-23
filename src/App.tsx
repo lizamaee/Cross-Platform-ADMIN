@@ -52,14 +52,14 @@ function App() {
         if (parsed.role === 'admin') {
           navigate('/admin/dashboard');
         } else if (parsed.role === 'user') {
-          navigate('/dashboard');
+          navigate('/voter/dashboard');
         }else {
           console.log("Here App component");
           
         }
     }else{
         //console.log("No token found");
-        navigate('/login')
+        navigate('/')
     }
     
   }, [isLoading, token])

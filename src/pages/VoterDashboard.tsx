@@ -48,27 +48,27 @@ export default function VoterDashboard() {
             </div>
 
             <ul className="px-3 flex flex-col gap-2 pt-5 pop-medium tracking-wider">
-              <NavLink onClick={() => toggleSidebar()} to="/dashboard" className="flex items-center gap-3 hover:bg-[#C1D0F5]  text-[#414141] px-5 py-3 rounded-md">
+              <NavLink onClick={() => toggleSidebar()} to="/voter/dashboard" className="flex items-center gap-3 hover:bg-[#C1D0F5]  text-[#414141] px-5 py-3 rounded-md">
                 <HiHome size={25} className="text-[#4C7CE5] voter-icon" />
                 <h2 className="pop-medium">Home</h2>
               </NavLink>
-              <NavLink onClick={() => toggleSidebar()} to="/cast-vote" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
+              <NavLink onClick={() => toggleSidebar()} to="/voter/cast-vote" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
                 <FaVoteYea size={25} className="text-[#4C7CE5] voter-icon"/>
                 <h2 className="pop-medium">Cast Vote</h2>
               </NavLink>
-              <NavLink onClick={() => toggleSidebar()} to="/election-history" className="flex items-center gap-3 hover:bg-[#C1D0F5]  text-[#414141] px-5 py-3 rounded-md">
+              <NavLink onClick={() => toggleSidebar()} to="/voter/election-history" className="flex items-center gap-3 hover:bg-[#C1D0F5]  text-[#414141] px-5 py-3 rounded-md">
                 <RiHistoryLine size={25} className="text-[#4C7CE5] voter-icon"/>
                 <h2 className="pop-medium">Election History</h2>
               </NavLink>
-              <NavLink onClick={() => toggleSidebar()} to="/developers" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
+              <NavLink onClick={() => toggleSidebar()} to="/voter/developers" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
                 <HiUserGroup size={25} className="text-[#4C7CE5] voter-icon"/>
                 <h2 className="pop-medium">Developers</h2>
               </NavLink>
-              <NavLink onClick={() => toggleSidebar()} to="/privacy-policy" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
+              <NavLink onClick={() => toggleSidebar()} to="/voter/privacy-policy" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
                 <BsShieldLockFill size={23} className="text-[#4C7CE5] voter-icon"/>
                 <h2 className="pop-medium">Privacy Policy</h2>
               </NavLink>
-              <NavLink onClick={() => toggleSidebar()} to="/settings" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
+              <NavLink onClick={() => toggleSidebar()} to="/voter/settings" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
                 <RiSettings2Fill size={25} className="text-[#4C7CE5] voter-icon"/>
                 <h2 className="pop-medium">Settings</h2>
               </NavLink>
@@ -92,27 +92,27 @@ export default function VoterDashboard() {
           </div>
 
           <ul className="px-3 flex flex-col gap-2 pt-5 pop-medium tracking-wider">
-            <NavLink to="/dashboard" className="flex items-center gap-3 hover:bg-[#C1D0F5]  text-[#414141] px-5 py-3 rounded-md">
+            <NavLink to="/voter/dashboard" className="flex items-center gap-3 hover:bg-[#C1D0F5]  text-[#414141] px-5 py-3 rounded-md">
               <HiHome size={25} className="text-[#4C7CE5] voter-icon" />
               <h2 className="pop-medium">Home</h2>
             </NavLink>
-            <NavLink to="/cast-vote" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
+            <NavLink to="/voter/cast-vote" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
               <FaVoteYea size={25} className="text-[#4C7CE5] voter-icon"/>
               <h2 className="pop-medium">Cast Vote</h2>
             </NavLink>
-            <NavLink to="/election-history" className="flex items-center gap-3 hover:bg-[#C1D0F5]  text-[#414141] px-5 py-3 rounded-md">
+            <NavLink to="/voter/election-history" className="flex items-center gap-3 hover:bg-[#C1D0F5]  text-[#414141] px-5 py-3 rounded-md">
               <RiHistoryLine size={25} className="text-[#4C7CE5] voter-icon"/>
               <h2 className="pop-medium">Election History</h2>
             </NavLink>
-            <NavLink to="/developers" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
+            <NavLink to="/voter/developers" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
               <HiUserGroup size={25} className="text-[#4C7CE5] voter-icon"/>
               <h2 className="pop-medium">Developers</h2>
             </NavLink>
-            <NavLink to="/privacy-policy" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
+            <NavLink to="/voter/privacy-policy" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
               <BsShieldLockFill size={25} className="text-[#4C7CE5] voter-icon"/>
               <h2 className="pop-medium">Privacy Policy</h2>
             </NavLink>
-            <NavLink to="/settings" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
+            <NavLink to="/voter/settings" className="flex items-center gap-3 hover:bg-[#C1D0F5] text-[#414141] px-5 py-3 rounded-md">
               <RiSettings2Fill size={25} className="text-[#4C7CE5] voter-icon"/>
               <h2 className="pop-medium">Settings</h2>
             </NavLink>

@@ -1,7 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
+import Landing from './pages/Landing'
 import Login from './pages/Login'
+import FPassword from './pages/FPassword'
+import Register from './pages/Register'
+import MVerification from './pages/MVerification'
+import CPin from './pages/CPin'
 import AdminDashboard from './pages/AdminDashboard'
 import NotFound from './pages/NotFound'
 import Home from './pages/adminsubpages/Home'
@@ -29,6 +34,10 @@ const router = createBrowserRouter([
     children: [
       {
         path: '',
+        element: <Landing />,
+      },
+      {
+        path: 'voter',
         element: <VoterDashboard />,
         children: [
           {
@@ -92,6 +101,22 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />
+      },
+      {
+        path: "forgot-password",
+        element: <FPassword />
+      },
+      {
+        path: "register",
+        element: <Register />
+      },
+      {
+        path: "mobile-verification",
+        element: <MVerification />
+      },
+      {
+        path: "create-pin",
+        element: <CPin />
       },
       {
         path: "*",

@@ -34,7 +34,7 @@ export default function Login() {
       if (res.data.role === 'admin') {
         navigate(from, {replace: true});
       }else if (res.data.role === 'user') {
-        navigate('/dashboard');
+        navigate('/voter/dashboard');
       }
       else {
         console.log("Here Login function");
