@@ -73,7 +73,7 @@ export default function Register() {
       //console.log(resId.data)
       //console.log(resNum.data)
       setIsLoading(false)
-      navigate('/verify-number', {replace: true})
+      navigate('/mobile-verification', {replace: true})
 
     } catch (err: any) {
         //console.log(err)
