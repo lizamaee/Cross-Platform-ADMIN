@@ -128,42 +128,42 @@ export default function Register() {
           <div className="flex flex-col px-5">
             {/* PASSWORD */}
             <label className="pop-regular opacity-80 text-sm">Password (required)</label>
-            <div className="pb-2">
+            <div className="flex rounded-lg bg-[#E5E0FF] w-full border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a]">
               <input
-                className="bg-[#E5E0FF] w-full px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
+                className="grow pl-4 py-3 text-black text-md pop-medium outline-none  dark:text-white tracking-wider bg-transparent"
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
                 placeholder="••••••••"
                 required
               />
               <button
-                className="text-sm font-bold absolute -translate-x-10 translate-y-4"
+                className="flex justify-center items-center text-sm font-bold w-14"
                 type="button"
                 onClick={handlePasswordToggle}
               >
                 {showPassword ? <FaEyeSlash size={23}/> : <FaEye size={23}/>}
               </button>
-              {errors.password && <span className="text-red-400 text-center text-sm w-[100%]">{errors.password.message}</span>}
             </div>
+            {errors.password && <span className="text-red-400 text-center text-sm w-[100%]">{errors.password.message}</span>}
             {/* CONFIRM PASSWORD */}
             <label className="pop-regular opacity-80 text-sm">Confirm Password (required)</label>
-            <div className="pb-2">
+            <div className="flex rounded-lg bg-[#E5E0FF] w-full border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a]">
               <input
-                className="bg-[#E5E0FF] w-full px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
+                className="grow pl-4 py-3 text-black text-md pop-medium outline-none  dark:text-white tracking-wider bg-transparent"
                 type={showSamePassword ? "text" : "password"}
                 {...register("confirmPassword")}
                 placeholder="••••••••"
                 required
               />
               <button
-                className="text-sm font-bold absolute -translate-x-10 translate-y-4"
+                className="flex justify-center items-center text-sm font-bold w-14"
                 type="button"
                 onClick={handlePasswordToggleSame}
               >
                 {showSamePassword ? <FaEyeSlash size={23}/> : <FaEye size={23}/>}
               </button>
-              {errors.confirmPassword && <span className="text-red-400 text-center text-sm">{errors.confirmPassword.message}</span>}
             </div>
+            {errors.confirmPassword && <span className="text-red-400 text-center text-sm">{errors.confirmPassword.message}</span>}
             {/* MOBILE NUMBER */}
             <label className="pop-regular opacity-80 text-sm">Mobile Number (required)</label>
             <input
