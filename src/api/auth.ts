@@ -38,3 +38,17 @@ export const confirmNumberSendOTP = async (new_number: string) => {
     throw err;
   }
 }
+export const confirmNumberVerifyOTP = async (mobile_number: string, otp_code: string) => {
+  try {
+    const res = await axios.post('http://localhost:3000/otp/verify', 
+    JSON.stringify({ mobile_number, otp_code }),
+    {
+      headers: { "Content-Type": "application/json"},
+      withCredentials: true
+    }
+    );
+    return res;
+  } catch (err) {
+    throw err;
+  }
+}
