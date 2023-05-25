@@ -1,6 +1,6 @@
 import { MdOutlineHowToVote } from 'react-icons/md'
 import { IoMenu,IoClose } from 'react-icons/io5'
-import VBallot from '../assets/votingphoto.svg'
+import {ReactComponent as VBallot} from '../assets/votingphoto.svg'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 
@@ -43,8 +43,8 @@ export default function Landing() {
       {/* BODY */}
       <div className="body-content text-gray-200 w-full grid items-center grid-rows-2 md:grid-rows-1 md:grid-cols-2 pt-5 md:pt-20 px-8 md:px-10">
         
-        <div className="setion-two md:order-2 flex justify-center">
-          <img src={VBallot} alt="" className='h-40 md:h-96 drop-shadow-2xl'/>
+        <div className="setion-two md:order-2 flex justify-center h-40 md:h-96">
+          <VBallot className='h-full w-full drop-shadow-2xl'/>
         </div>
 
         <div className="section-one md:pt-16 md:pl-5 lg:pr-40">
