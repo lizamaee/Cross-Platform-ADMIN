@@ -19,6 +19,7 @@ export default function Dashboard() {
 
   async function handleLogout(){
     await logout()
+    localStorage.removeItem('student_id')
     console.log("Logged out")
     navigate("/login", {replace: true})
   }

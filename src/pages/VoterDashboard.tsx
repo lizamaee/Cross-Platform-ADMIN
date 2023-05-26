@@ -18,6 +18,7 @@ export default function VoterDashboard() {
 
   async function handleLogout(){
     await logout()
+    localStorage.removeItem('student_id')
     console.log("Logged out")
     navigate("/login", {replace: true})
   }

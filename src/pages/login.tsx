@@ -19,7 +19,7 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
-  const { setToken,setStudentID } = useAuthStore((state) => state);
+  const { setToken } = useAuthStore((state) => state);
   const navigate = useNavigate();
   const location = useLocation()
   const from = location.state?.from?.pathname || ""
@@ -33,8 +33,7 @@ export default function Login() {
   const {register, handleSubmit, formState:{errors}} = useForm<LoginFormData>({resolver: zodResolver(schema)})
 
   const handleLogin = async (data: LoginFormData) => {
-    //console.log(username, password);
-    setStudentID(data.student_id)
+    localStorage.setItem('student_id', JSON.stringify(data.student_id))
     setIsLoading(true)
     try {
         const respo = await loginadmin(data.student_id, data.password)
