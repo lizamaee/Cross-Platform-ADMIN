@@ -57,7 +57,10 @@ export default function MVerification() {
       setIsVerifying(false)
     }else{
       try {
-        const res = await confirmNumberVerifyOTP(tempMobileNumber, otp)
+        const philNum = tempMobileNumber.slice(1)
+        const validNum = `+63${philNum}`
+        
+        const res = await confirmNumberVerifyOTP(validNum, otp)
 
         if(res.data?.check_status.status === "approved"){
           setIsVerifying(false)
@@ -110,7 +113,9 @@ export default function MVerification() {
   const handleResend = async () => {
     try {
       setIsResending(true)
-      await confirmNumberSendOTP(tempMobileNumber).then(() => {
+      const philNum = tempMobileNumber.slice(1)
+      const validNum = `+63${philNum}`
+      await confirmNumberSendOTP(validNum).then(() => {
         message.success('OTP Resent')
         setIsResending(false)
         setCountdown(60);
@@ -170,7 +175,7 @@ export default function MVerification() {
       const philFormat = data.mobile_number.slice(1)
       const resNum = await confirmNumberSendOTP(`+63${philFormat}`)
 
-      useAuthStore.setState({ tempMobileNumber: `+63${philFormat}` })
+      useAuthStore.setState({ tempMobileNumber: data.mobile_number });
       setConfirmLoading(false);
       setOpenModal(false);
       message.success('OTP Sent')

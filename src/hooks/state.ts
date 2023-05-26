@@ -3,7 +3,7 @@ import { create } from "zustand"
 type AuthState = {
     isAuthenticated: boolean;
     token: string | null;
-    student_id: string | null;
+    student_id: string;
     setToken: (token: {}) => void;
     setStudentID: (id: string) => void;
     isNight: boolean;

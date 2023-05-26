@@ -66,7 +66,7 @@ export default function Register() {
           }).then(() => message.success("Happy Registrations :)", 2.5))
         })
 
-      useAuthStore.setState({ tempMobileNumber: `+63${philFormat}` })
+      useAuthStore.setState({ tempMobileNumber: data.mobile_number })
       useAuthStore.setState({ tempPassword: data.password })
       useAuthStore.setState({ student_id: data.student_id })
 

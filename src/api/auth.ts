@@ -52,3 +52,19 @@ export const confirmNumberVerifyOTP = async (mobile_number: string, otp_code: st
     throw err;
   }
 }
+
+export const registerUser = async (student_id: string, password: string, pin_number: string, mobile_number: string) => {
+
+  try {
+    const res = await axios.post('http://localhost:3000/register', 
+    JSON.stringify({ student_id, password, pin_number, mobile_number}),
+    {
+      headers: { "Content-Type": "application/json"},
+      withCredentials: true
+    })
+    return res
+  } catch (err) {
+    throw err;
+  }
+
+}

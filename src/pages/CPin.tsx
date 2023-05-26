@@ -4,6 +4,10 @@ import { useForm } from "react-hook-form";
 import { BsFillShieldLockFill } from "react-icons/bs";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { ZodType, z } from "zod";
+import { registerUser } from "../api/auth";
+import { useAuthStore } from "../hooks/state";
+import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 
 type PinFormData = {
   pin_code: string;
@@ -14,6 +18,8 @@ export default function CPin() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [showPin, setShowPin] = useState(false);
   const [showConfirmPin, setShowConfrimPin] = useState(false);
+  const {tempPassword, tempMobileNumber, student_id} = useAuthStore((state) => state)
+  const navigate = useNavigate()
 
   const handleShowPin = () => setShowPin(!showPin);
   const handleShowConfrimPin = () => setShowConfrimPin(!showConfirmPin);
@@ -42,8 +48,55 @@ export default function CPin() {
     formState: { errors },
   } = useForm<PinFormData>({ resolver: zodResolver(schema) });
 
-  const handleConfirm = (data: PinFormData) => {
-    console.log(data.pin_code);
+  const handleConfirm = async (data: PinFormData) => {
+    try {
+      setIsConfirming(true)
+      const response = await registerUser(student_id, tempPassword, data.pin_code, tempMobileNumber)
+
+      if(response.data.message === 'success'){
+        message.success('Registered Successfully :)')
+        setIsConfirming(false)
+        useAuthStore.setState({tempPassword: ''})
+        useAuthStore.setState({tempMobileNumber: ''})
+        navigate('/login', {replace: true})
+      }else{
+        setIsConfirming(false)
+        message.open({
+          type: 'warning',
+          content: `${response.data.message}`,
+          className: 'custom-class pop-medium',
+          duration: 2.5,
+        });
+      }
+      
+    } catch (error:any) {
+      setIsConfirming(false)
+      if (error.message === 'Network Error') {
+        message.open({
+          type: 'error',
+          content: 'Server Unavailable',
+          className: 'custom-class pop-medium',
+          duration: 2.5,
+        });
+      } else if(error.response.data.error){
+        message.open({
+          type: 'error',
+          content: `${error.response.data.error}`,
+          className: 'custom-class pop-medium',
+          duration: 2.5,
+        });
+      }else {
+        // Handle other errors
+        error.response.data.errors?.map((err:any) => {
+          message.open({
+            type: 'error',
+            content: `${err.msg}`,
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          })
+        })
+      }
+    }
   };
 
   return (
