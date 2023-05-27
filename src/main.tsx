@@ -7,6 +7,7 @@ import FPassword from './pages/FPassword'
 import Register from './pages/Register'
 import MVerification from './pages/MVerification'
 import CPin from './pages/CPin'
+import EPin from './pages/EPin'
 import AdminDashboard from './pages/AdminDashboard'
 import NotFound from './pages/NotFound'
 import Home from './pages/adminsubpages/Home'
@@ -101,6 +102,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />
+      },
+      {
+        path: "enter-pin",
+        element: <EPin />
       },
       {
         path: "forgot-password",
