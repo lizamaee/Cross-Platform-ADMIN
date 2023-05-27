@@ -16,13 +16,11 @@ type LoginFormData = {
 }
 
 export default function Login() {
-  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
   const { setToken } = useAuthStore((state) => state);
   const navigate = useNavigate();
   const location = useLocation()
-  const from = location.state?.from?.pathname || ""
 
   const schema: ZodType<LoginFormData> = z.object({
     student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7),
@@ -33,36 +31,51 @@ export default function Login() {
   const {register, handleSubmit, formState:{errors}} = useForm<LoginFormData>({resolver: zodResolver(schema)})
 
   const handleLogin = async (data: LoginFormData) => {
-    localStorage.setItem('student_id', JSON.stringify(data.student_id))
     setIsLoading(true)
     try {
         const respo = await loginadmin(data.student_id, data.password)
-          
         setIsLoading(false)
-        setToken(respo.data)
-        message.success("Welcome :)", 2.5)
-        //console.log(respo.data.role);
-        //navigate to dashboard
-        if (respo.data.role === 'admin') {
-          navigate(from, {replace: true});
-        }else if (respo.data.role === 'user') {
-          navigate('/voter/dashboard');
-        }
-        else {
-          console.log("Here Login function");
-        }
-        console.log("Login Successfully"); 
 
-    } catch (err: any) {
-        //console.log(err) 
-        if(err.message === "Network Error"){
-          setIsLoading(false)
-          setError(err.message)
+        if(respo.data.message === 'success') {
+          useAuthStore.setState({tempPin: respo.data.pin})
+          useAuthStore.setState({student_id: data.student_id})
+          useAuthStore.setState({tempPassword: data.password})
+          navigate('/enter-pin')
+          message.success("Please Enter Your PIN code :)", 2.5)
         }else{
-          setIsLoading(false)
-          //console.log(err.response);
-          setError(err.response.data.message);
-        }  
+          console.log(respo.data);
+          
+        }
+
+    } catch (error: any) {
+        setIsLoading(false)
+        //console.log(error.response);
+        
+        if (error.message === 'Network Error') {
+          message.open({
+            type: 'error',
+            content: 'Server Unavailable',
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        } else if(error.response.data?.message){
+          message.open({
+            type: 'error',
+            content: `${error.response.data.message}`,
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        }else {
+          // Handle other errors
+          error.response.data.errors?.map((err:any) => {
+            message.open({
+              type: 'error',
+              content: `${err.msg}`,
+              className: 'custom-class pop-medium',
+              duration: 2.5,
+            })
+          })
+        }
     }
   };
 
@@ -82,7 +95,7 @@ export default function Login() {
             <h2 className="text-3xl py-6 md:py-3 text-center font-sans pop-bold text-[#4C7CE5] dark:text-white tracking-widest">Login</h2>
             <label className="pop-regular opacity-80 text-sm">Student ID</label>
             <input
-              className="bg-[#E5E0FF] px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
+              className="bg-[#E5E0FF] px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider focus:bg-transparent"
               type="text"
               {...register("student_id")}
               placeholder="ex. 1234567"
@@ -115,22 +128,15 @@ export default function Login() {
           </div>
         </div>
         <div className="flex items-center flex-col px-5">
-          {error ? (
-            <div className="text-red-400 text-center px-5 py-3 break-words">
-              {error}
-            </div>
-          ) : (
-            ""
-          )}
           {isLoading ? (<button
-            className="text-center text-white px-4 py-3 rounded-lg w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
+            className="text-center text-white px-4 py-3 rounded-lg md:mt-5 w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
             type="submit"
           >
             Loading...
           </button>)
           :
           (<button
-            className="text-center text-white px-4 py-3 rounded-lg w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
+            className="text-center text-white px-4 py-3 rounded-lg md:mt-5 w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
             type="submit"
           >
             Login

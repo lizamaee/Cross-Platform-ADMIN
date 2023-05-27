@@ -17,6 +17,7 @@ export default function useRefreshToken() {
     } 
     
     setToken(response.data)
+    useAuthStore.setState({student_id: response.data.student_id});
     //console.log(response.data);
 
     return response.data.accessToken
