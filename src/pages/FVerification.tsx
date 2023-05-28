@@ -4,7 +4,7 @@ import otpImage from '../images/otp.png'
 import { confirmNumberSendOTP, confirmNumberVerifyOTP } from '../api/auth';
 import { useAuthStore } from '../hooks/state';
 import { useNavigate } from 'react-router-dom';
-import { message, Popover,Button, Modal  } from 'antd';
+import { message, Popover, Modal, Button  } from 'antd';
 import {TbInfoSquareRoundedFilled} from 'react-icons/tb'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -14,7 +14,7 @@ type MobileFormData = {
   mobile_number: string;
 }
 
-export default function MVerification() {
+export default function FVerification() {
   const [otp, setOtp] = useState('');
   const {tempMobileNumber} = useAuthStore((state) => state)
   const navigate = useNavigate()
@@ -24,11 +24,8 @@ export default function MVerification() {
   const [isCoundownDone, setIsCountdownDone] = useState(true)
   const [open, setOpen] = useState(false);
   const [openAtNumber, setOpenAtNumber] = useState(false);
-  
   const [openModal, setOpenModal] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState('Content of the modal')
-
+  const [confirmLoading, setConfirmLoading] = useState(false)
   const targetRef = useRef(null)
 
 
@@ -65,7 +62,7 @@ export default function MVerification() {
         if(res.data?.check_status.status === "approved"){
           setIsVerifying(false)
           message.success('OTP Confirmed!')
-          navigate('/create-pin', {replace: true})
+          navigate('/reset-password', {replace: true})
         }else{
           setIsVerifying(false)
           message.open({
@@ -178,6 +175,7 @@ export default function MVerification() {
       useAuthStore.setState({ tempMobileNumber: data.mobile_number });
       setConfirmLoading(false);
       setOpenModal(false);
+      setOpenAtNumber(false)
       message.success('OTP Sent')
       setCountdown(60);
       
@@ -214,13 +212,11 @@ export default function MVerification() {
 
   }
 
-
   const showModal = () => {
     setOpenModal(true);
   };
 
   const handleCancel = () => {
-    console.log('Clicked cancel button');
     setOpenModal(false);
   };
 
@@ -233,7 +229,11 @@ export default function MVerification() {
       
       <div className="otp-wrapper flex flex-col items-center px-10">
         <div className="otp">
-          <h2 className='text-[#4C7CE5] text-lg md:text-2xl pb-10 md:pb-20 text-center pop-bold'>Have you recieved a verification code?</h2>
+          <h2 className='text-[#4C7CE5] text-lg md:text-2xl pb-5 text-center pop-bold'>OTP Verification</h2>
+          <div className='text-gray-900 text-center dark:text-gray-500 pop-semibold pb-10 md:pb-18'>
+            Enter OTP sent to
+            <span className='dark:text-gray-400 px-3'>{`#${tempMobileNumber}`}</span>
+          </div>
           <div className="subheading-input flex justify-between items-center">
             <h3 className='text-[#3F3D56] dark:text-gray-400 pop-light text-sm py-3'>Enter 6 digits code</h3>
             
@@ -319,7 +319,7 @@ export default function MVerification() {
           <div className="verify-wrapper flex justify-center">
             {!isVerifying
               ? <button onClick={handlerVerify} className='py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
-              : <button onClick={handlerVerify} className='py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
+              : <button className='py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
             }
           </div>
         </div>
