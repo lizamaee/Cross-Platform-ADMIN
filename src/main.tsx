@@ -26,6 +26,7 @@ import EHistory from './pages/votersubpages/EHistory'
 import Developers from './pages/votersubpages/Developers'
 import PPolicy from './pages/votersubpages/PPolicy'
 import VSettings from './pages/votersubpages/VSettings'
+import FVerification from './pages/FVerification'
 
 
 const router = createBrowserRouter([
@@ -110,6 +111,10 @@ const router = createBrowserRouter([
       {
         path: "forgot-password",
         element: <FPassword />
+      },
+      {
+        path: "forgot-password-verify",
+        element: <FVerification />
       },
       {
         path: "register",

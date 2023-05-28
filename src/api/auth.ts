@@ -28,6 +28,14 @@ export const loginFinaly = async (student_id: string, password: string) => {
     throw err;
   }
 };
+export const forgotPasswordSendOTP = async (mobile_number: string) => {
+  try {
+    const res = await axios.get('http://localhost:3000/forgot-password-send',{params:{ mobile_number} })
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
 
 export const checkStudentID = async (student_id: string) => {
   try {

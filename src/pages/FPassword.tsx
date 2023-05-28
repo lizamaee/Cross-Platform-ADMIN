@@ -4,14 +4,19 @@ import { ZodType, z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { TbSquareRoundedArrowLeft } from 'react-icons/tb';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { forgotPasswordSendOTP } from '../api/auth';
+import { message } from 'antd';
+import { useAuthStore } from '../hooks/state';
 
 type NumberFormData = {
   mobile_number: string;
 }
 
 export default function FPassword() {
-  const [isProcessing, seIsProcessing] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  const navigate = useNavigate()
 
   const schema: ZodType<NumberFormData> = z.object({
     mobile_number: z.string().regex(/^09\d{9}$/, {message: "Mobile number must be a valid PH Mobile Number",
@@ -22,7 +27,52 @@ export default function FPassword() {
   const {register, handleSubmit, formState:{errors}} = useForm<NumberFormData>({resolver: zodResolver(schema)})
 
   const handleNext = async (data: NumberFormData) => {
-    console.log(data.mobile_number);
+    try {
+      setIsProcessing(true)
+      const philFormat = data.mobile_number.slice(1)
+      const validNumber = `+63${philFormat}`
+      
+      const res = await forgotPasswordSendOTP(validNumber) 
+      //console.log(res.data);
+
+      if(res.data.message === 'success') {
+        setIsProcessing(false)
+        message.success("Please confirm the OTP for verification :)", 2.5)
+        useAuthStore.setState({ tempMobileNumber: data.mobile_number })
+        navigate('/forgot-password-verify', {replace: true})
+      }else{
+        setIsProcessing(false)
+        message.success(`${res.data.message}`, 2.5)
+      }
+    } catch (error: any) {
+        //console.log(err)
+        setIsProcessing(false)
+        if (error.message === 'Network Error') {
+          message.open({
+            type: 'error',
+            content: 'Server Unavailable',
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        } else if(error.response.data.error){
+          message.open({
+            type: 'error',
+            content: `${error.response.data.error}`,
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        }else {
+          // Handle other errors
+          error.response.data.errors?.map((err:any) => {
+            message.open({
+              type: 'error',
+              content: `${err.msg}`,
+              className: 'custom-class pop-medium',
+              duration: 2.5,
+            })
+          })
+        }
+    }
   }
 
   return (
@@ -33,7 +83,7 @@ export default function FPassword() {
       <div className="label-for-number flex items-center flex-col md:w-[70%] py-5">
         <Recoverpass className='h-40 drop-shadow-xl'/>
       </div>
-      <form onClick={handleSubmit(handleNext)} className='flex flex-col md:px-36 md:w-[80%] lg:w-[60%] px-5' >
+      <form className='flex flex-col md:px-36 md:w-[80%] lg:w-[60%] px-5' >
         <h2 className='text-[#4C7CE5] text-lg md:text-xl pb-10 md:pb-18 text-center pop-bold'>Provide the details below to begin the process</h2>
         <label className="pop-regular text-gray-400 py-3">Mobile Number</label>
         <input
@@ -48,7 +98,7 @@ export default function FPassword() {
         {errors.mobile_number && <span className="text-red-400 text-center text-sm">{errors.mobile_number.message}</span>}
         <div className="verify-wrapper flex w-full justify-center">
             {!isProcessing ? (
-              <button
+              <button onClick={handleSubmit(handleNext)}
                 type="submit"
                 className="py-3 flex-1 px-20 mt-10 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
               >
