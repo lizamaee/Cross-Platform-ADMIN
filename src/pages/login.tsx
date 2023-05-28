@@ -131,6 +131,7 @@ export default function Login() {
           {isLoading ? (<button
             className="text-center text-white px-4 py-3 rounded-lg md:mt-5 w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
             type="submit"
+            disabled={isLoading ? true : false}
           >
             Loading...
           </button>)
@@ -138,6 +139,7 @@ export default function Login() {
           (<button
             className="text-center text-white px-4 py-3 rounded-lg md:mt-5 w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
             type="submit"
+            disabled={isLoading ? true : false}
           >
             Login
           </button>)}

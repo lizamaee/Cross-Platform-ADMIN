@@ -188,7 +188,7 @@ export default function Register() {
           )}
           {isLoading ? (<button
             className="text-center text-white mt-2 px-4 py-3 rounded-lg w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
-            type="submit"
+            disabled={isLoading}
           >
             Loading...
           </button>)
@@ -196,6 +196,7 @@ export default function Register() {
           (<button
             className="text-center text-white mt-2 px-4 py-3 rounded-lg w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
             type="submit"
+            disabled={isLoading}
           >
             Register
           </button>)}

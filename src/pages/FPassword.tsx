@@ -100,13 +100,14 @@ export default function FPassword() {
             {!isProcessing ? (
               <button onClick={handleSubmit(handleNext)}
                 type="submit"
+                disabled={isProcessing}
                 className="py-3 flex-1 px-20 mt-10 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
               >
                 Next
               </button>
             ) : (
               <button
-                type="submit"
+                disabled={isProcessing}
                 className="py-3 flex-1 px-20 mt-10 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
               >
                 Loading...

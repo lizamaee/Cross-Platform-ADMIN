@@ -304,7 +304,7 @@ export default function MVerification() {
                 {errors.mobile_number && <span className="md:w-[70%] text-red-400 text-center text-xs md:text-sm">{errors.mobile_number.message}</span>}
 
                 {!confirmLoading
-                    ? <button onClick={handleSubmit(handleChangeNumber)} className='md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Confirm</button>
+                    ? <button onClick={handleSubmit(handleChangeNumber)} disabled={countdown > 0} className={`md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5] ${countdown > 0 ? 'cursor-not-allowed': ''}`}>Confirm</button>
                     : <button className='md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Confirming...</button>
                 }
               </form>
@@ -319,7 +319,7 @@ export default function MVerification() {
           <div className="verify-wrapper flex justify-center">
             {!isVerifying
               ? <button onClick={handlerVerify} className='py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
-              : <button onClick={handlerVerify} className='py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
+              : <button className='py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
             }
           </div>
         </div>
