@@ -220,7 +220,6 @@ export default function MVerification() {
   };
 
   const handleCancel = () => {
-    console.log('Clicked cancel button');
     setOpenModal(false);
   };
 
@@ -304,16 +303,16 @@ export default function MVerification() {
                 {errors.mobile_number && <span className="md:w-[70%] text-red-400 text-center text-xs md:text-sm">{errors.mobile_number.message}</span>}
 
                 {!confirmLoading
-                    ? <button onClick={handleSubmit(handleChangeNumber)} disabled={countdown > 0} className={`md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5] ${countdown > 0 ? 'cursor-not-allowed': ''}`}>Confirm</button>
-                    : <button className='md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Confirming...</button>
+                    ? <button onClick={handleSubmit(handleChangeNumber)} disabled={countdown > 0 || confirmLoading} className={`md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5] ${countdown > 0 ? 'cursor-not-allowed': ''}`}>Confirm</button>
+                    : <button className='md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]' disabled={countdown > 0 || confirmLoading}>Confirming...</button>
                 }
               </form>
             </Modal>
             {!isResending 
               ? countdown > 0 
-                  ? <button disabled={isCoundownDone} className={`py-5 ${countdown > 0 ? 'opacity-50' : ''}`} onClick={handleResend}>Resend code({countdown})</button>
+                  ? <button disabled={isCoundownDone || isResending} className={`py-5 ${countdown > 0 ? 'opacity-50' : ''}`} >Resend code({countdown})</button>
                   : <button className='py-5' onClick={handleResend}>Resend code</button>
-              : <button className='py-5' onClick={handleResend}>Resending code...</button>
+              : <button className={`py-5 ${isResending ? 'opacity-50' : ''}`}>Resending code...</button>
             }
           </div>
           <div className="verify-wrapper flex justify-center">

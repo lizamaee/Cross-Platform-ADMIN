@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {ReactComponent as Recoverpass} from '../assets/recoverpass.svg'
 import { ZodType, z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,6 +22,39 @@ export default function FPassword() {
   };
 
   const navigate = useNavigate()
+
+
+
+  const [tries, setTries] = useState(1);
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [mistakes, setMistakes] = useState(1);
+  const [life, setLife] = useState(5)
+
+
+  let interval: number;
+  useEffect(() => {
+    if (timeRemaining > 0) {
+      interval = setInterval(() => {
+        setTimeRemaining((prevTime) => prevTime - 1);
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [timeRemaining, tries]);
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  };
+
+
+
+
+
+
+
 
   const schema: ZodType<NumberFormData> = z.object({
     mobile_number: z.string().regex(/^09\d{9}$/, {message: "Mobile number must be a valid PH Mobile Number",
@@ -60,14 +93,40 @@ export default function FPassword() {
             duration: 2.5,
           });
         } else if(error.response.data.error){
+            if(error.response.data.error === 'No Student with that Number'){
+              setTries(tries + 1);
+              setLife(life - 1)
+              if (tries === 5) {
+                  setMistakes(mistakes + 1)
+                  if(mistakes > 0){
+                  console.log("here", mistakes);
+                  
+                  setTries(1) //this should be global state in zustand
+                  setTimeRemaining(60 * 5); 
+                  setLife(5)
+                  }else{
+                  setTries(1) //this should be global state in zustand
+                  setTimeRemaining(0);
+                  setLife(5)
+                  }
+              }else{
+                message.open({
+                  type: 'error',
+                  content: `${error.response.data.error}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                });
+              }
+            }
+        }else if(error.response.data){
           message.open({
             type: 'error',
-            content: `${error.response.data.error}`,
+            content: `${error.response.data}`,
             className: 'custom-class pop-medium',
             duration: 2.5,
-          });
+          })
+
         }else {
-          // Handle other errors
           error.response.data.errors?.map((err:any) => {
             message.open({
               type: 'error',
@@ -94,7 +153,7 @@ export default function FPassword() {
                   <label className="pop-medium text-gray-600 flex-1 opacity-80 text-sm md:text-md">Mobile Number</label>
                   <Popover
                     content={<div>
-                      <p>A 10-Minute Pause after 5 same number consecutive changes</p>
+                      <p>A 5-Minute Pause after 5 requests</p>
                       </div>}
                     title="Optimizing Security Measures"
                     open={openAtNumber}
@@ -116,18 +175,23 @@ export default function FPassword() {
           required
         />
         {errors.mobile_number && <span className="text-red-400 text-center text-sm">{errors.mobile_number.message}</span>}
+        {timeRemaining > 0 && (
+            <div className='text-sm text-center text-red-500 pt-5'>
+                Please wait {formatTime(timeRemaining)} before trying again.
+            </div>
+            )}
         <div className="verify-wrapper flex w-full justify-center">
             {!isProcessing ? (
               <button onClick={handleSubmit(handleNext)}
                 type="submit"
-                disabled={isProcessing}
+                disabled={isProcessing || timeRemaining > 0}
                 className="py-3 flex-1 px-20 mt-10 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
               >
                 Next
               </button>
             ) : (
               <button
-                disabled={isProcessing}
+                disabled={isProcessing || timeRemaining > 0}
                 className="py-3 flex-1 px-20 mt-10 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
               >
                 Loading...

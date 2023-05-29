@@ -169,14 +169,14 @@ export default function CPin() {
               <button
                 type="submit"
                 disabled={isConfirming}
-                className="py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
+                className=" w-full py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
               >
                 Confirm
               </button>
             ) : (
               <button
                 disabled={isConfirming}
-                className="py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
+                className=" w-full py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
               >
                 Confirming...
               </button>
