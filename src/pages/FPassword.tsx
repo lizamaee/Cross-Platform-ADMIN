@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {ReactComponent as Recoverpass} from '../assets/recoverpass.svg'
 import { ZodType, z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { TbSquareRoundedArrowLeft } from 'react-icons/tb';
+import { TbInfoSquareRoundedFilled, TbSquareRoundedArrowLeft } from 'react-icons/tb';
 import { Link, useNavigate } from 'react-router-dom';
 import { forgotPasswordSendOTP } from '../api/auth';
-import { message } from 'antd';
+import { Popover, message } from 'antd';
 import { useAuthStore } from '../hooks/state';
 
 type NumberFormData = {
@@ -15,6 +15,11 @@ type NumberFormData = {
 
 export default function FPassword() {
   const [isProcessing, setIsProcessing] = useState(false)
+  const targetRef = useRef(null)
+  const [openAtNumber, setOpenAtNumber] = useState(false);
+  const handleOpenChangeAtNumber = (newOpen: boolean) => {
+    setOpenAtNumber(newOpen);
+  };
 
   const navigate = useNavigate()
 
@@ -85,9 +90,24 @@ export default function FPassword() {
       </div>
       <form className='flex flex-col md:px-36 md:w-[80%] lg:w-[60%] px-5' >
         <h2 className='text-[#4C7CE5] text-lg md:text-xl pb-10 md:pb-18 text-center pop-bold'>Provide the details below to begin the process</h2>
-        <label className="pop-regular text-gray-400 py-3">Mobile Number</label>
+        <div className="label-for-change-number items-center flex py-1">
+                  <label className="pop-medium text-gray-600 flex-1 opacity-80 text-sm md:text-md">Mobile Number</label>
+                  <Popover
+                    content={<div>
+                      <p>A 10-Minute Pause after 5 same number consecutive changes</p>
+                      </div>}
+                    title="Optimizing Security Measures"
+                    open={openAtNumber}
+                    onOpenChange={handleOpenChangeAtNumber}
+                  >
+                    <span ref={targetRef}>
+                      <TbInfoSquareRoundedFilled size={22} className='text-[#4C7CE5] p1'/>
+                    </span>
+                  </Popover>
+                </div>
+        
         <input
-          className="bg-[#E5E0FF] px-4 py-3 mb-2 rounded-lg text-black dark:text-gray-300 text-md md:text-lg pop-medium outline-none  border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] tracking-wider"
+          className="bg-[#E5E0FF]  px-4 py-3 mb-2 rounded-lg text-black dark:text-gray-300 text-md md:text-lg pop-medium outline-none border-2  border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] tracking-wider"
           type="text"
           {...register("mobile_number")}
           placeholder="ex. 09123456789"

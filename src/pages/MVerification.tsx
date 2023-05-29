@@ -318,8 +318,8 @@ export default function MVerification() {
           </div>
           <div className="verify-wrapper flex justify-center">
             {!isVerifying
-              ? <button onClick={handlerVerify} className='py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
-              : <button className='py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
+              ? <button onClick={handlerVerify} className='w-full py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
+              : <button className='w-full py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
             }
           </div>
         </div>

@@ -155,8 +155,8 @@ export default function EPin() {
 
           <div className="login-wrapper flex justify-center">
             {!isLoggingIn
-              ? <button disabled={timeRemaining > 0 || isLoggingIn} onClick={handleLogIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} py-3 px-20 mt-14 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Login</button>
-              : <button disabled={timeRemaining > 0 || isLoggingIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} py-3 px-20 mt-14 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Logging in...</button>
+              ? <button disabled={timeRemaining > 0 || isLoggingIn} onClick={handleLogIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} w-full py-3 px-20 mt-14 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Login</button>
+              : <button disabled={timeRemaining > 0 || isLoggingIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} w-full py-3 px-20 mt-14 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Logging in...</button>
             }
           </div>
         </div>
