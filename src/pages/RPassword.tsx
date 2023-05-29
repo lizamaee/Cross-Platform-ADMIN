@@ -4,6 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from 'react';
 import { FaEyeSlash,FaEye } from 'react-icons/fa';
 import {ReactComponent as Newpass} from '../assets/newpass.svg'
+import { forgotPassword } from '../api/auth';
+import { useAuthStore } from '../hooks/state';
+import { message } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 type ResetPasswortForm = {
     password: string;
@@ -14,6 +18,8 @@ export default function RPassword() {
     const [isConfirming, setIsConfirming] = useState(false)
     const [showPassword, setShowPassword] = useState(false);
     const [showSamePassword, setShowSamePassword] = useState(false);
+    const {tempMobileNumber} = useAuthStore((state)=> state)
+    const navigate = useNavigate()
 
     const schema: ZodType<ResetPasswortForm> = z.object({
     password: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/, {
@@ -35,9 +41,58 @@ export default function RPassword() {
     setShowSamePassword(!showSamePassword);
     };
 
-    const handleConfirm = (data: ResetPasswortForm) => {
+    const handleConfirm = async (data: ResetPasswortForm) => {
         console.log(data.password);
+        console.log(tempMobileNumber);
+        
+        try {
+          setIsConfirming(true)
+          
+          const res = await forgotPassword(tempMobileNumber,data.password) 
+          //console.log(res.data);
+    
+          if(res.data.message === 'Password Updated!') {
+            setIsConfirming(false)
+            message.success("Password reset Successfully :)", 2.5)
+            useAuthStore.setState({ tempMobileNumber: ''})
+            navigate('/login', {replace: true})
+          }else{
+            setIsConfirming(false)
+            message.success(`${res.data.message}`, 2.5)
+          }
+        } catch (error: any) {
+            //console.log(err)
+            setIsConfirming(false)
+            if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            }
+        }
+
     }
+
+
 
   return (
     <div className="flex justify-center">

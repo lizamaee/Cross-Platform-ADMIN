@@ -36,6 +36,14 @@ export const forgotPasswordSendOTP = async (mobile_number: string) => {
     throw err;
   }
 };
+export const forgotPassword = async (mobile_number: string, new_password: string) => {
+  try {
+    const res = await axios.patch('http://localhost:3000/forgot-password',{ mobile_number, new_password})
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
 
 export const checkStudentID = async (student_id: string) => {
   try {
