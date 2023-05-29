@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import OtpInput from 'react-otp-input';
 import otpImage from '../images/otp.png'
-import { confirmNumberSendOTP, confirmNumberVerifyOTP } from '../api/auth';
+import { confirmNumberSendOTP, confirmNumberVerifyOTP, forgotPasswordSendOTP } from '../api/auth';
 import { useAuthStore } from '../hooks/state';
 import { useNavigate } from 'react-router-dom';
 import { message, Popover, Modal, Button  } from 'antd';
@@ -170,14 +170,20 @@ export default function FVerification() {
       setConfirmLoading(true);
 
       const philFormat = data.mobile_number.slice(1)
-      const resNum = await confirmNumberSendOTP(`+63${philFormat}`)
+      const res = await forgotPasswordSendOTP(`+63${philFormat}`) 
+      //console.log(res.data);
 
-      useAuthStore.setState({ tempMobileNumber: data.mobile_number });
-      setConfirmLoading(false);
-      setOpenModal(false);
-      setOpenAtNumber(false)
-      message.success('OTP Sent')
-      setCountdown(60);
+      if(res.data.message === 'success') {
+        setConfirmLoading(false);
+        setOpenModal(false);
+        setOpenAtNumber(false)
+        message.success('OTP Sent')
+        setCountdown(60);
+        useAuthStore.setState({ tempMobileNumber: data.mobile_number })
+      }else{
+        setConfirmLoading(false)
+        message.success(`${res.data.message}`, 2.5)
+      }
       
     } catch (error:any) {
       setConfirmLoading(false)
@@ -318,8 +324,8 @@ export default function FVerification() {
           </div>
           <div className="verify-wrapper flex justify-center">
             {!isVerifying
-              ? <button onClick={handlerVerify} className='py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
-              : <button className='py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
+              ? <button onClick={handlerVerify} className='py-3 px-20 w-full mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
+              : <button className='py-3 px-20 w-full mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
             }
           </div>
         </div>
