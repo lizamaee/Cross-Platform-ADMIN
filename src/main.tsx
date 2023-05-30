@@ -28,7 +28,11 @@ import PPolicy from './pages/votersubpages/PPolicy'
 import VSettings from './pages/votersubpages/VSettings'
 import FVerification from './pages/FVerification'
 import RPassword from './pages/RPassword'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
+
+const client = new QueryClient()
 
 const router = createBrowserRouter([
   {
@@ -144,6 +148,9 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={client}>
+      <RouterProvider router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   </React.StrictMode>,
 )
