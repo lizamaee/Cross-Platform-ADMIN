@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { TiGroup } from "react-icons/ti";
 import { BsCalendar2EventFill } from "react-icons/bs";
 import { FaPeopleCarry } from "react-icons/fa";
@@ -11,6 +10,7 @@ import CandidatesResults from '../../components/CandidatesResults';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Skeleton } from 'antd'
+import {useQuery} from '@tanstack/react-query'
 
 
 interface Election {
@@ -52,21 +52,15 @@ interface seatCandidate{
 }
 
 export default function Home(){
-  const [upcomings, setUpComings] = useState<Election[]>([])
-  const [ongoings, setOngoings] = useState<Election[]>([])
-  const [newUser, setNewUser] = useState([]);
   const [asOfNow, setAsOfNow] = useState<string>("");
   const [upcomingTab, setUpcomingTab] = useState<boolean>(true)
   const [ongoingTab, setOngoingTab] = useState<boolean>(false)
   const [renderOrganizations, setRenderOrganizations] = useState<boolean>(false)
-  const [voted, setVoted] = useState<string>("")
-
   const [upcomingsError, setUpcomingsError] = useState<string>("")
   const [ongoingsError, setOngoingsError] = useState<string>("")
   const [activitiesError, setActivitiesError] = useState<string>("")
 
   const [electionOrgs, setElectionOrgs] = useState<ElectionOrg[]>([])
-  const [activities, setActivities] = useState<Activity[]>([])
   const [seatCandidates, setSeatCandidates] = useState<seatCandidate[]>([])
   const [renderCandidates, setRenderCandidates] = useState(false)
 
@@ -75,23 +69,6 @@ export default function Home(){
   const navigate = useNavigate()
 
   const { isNight } = useAuthStore((state) => state)
-
-  const [voters, setVoters] = useState([])
-  const [elections, setElections] = useState([])
-  const [organizations, setOrganizations] = useState([])
-  const [isNumbersLoading, setIsNumbersLoading] = useState(true)
-
-  const getDataDayAndCount = () => {
-    const dataDay: [] = [];
-    const dataCount: [] = [];
-
-    for (let i = 0; i < newUser.length; i++) {
-      dataDay.push(newUser[i][0]);
-      dataCount.push(newUser[i][1]);
-    }
-    return { dataDay, dataCount };
-  };
-  const { dataDay, dataCount } = getDataDayAndCount();
 
   const fetchData = async (endpoints: string) => {
     try {
@@ -114,110 +91,62 @@ export default function Home(){
     }
   }
 
+  //Elections Query
+  const fetchElections = async () => {
+    return await fetchData('election');
+  };
+  const electionsQuery = useQuery(
+    {queryKey: ['elections'], queryFn: fetchElections},
+  )
+  
+  const upcomingElections: Election[] = electionsQuery.data?.filter((election: Election)=> election.status === 'upcoming');
+
+  const ongoingElections: Election[] = electionsQuery.data?.filter((election: Election)=> election.status === 'ongoing');
+
+  //Organizations Query
+  const fetchOrganizations = async () => {
+    return await fetchData('organization');
+  };
+  const organizationsQuery = useQuery(
+    {queryKey: ['organizations'], queryFn: fetchOrganizations},
+  ) 
+
+  //Voters Query
+  const fetchVoters = async () => {
+    return await fetchData('get-all-voters');
+  };
+  const votersQuery = useQuery(
+    {queryKey: ['voters'], queryFn: fetchVoters},
+  ) 
+
+  //Voted Activites Query
+  const fetchVotedActivities = async () => {
+    return await fetchData('get-voted-activities');
+  };
+  const votedActivitiesQuery = useQuery(
+    {queryKey: ['voted-activities'], queryFn: fetchVotedActivities},
+  ) 
+
+  //Analytics Query
+  const fetchAnalyticsData = async () => {
+    return await fetchData('user-analytics');
+  };
+  const analyticsQuery = useQuery(
+    {queryKey: ['analytics'], queryFn: fetchAnalyticsData},
+  ) 
+  const getDataDayAndCount = () => {
+    const dataDay: string[] = [];
+    const dataCount: number[] = [];
+
+    for (let i = 0; i < analyticsQuery.data?.length; i++) {
+      dataDay.push(analyticsQuery.data[i][0]);
+      dataCount.push(analyticsQuery.data[i][1]);
+    }
+    return { dataDay, dataCount };
+  };
+  const { dataDay, dataCount } = getDataDayAndCount();
+
   useEffect(() => {
-    //fetch upcoming elections
-    const getUpcomings = async () => {
-      try {
-          const response = await fetchData('election/status/upcoming')
-          //console.log(response);
-          return response
-      } catch (err: any) {
-          throw err
-      }
-    }
-    const fetchUpcomings = async () => {
-      const data = await getUpcomings()
-      setUpComings(data)
-      //console.log(data[0].error)
-      setUpcomingsError(data[0].error)
-    }
-    
-    //fetch ongoing elections
-    const getOngoings = async () => {
-      try {
-          const response = await fetchData('election/status/ongoing')
-          return response
-      } catch (err: any) {
-          throw err
-      }
-    }
-    const fetchOngoings = async () => {
-      const data = await getOngoings()
-      setOngoings(data)
-      setOngoingsError(data[0].error)
-    }
-
-    //fetch daily registration analytics data
-    const getAnalyticsData = async () => {
-      try {
-        const response = await fetchData('user-analytics')
-        return response
-      } catch (err) {
-        throw err
-      }
-    };
-    const fetchAnalyticsData = async () => {
-      const data = await getAnalyticsData()
-      setNewUser(data)
-    }
-
-    //fetch voted activities
-    const getVotedActivities = async () => {
-      try {
-        const response = await fetchData('get-voted-activities')
-        //console.log(response);
-        return response
-      } catch (err: any) {
-          //console.log(err.response);
-          throw err
-      }
-    } 
-    const fetchActivities = async () => {
-      const data = await getVotedActivities()
-      setVoted(String(data.count ?? "0"))
-      //console.log(data[0].error);
-      if(data.activities){
-        const act_count = data.activities
-        //console.log(act_count.length);
-
-        if(act_count.length === 0){
-          setActivitiesError("No Activity")
-        }else{
-          setActivities(data.activities)
-        }
-      }else{
-        //console.log(data);
-        
-        setActivitiesError(String(data[0].error))
-      } 
-    }
-    
-
-    //fetch voters, election, organizations total
-    const parallelFetch = async () => {
-      const totalVotersData = fetchData("get-all-voters");
-      const totalElectionsData = fetchData("election");
-      const totalOrganizationsData = fetchData("organization");
-    
-      const [voters, elections, organizations] = await Promise.all([
-        totalVotersData,
-        totalElectionsData,
-        totalOrganizationsData,
-      ]);
-
-      setVoters(voters)
-      setElections(elections)
-      setOrganizations(organizations)
-      setIsNumbersLoading(false)
-    }
-
-    //invoke Fetch
-    parallelFetch()
-    fetchActivities()
-    fetchOngoings()
-    fetchUpcomings()
-    fetchAnalyticsData()
-
     //DATE TODAY
     const today = new Date()
     function formatDate() {
@@ -369,12 +298,12 @@ export default function Home(){
       <div className="boxes py-5 grid md:grid-cols-3 gap-5">
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#A75DE1] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
-          {isNumbersLoading ? (
+          {votersQuery.isLoading ? (
             <Skeleton.Avatar active shape='circle' size='large' />
           ) : (
             <div>
               <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
-                {voters.length}
+                {votersQuery.data?.length}
               </h1>
             </div>
           )}
@@ -389,12 +318,12 @@ export default function Home(){
 
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#2F92F0] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
-            {isNumbersLoading ? (
+            {electionsQuery.isLoading ? (
               <Skeleton.Avatar active shape='circle' size='large' />
             ) : (
               <div>
                 <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
-                  {elections.length}
+                  {electionsQuery.data?.length}
                 </h1>
               </div>
             )}
@@ -407,12 +336,12 @@ export default function Home(){
 
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#1AB98C] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
-            {isNumbersLoading ? (
+            {organizationsQuery.isLoading ? (
               <Skeleton.Avatar active shape='circle' size='large' />
             ) : (
               <div>
                 <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
-                  {organizations.length}
+                  {organizationsQuery.data?.length}
                 </h1>
               </div>
             )}
@@ -451,8 +380,8 @@ export default function Home(){
 
             <div className="card p-10 bg-[#090650] dark:bg-[#4a4a4a] rounded-xl text-center text-white">
               <h2 className="text-2xl pop-bold">
-                <span className="text-[#00ffdf] dark:text-[#49ecd6]">{voted}</span>
-                <span className="pop-regular px-4">out of</span>{voters.length}
+                <span className="text-[#00ffdf] dark:text-[#49ecd6]">{String(votedActivitiesQuery.data?.count ?? "0")}</span>
+                <span className="pop-regular px-4">out of</span>{votersQuery.data?.length}
               </h2>
               <p className="opacity-50">the votes used</p>
             </div>
@@ -468,7 +397,7 @@ export default function Home(){
 
                   <h3 className="pop-normal w-full text-center text-sm tracking-wide pt-5 opacity-50 dark:text-gray-200">{activitiesError}</h3>
               )}
-              {!activitiesError && activities?.map((activity) => (
+              {!activitiesError && votedActivitiesQuery.data?.activities?.map((activity: Activity) => (
                   <div key={activity.id} className="activity flex justify-between items-center shadow-sm py-1 text-[#090650] dark:text-gray-400">
                     <img
                       className="w-6 h-6 rounded-full"
@@ -501,8 +430,8 @@ export default function Home(){
           </button>
         </div>
         {/* Elections Table */}
-        { upcomingTab && <ElectionTable election={upcomings} error={upcomingsError} handleElection={activateElection} action='activate' actionStyle='hover:bg-sky-800 border-2 border-blue-400 hover:text-white'/> }
-        { ongoingTab && <ElectionTable election={ongoings} error={ongoingsError} handleElection={getOrganizations} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
+        { upcomingTab && <ElectionTable election={upcomingElections} error={upcomingsError} handleElection={activateElection} action='activate' actionStyle='hover:bg-sky-800 border-2 border-blue-400 hover:text-white'/> }
+        { ongoingTab && <ElectionTable election={ongoingElections} error={ongoingsError} handleElection={getOrganizations} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
       
 
         {renderOrganizations && <h2 className='text-sm pop-bold py-4 mt-2 text-sky-950 dark:text-gray-200 w-full text-center'>Active Organizations Election</h2>}

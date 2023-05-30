@@ -128,13 +128,13 @@ export default function Login() {
           </div>
         </div>
         <div className="flex items-center flex-col px-5">
-          {isLoading ? (<button
+          {isLoading ? <button
             className="text-center text-white px-4 py-3 rounded-lg md:mt-5 w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
             type="submit"
             disabled={isLoading ? true : false}
           >
             Loading...
-          </button>)
+          </button>
           :
           (<button
             className="text-center text-white px-4 py-3 rounded-lg md:mt-5 w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
