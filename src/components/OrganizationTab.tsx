@@ -4,10 +4,12 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
-import { Drawer, Modal, Spin } from 'antd';
+import { Drawer, Modal, Spin, message } from 'antd';
 import DatePicker from "react-datepicker";
 import { useDropzone } from 'react-dropzone';
 import React from 'react';
+import moment from 'moment';
+
 
 interface DataType {
   id: string;
@@ -18,11 +20,11 @@ interface DataType {
 }
 
 export default function OrganizationTab() {
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(null)
+  const [endDate, setEndDate] = useState<Date | null>(null)
   const [isCreating, setIsCreating] = useState<boolean>(false)
   const [name, setName] = useState<string>('')
-  const [image, setImage] = useState([]);
+  const [image, setImage] = useState([])
   const axiosPrivate = useAxiosPrivate()
   const navigate = useNavigate()
   const location = useLocation()
@@ -35,12 +37,10 @@ export default function OrganizationTab() {
           preview: URL.createObjectURL(file),
         })
       )
-    )
-    
-  }, []);
+    )}, []);
   
   const {
-    fileRejections, // Error files
+    fileRejections,
     getRootProps,
     getInputProps,
     isDragActive,
@@ -69,17 +69,12 @@ export default function OrganizationTab() {
         <img
           src={file.preview}
           className='h-32'
-          // Revoke data uri after image is loaded
           onLoad={() => { URL.revokeObjectURL(file.preview) }}
         />
         <h3 className='text-center pt-3 opacity-80'>Preview</h3>
       </div>
     </div>
   ));
-
-  
-  
-
 
   const fetchData = async (endpoints: string) => {
     try {
@@ -139,7 +134,6 @@ export default function OrganizationTab() {
       className: 'text-gray-700',
       onOk() {
         return new Promise((resolve, reject) => {
-          // setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
           handleDeleteOrganization(id)
             .then(resolve)
             .catch(reject);
@@ -151,7 +145,7 @@ export default function OrganizationTab() {
 
   useEffect(()=> {
     return () => image.forEach((file:any) => URL.revokeObjectURL(file.preview));
-  }, [d])
+  }, [d, organizationsQuery.data])
 
   const [open, setOpen] = useState(false)
   const showDrawer = () => {
@@ -165,14 +159,97 @@ export default function OrganizationTab() {
     setOpen(false)
   }
 
-  const createOrganization = () => {
-    setIsCreating(true)
-    setTimeout(() => {
-      setIsCreating(false)
-    }, 2000);
+  const createOrganization = async (logo_url: string) => {
 
+    const key = 'createOrganizationKEY';
+
+    //console.log(logoCloudLink);
+    
+    const uploadOrgData = {
+      org_name: name,
+      logo_url,
+      startDate: moment(startDate).utc().format('YYYY-MM-DD'),
+      endDate: moment(endDate).utc().format('YYYY-MM-DD')
+    }
+
+    await axiosPrivate.post('/organization', uploadOrgData)
+    .then((response) => {
+        //console.log('Success:', response.data);
+        message.open({
+          key,
+          type: 'success',
+          content: 'Organization Created',
+          duration: 2,
+        });
+        onClose()
+        setIsCreating(false)
+
+        
+    })
+    .catch((error) => {
+        //console.error('Error:', error);
+        setIsCreating(false)
+        if (error.message === 'Network Error') {
+          message.open({
+            type: 'error',
+            content: 'Server Unavailable',
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        } else if(error.response.data?.message){
+          message.open({
+            type: 'error',
+            content: `${error.response.data.message}`,
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        }else {
+          // Handle other errors
+          error.response.data.errors?.map((err:any) => {
+            message.open({
+              type: 'error',
+              content: `${err.msg}`,
+              className: 'custom-class pop-medium',
+              duration: 2.5,
+            })
+          })
+        }
+    });
   }
 
+
+  const handleCreate = async (e:any) => {
+    e.preventDefault()
+    setIsCreating(true)
+    
+    if(startDate === null || endDate === null || name === '') {
+      setIsCreating(false)
+      return message.open({
+        type: 'error',
+        content: 'Please fill the fields',
+        className: 'custom-class pop-medium',
+        duration: 2.5,
+      });
+    }
+
+    const url = 'http://api.cloudinary.com/v1_1/nanad/image/upload';
+    const formData = new FormData();
+      // Use the first item to upload
+      let file = image[0]
+      formData.append('file', file);
+      formData.append('upload_preset', 'dz4hcr6r');
+
+    await fetch(url, {
+      method: 'POST',
+      body: formData,
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      //console.log(data)
+      createOrganization(data.url)
+    })
+    .catch(error => console.error(error))
+  }
 
 
   return (
@@ -259,7 +336,7 @@ export default function OrganizationTab() {
             {thumbs}
             {/* DRAG N DROP LOGO PICTURE */}
             <label className='pb-1 pt-5 opacity-80'>Organization Name</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} type="text" className='py-1 px-3 text-lg focus:outline-indigo-400 rounded-md border-solid border-2 ' />
+            <input value={name} onChange={(e) => setName(e.target.value)} type="text" className='py-1 px-3 text-lg focus:outline-indigo-400 rounded-md border-solid border-2' />
             
             {/* DATE PICKER */}
             <div className="dates md:flex justify-between pt-4">
@@ -302,18 +379,13 @@ export default function OrganizationTab() {
               </div>
             </div>
             {/* DATE PICKER */}
-
-            
-
-
-
           </div>
         </form>
         {/* CREATE BUTTON */}
         {image.length > 0 && (
           <div className="btn-container flex items-center justify-center pt-3">
             {!isCreating 
-              ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={createOrganization}>
+              ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={handleCreate}>
                   <p className='pop-medium'>Create</p>   
                 </button>
               : <button className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
