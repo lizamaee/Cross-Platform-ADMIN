@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import {BsPlus, BsShieldFillExclamation} from 'react-icons/bs'
-import CreateElection from './CreateElection';
+import { useEffect, useState } from 'react';
+import {BsPlus} from 'react-icons/bs'
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
-import { Modal } from 'antd';
+import { Drawer, Modal, Spin } from 'antd';
+import DatePicker from "react-datepicker";
+import { useDropzone } from 'react-dropzone';
+import React from 'react';
 
 interface DataType {
   id: string;
@@ -16,12 +18,67 @@ interface DataType {
 }
 
 export default function OrganizationTab() {
-  const [renderCreate, setRenderCreate] = useState(false)
-
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [isCreating, setIsCreating] = useState<boolean>(false)
+  const [name, setName] = useState<string>('')
+  const [image, setImage] = useState([]);
   const axiosPrivate = useAxiosPrivate()
   const navigate = useNavigate()
   const location = useLocation()
+  
+  const onDrop = React.useCallback((acceptedFiles: any) => {
+    //console.log(acceptedFiles);
+    setImage(
+      acceptedFiles.map((file:any) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
+      )
+    )
+    
+  }, []);
+  
+  const {
+    fileRejections, // Error files
+    getRootProps,
+    getInputProps,
+    isDragActive,
+  } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': []
+    },
+    maxFiles: 1,
+    validator: fileSizeValidator,
+  })
 
+  function fileSizeValidator(file:any) {
+    if (file.size > 1024 ** 2 * 2) {
+      return {
+        code: 'size-too-large',
+        message: `File is larger than 2mb`,
+      };
+    }
+    return null;
+  }
+
+  const thumbs = image.map((file:any) => (
+    <div className='w-full p-3 flex justify-center' key={file.name}>
+      <div className=''>
+        <img
+          src={file.preview}
+          className='h-32'
+          // Revoke data uri after image is loaded
+          onLoad={() => { URL.revokeObjectURL(file.preview) }}
+        />
+        <h3 className='text-center pt-3 opacity-80'>Preview</h3>
+      </div>
+    </div>
+  ));
+
+  
+  
 
 
   const fetchData = async (endpoints: string) => {
@@ -75,10 +132,6 @@ export default function OrganizationTab() {
     }
   }
 
-  const closeCreateForm = () => {
-    setRenderCreate(false)
-  }
-
   const deleteIt = (id: string, name: string) => {
     Modal.confirm({
       title: 'Do you want to delete this Organization?',
@@ -96,20 +149,43 @@ export default function OrganizationTab() {
     });
   }
 
+  useEffect(()=> {
+    return () => image.forEach((file:any) => URL.revokeObjectURL(file.preview));
+  }, [d])
+
+  const [open, setOpen] = useState(false)
+  const showDrawer = () => {
+    setOpen(true)
+  }
+  const onClose = () => {
+    setImage([])
+    setName('')
+    setStartDate(null)
+    setEndDate(null)
+    setOpen(false)
+  }
+
+  const createOrganization = () => {
+    setIsCreating(true)
+    setTimeout(() => {
+      setIsCreating(false)
+    }, 2000);
+
+  }
+
 
 
   return (
     <div className='Election bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
       {/* CREATE BUTTON */}
-      <div className="top flex pb-4 justify-end px-3">
-        <button onClick={()=> setRenderCreate(true)} className='flex justify-center items-center py-1 md:py-2 pr-3 pl-1 text-white pop-medium bg-[#3961ee] rounded-2xl'>
-          <BsPlus size={30} />
-          <h3 className='text-sm md:text-md'>Create Organization</h3>
+      <div className="top flex justify-between items-center pt-10  mx-5">
+        <h3 className='text-lg pop-semibold text-gray-950 dark:text-gray-100'>Organizations</h3>
+        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 pr-3 pl-1 text-white pop-medium bg-[#3961ee] hover:text-[#3961ee] border-2 border-[#3961ee] hover:bg-transparent focus:outline-none rounded-2xl'>
+          <BsPlus size={25} className='' />
+          <h3 className='text-sm md:text-md'>CREATE</h3>
         </button>
       </div>
       {/* CREATE BUTTON */}
-
-      {renderCreate && (<CreateElection title='Create Election' handleClose={closeCreateForm}/>)}
 
       {/* ALL ORGANIZATIONS */}
       <div className="container w-full mx-auto p-4 overflow-x-auto">
@@ -156,6 +232,99 @@ export default function OrganizationTab() {
           ))}
         </div>
       </div>
+      <Drawer title="Create Organization" placement="right" onClose={onClose} open={open}>
+        <form className="create-organization-container py-3">
+          <div className="name flex flex-col pop-medium">
+            {/* DRAG N DROP LOGO PICTURE */}
+            <label className='opacity-80 py-2 text-center'>Select Logo Image</label>
+            <div {...getRootProps()} className='opacity-60 p-3 rounded-lg border-dashed border-2 border-gray-500 cursor-pointer' >
+              <input {...getInputProps()} />
+                {isDragActive ? (
+                  <p className="text-center">Drop your Logo here</p>
+                ) : (
+                  <p className="text-center">
+                    Drag and drop logo here, or click to select logo image
+                  </p>
+                )}
+            </div>
+            {fileRejections.map(({ file, errors }) => {
+              return (
+                    <>
+                    {errors.map((e) => (
+                      <h6 className='text-red-400' key={e.code}>{e.message}</h6>
+                    ))}
+                    </>
+              )
+            })}
+            {thumbs}
+            {/* DRAG N DROP LOGO PICTURE */}
+            <label className='pb-1 pt-5 opacity-80'>Organization Name</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} type="text" className='py-1 px-3 text-lg focus:outline-indigo-400 rounded-md border-solid border-2 ' />
+            
+            {/* DATE PICKER */}
+            <div className="dates md:flex justify-between pt-4">
+              {/* START DATE */}
+              <div className="start">
+                <label className="opacity-80">
+                  Start Date
+                </label>
+                <DatePicker
+                  selected={startDate ?? null}
+                  onChange={(date) => setStartDate(date)}
+                  showIcon
+                  required
+                  isClearable
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  placeholderText="nothing!"
+                  className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
+                />
+              </div>
+              {/* END DATE */}
+              <div className="end">
+                <label className="opacity-80">
+                  End Date
+                </label>
+                <DatePicker
+                  showIcon
+                  required
+                  isClearable
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  minDate={startDate}
+                  placeholderText="nothing!"
+                  className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
+                  selected={endDate ?? null}
+                  onChange={(date) => setEndDate(date)}
+                />
+              </div>
+            </div>
+            {/* DATE PICKER */}
+
+            
+
+
+
+          </div>
+        </form>
+        {/* CREATE BUTTON */}
+        {image.length > 0 && (
+          <div className="btn-container flex items-center justify-center pt-3">
+            {!isCreating 
+              ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={createOrganization}>
+                  <p className='pop-medium'>Create</p>   
+                </button>
+              : <button className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                  Creating...
+                  <Spin className='pl-1'/> 
+                </button>
+            }
+          </div>
+        )}
+        {/* CREATE BUTTON */}
+      </Drawer>
       
       {/* ALL ORGANIZATIONS */}
     </div>
