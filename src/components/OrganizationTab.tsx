@@ -4,7 +4,7 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
-import { Drawer, Modal, Spin, message } from 'antd';
+import { Drawer, Modal, Spin, Tooltip, message } from 'antd';
 import DatePicker from "react-datepicker";
 import { useDropzone } from 'react-dropzone';
 import React from 'react';
@@ -82,6 +82,9 @@ export default function OrganizationTab() {
       return response.data
     } catch (error: any) {
       if (error.response) {
+        // ✅ log status code here
+        //Live Server Return
+        //console.log(error.response.status);
         if(error.response.status === 403){
           navigate('/login', {state: {from: location}, replace: true});
         }
@@ -99,24 +102,6 @@ export default function OrganizationTab() {
   const organizationsQuery = useQuery(
     {queryKey: ['organizations'], queryFn: fetchOrganizations},
   ) 
-  
-  const d: DataType[] = organizationsQuery.data?.map((item: any) => ({
-    key: item.id,
-    org_name: item.org_name,
-    logo_url: item.logo_url,
-    startDate: new Date(item.startDate).toLocaleDateString("en-US", {
-      timeZone: "Asia/Manila",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
-    endDate: new Date(item.endDate).toLocaleDateString("en-US", {
-      timeZone: "Asia/Manila",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
-  }))
 
   async function handleDeleteOrganization(id: string) {
     try {
@@ -145,7 +130,7 @@ export default function OrganizationTab() {
 
   useEffect(()=> {
     return () => image.forEach((file:any) => URL.revokeObjectURL(file.preview));
-  }, [d, organizationsQuery.data])
+  }, [])
 
   const [open, setOpen] = useState(false)
   const showDrawer = () => {
@@ -266,48 +251,59 @@ export default function OrganizationTab() {
 
       {/* ALL ORGANIZATIONS */}
       <div className="container w-full mx-auto p-4 overflow-x-auto">
-        <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 md:gap-5">
-          {organizationsQuery.data?.map((org:DataType) =>(
-            <div key={org.id} className="card p-2 shadow-md rounded-2xl dark:bg-[#2a2a2a]">
-              <div className="img-container w-full rounded-lg overflow-hidden">
-                <img className='bg-cover' src={org.logo_url || "https://shorturl.at/uIRY1"} alt="" />
-              </div>
-              <h3 className='pop-semibold text-[#303030] dark:text-gray-200 text-center pt-3 pb-1'>{org.org_name}</h3>
-              <div className="dates flex text-xs justify-between text-gray-500 pop-regular">
-                <p className="">
-                  {new Date(org.startDate).toLocaleDateString("en-US", {
-                    timeZone: "Asia/Manila",
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </p>
-                <p className="text-right">
-                  {new Date(org.endDate).toLocaleDateString("en-US", {
-                    timeZone: "Asia/Manila",
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </p>
-              </div>
-              <div className="actions flex justify-between py-2">
-                <button
-                  onClick={(e) => deleteIt(org.id, org.org_name)}
-                  className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-red-400 shadow-sm shadow-red-400 focus:outline-none`}
-                >
-                  <RiDeleteBin5Fill />
-                </button>
-                <button
-                  onClick={() =>console.log("Edited")}
-                  className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-blue-400 shadow-sm shadow-blue-400 focus:outline-none`}
-                >
-                  <RiEditBoxFill />
-                </button>
-              </div>
+        {organizationsQuery.status === 'error' || organizationsQuery.data[0]?.error === 'Network Error'
+            ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
+            : organizationsQuery.data?.length === 0 
+                ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Organization</h4>
+                : <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 md:gap-5">
+                {organizationsQuery.data?.map((org:DataType, index: any) =>(
+                  <div key={index} className="card p-2 shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
+                    <div className="img-container w-full rounded-lg overflow-hidden">
+                      <img className='object-cover h-40 w-full' src={org.logo_url} alt="" />
+                    </div>
+                    <h3 className='pop-semibold text-[#303030] dark:text-gray-200 text-center pt-3 pb-1'>{org.org_name}</h3>
+                    <div className="dates flex text-xs justify-between text-gray-500 pop-regular">
+                      <p className="">
+                        {new Date(org.startDate).toLocaleDateString("en-US", {
+                          timeZone: "Asia/Manila",
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                      <p className="text-right">
+                        {new Date(org.endDate).toLocaleDateString("en-US", {
+                          timeZone: "Asia/Manila",
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </div>
+                    <div className="actions flex justify-between py-2">
+                      <Tooltip title='Delete' color='#f87171'>
+                        <button
+                          onClick={(e) => deleteIt(org.id, org.org_name)}
+                          className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-red-400 shadow-sm shadow-red-400 focus:outline-none`}
+                        >
+                          <RiDeleteBin5Fill />
+                        </button>
+                      </Tooltip>
+      
+                      <Tooltip title='Modify' color='#60a5fa'>
+                        <button
+                          onClick={() =>console.log("Edited")}
+                          className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-blue-400 shadow-sm shadow-blue-400 focus:outline-none`}
+                          >
+                          <RiEditBoxFill />
+                        </button>
+                      </Tooltip>
+                    </div>
+                  </div>
+                ))}
             </div>
-          ))}
-        </div>
+            }
+        
       </div>
       <Drawer title="Create Organization" placement="right" onClose={onClose} open={open}>
         <form className="create-organization-container py-3">
