@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {BsPlus} from 'react-icons/bs'
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
-import { Drawer, Modal, Spin, Tooltip, message } from 'antd';
+import {FaCamera} from 'react-icons/fa'
+import { Drawer, Modal, Progress, Spin, Tooltip, message } from 'antd';
 import DatePicker from "react-datepicker";
 import { useDropzone } from 'react-dropzone';
 import React from 'react';
 import moment from 'moment';
+import axios from 'axios';
 
 
 interface DataType {
@@ -25,6 +27,9 @@ export default function OrganizationTab() {
   const [isCreating, setIsCreating] = useState<boolean>(false)
   const [name, setName] = useState<string>('')
   const [image, setImage] = useState([])
+  const [childrenDrawer, setChildrenDrawer] = useState(false);
+  const [openMulti, setOpenMulti] = useState(false);
+  const [singleOrganization, setSingleOrganization] = useState<DataType>()
   const axiosPrivate = useAxiosPrivate()
   const navigate = useNavigate()
   const location = useLocation()
@@ -79,6 +84,8 @@ export default function OrganizationTab() {
   const fetchData = async (endpoints: string) => {
     try {
       const response = await axiosPrivate.get(`/${endpoints}`);
+      console.log(response.data);
+      
       return response.data
     } catch (error: any) {
       if (error.response) {
@@ -130,7 +137,7 @@ export default function OrganizationTab() {
 
   useEffect(()=> {
     return () => image.forEach((file:any) => URL.revokeObjectURL(file.preview));
-  }, [])
+  }, [singleOrganization])
 
   const [open, setOpen] = useState(false)
   const showDrawer = () => {
@@ -236,6 +243,147 @@ export default function OrganizationTab() {
     .catch(error => console.error(error))
   }
 
+  const [isUpdating, setIsUpdating] = useState<boolean>(false)
+  const [modifyId, setModifyId] = useState<string>('')
+  const [modifyName, setModifyName] = useState<string>('')
+  const [modifyUrl, setModifyUrl] = useState<string>('')
+  const [modifyStartDate, setModifyStartDate] = useState<Date | null>()
+  const [modifyEndDate, setModifyEndDate] = useState<Date | null>()
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [uploadProgress, setUploadProgress] = useState(0);
+  
+  const openMultiDrawer = (id: string, name: string) => {
+    setOpenMulti(true)
+    // setSingleOrganization(organizationsQuery.data?.filter((org: DataType)=> org.id === id))
+    const single = organizationsQuery.data?.filter((org: DataType)=> org.id === id)
+
+    const startdate = new Date(single[0].startDate)
+    const enddate = new Date(single[0].endDate)
+
+    setModifyId(single[0].id)
+    setModifyName(single[0].org_name)
+    setModifyUrl(single[0].logo_url)
+    setModifyStartDate(startdate)
+    setModifyEndDate(enddate)
+    
+  }
+  
+  const onCloseMultiDrawer = () => {
+    setOpenMulti(false)
+  }
+  
+  const showChildrenDrawer = () => {
+    setChildrenDrawer(true);
+  };
+  
+  const onChildrenDrawerClose = () => {
+    setChildrenDrawer(false);
+  };
+  
+  const handleButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleUpdateImage = async (e:any) => {
+    e.preventDefault()
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'dz4hcr6r');
+
+    const url = 'http://api.cloudinary.com/v1_1/nanad/image/upload';
+    try {
+      const response = await axios.post(url,
+        formData,
+        {
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total !== undefined) {
+              const progress = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              setUploadProgress(progress);
+            }
+          },
+        }
+      );
+      setModifyUrl(response.data.secure_url);
+    } catch (error) {
+      console.log('Error uploading image: ', error);
+    }
+  }
+
+  const updateOrganization = async (e:any) => {
+    e.preventDefault()
+    setIsUpdating(true)
+    
+    if(modifyStartDate === null || modifyEndDate === null || modifyName === '' || modifyUrl === '') {
+      setIsUpdating(false)
+      return message.open({
+        type: 'error',
+        content: 'Please fill the fields',
+        className: 'custom-class pop-medium',
+        duration: 2.5,
+      });
+    }
+
+    const key = 'updateOrganizationKEY'
+    const updateOrgData = {
+      org_name: modifyName,
+      logo_url: modifyUrl,
+      start_date: moment(modifyStartDate).utc().format('YYYY-MM-DD'),
+      end_date: moment(modifyEndDate).utc().format('YYYY-MM-DD')
+    }
+
+    await axiosPrivate.patch(`/organization/${modifyId}`, updateOrgData)
+    .then((response) => {
+        //console.log('Success:', response.data);
+        message.open({
+          key,
+          type: 'success',
+          content: 'Organization Updated',
+          duration: 2,
+        });
+        onCloseMultiDrawer()
+        setIsUpdating(false)
+        setModifyId('')
+        setModifyName('')
+        setModifyUrl('')
+        setModifyStartDate(null)
+        setModifyEndDate(null)
+        setUploadProgress(0)     
+    })
+    .catch((error) => {
+        //console.error('Error:', error);
+        setIsUpdating(false)
+        if (error.message === 'Network Error') {
+          message.open({
+            type: 'error',
+            content: 'Server Unavailable',
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        } else if(error.response.data?.message){
+          message.open({
+            type: 'error',
+            content: `${error.response.data.message}`,
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        }else {
+          // Handle other errors
+          error.response.data.errors?.map((err:any) => {
+            message.open({
+              type: 'error',
+              content: `${err.msg}`,
+              className: 'custom-class pop-medium',
+              duration: 2.5,
+            })
+          })
+        }
+    });
+  }
 
   return (
     <div className='Election bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
@@ -292,7 +440,9 @@ export default function OrganizationTab() {
       
                       <Tooltip title='Modify' color='#60a5fa'>
                         <button
-                          onClick={() =>console.log("Edited")}
+                          onClick={()=> {
+                            openMultiDrawer(org.id,org.org_name)
+                          }}
                           className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-blue-400 shadow-sm shadow-blue-400 focus:outline-none`}
                           >
                           <RiEditBoxFill />
@@ -392,6 +542,99 @@ export default function OrganizationTab() {
           </div>
         )}
         {/* CREATE BUTTON */}
+      </Drawer>
+
+      <Drawer title="Modify" onClose={onCloseMultiDrawer} open={openMulti}>
+        <div className='pop-medium'>
+          <button onClick={showChildrenDrawer} className='border-2 py-1 px-2 rounded-md'>Connections</button>
+          <div className="img-holder flex justify-center relative mb-7">
+            <img 
+              src={modifyUrl} alt={`${modifyName} Image`} 
+              className='object-cover rounded-full border-2 border-gray-400 w-36 h-36'
+            />
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleUpdateImage}
+            />
+            <button
+              onClick={handleButtonClick}
+              className="bg-white focus:outline-none border-2 border-gray-400 rounded-full flex p-1 absolute bottom-0 translate-x-14 -translate-y-3"
+            >
+              <FaCamera className="w-6 h-6 text-gray-600" />
+            </button>
+          </div>
+          {uploadProgress > 0 && (
+            <span>
+              <Progress percent={uploadProgress} size="small" />
+            </span>
+          )}
+          <label className='pb-1 opacity-80 mt-8'>Organization Name</label>
+          <input value={modifyName} onChange={(e) => setModifyName(e.target.value)} type="text" className='py-1 px-3 text-lg focus:outline-indigo-400 rounded-md border-solid border-2 w-full' />
+
+          {/* DATE PICKER */}
+          <div className="dates md:flex justify-between pt-4">
+              {/* START DATE */}
+              <div className="start">
+                <label className="opacity-80">
+                  Start Date
+                </label>
+                <DatePicker
+                  selected={modifyStartDate ?? null}
+                  onChange={(date) => setModifyStartDate(date)}
+                  showIcon
+                  required
+                  isClearable
+                  selectsStart
+                  startDate={modifyStartDate}
+                  endDate={modifyEndDate}
+                  placeholderText="nothing!"
+                  className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
+                />
+              </div>
+              {/* END DATE */}
+              <div className="end">
+                <label className="opacity-80">
+                  End Date
+                </label>
+                <DatePicker
+                  showIcon
+                  required
+                  isClearable
+                  selectsStart
+                  startDate={modifyStartDate}
+                  endDate={modifyEndDate}
+                  minDate={modifyStartDate}
+                  placeholderText="nothing!"
+                  className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
+                  selected={modifyEndDate ?? null}
+                  onChange={(date) => setModifyEndDate(date)}
+                />
+              </div>
+            </div>
+            {/* DATE PICKER */}
+
+            <div className="cnt flex items-center justify-center p-5">
+              {!isUpdating 
+                ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={updateOrganization}>
+                    <p className='pop-medium'>Update</p>   
+                  </button>
+                : <button className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                    Updating...
+                    <Spin className='pl-1'/> 
+                  </button>
+              }
+            </div>
+          </div>
+        <Drawer
+          title="Connections"
+          width={320}
+          onClose={onChildrenDrawerClose}
+          open={childrenDrawer}
+        >
+          Connnection Drawer
+        </Drawer>
       </Drawer>
       
       {/* ALL ORGANIZATIONS */}
