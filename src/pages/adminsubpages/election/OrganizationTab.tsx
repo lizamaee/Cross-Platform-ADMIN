@@ -6,8 +6,9 @@ import { useQuery } from '@tanstack/react-query';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
 import {FaCamera} from 'react-icons/fa' 
 import {IoMdRemoveCircle} from 'react-icons/io' 
-import { Drawer, Dropdown, Menu, MenuProps, Modal, Progress, Space, Spin, Tooltip, message } from 'antd';
+import { Drawer, Dropdown, MenuProps, Modal, Progress, Space, Spin, Tooltip, message } from 'antd';
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { useDropzone } from 'react-dropzone';
 import React from 'react';
 import moment from 'moment';
@@ -161,8 +162,8 @@ export default function OrganizationTab() {
     const uploadOrgData = {
       org_name: name,
       logo_url,
-      startDate: moment(startDate).utc().format('YYYY-MM-DD'),
-      endDate: moment(endDate).utc().format('YYYY-MM-DD')
+      startDate: moment(startDate).utc().format('YYYY-MM-DD').toString(),
+      endDate: moment(endDate).utc().format('YYYY-MM-DD').toString()
     }
 
     await axiosPrivate.post('/organization', uploadOrgData)
@@ -547,7 +548,7 @@ export default function OrganizationTab() {
 
       {/* ALL ORGANIZATIONS */}
       <div className="container w-full mx-auto p-4 overflow-x-auto">
-        {organizationsQuery.status === 'error' || organizationsQuery.data[0]?.error === 'Network Error'
+        {organizationsQuery.status === 'error' || organizationsQuery.data?.[0]?.error === 'Network Error'
             ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
             : organizationsQuery.data?.length === 0 
                 ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Organization</h4>
