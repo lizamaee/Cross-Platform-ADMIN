@@ -11,6 +11,7 @@ import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Skeleton } from 'antd'
 import {useQuery} from '@tanstack/react-query'
+import { useElections } from "../../../hooks/queries/useElection";
 
 
 interface Election {
@@ -92,12 +93,7 @@ export default function Home(){
   }
 
   //Elections Query
-  const fetchElections = async () => {
-    return await fetchData('election');
-  };
-  const electionsQuery = useQuery(
-    {queryKey: ['elections'], queryFn: fetchElections},
-  )
+  const electionsQuery = useElections()
   
   const upcomingElections: Election[] = electionsQuery.data?.filter((election: Election)=> election.status === 'upcoming');
 
