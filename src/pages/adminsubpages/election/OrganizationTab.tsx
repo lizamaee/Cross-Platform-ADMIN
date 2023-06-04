@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {BsPlus} from 'react-icons/bs'
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';

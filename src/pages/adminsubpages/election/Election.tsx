@@ -1,10 +1,10 @@
 
 import { useState } from 'react'
-import NavBar from '../../components/NavBar'
-import ElectionTab from '../../components/ElectionTab'
-import OrganizationTab from '../../components/OrganizationTab'
-import CandidateTab from '../../components/CandidateTab'
-import PositionTab from '../../components/PositionTab'
+import NavBar from '../../../components/NavBar'
+import ElectionTab from './ElectionTab'
+import OrganizationTab from './OrganizationTab'
+import CandidateTab from './CandidateTab'
+import PositionTab from './PositionTab'
 
 export default function Election() {
   const [electionTab, setElectionTab] = useState(true)

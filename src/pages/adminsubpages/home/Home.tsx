@@ -2,12 +2,12 @@ import { TiGroup } from "react-icons/ti";
 import { BsCalendar2EventFill } from "react-icons/bs";
 import { FaPeopleCarry } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import LineChart from "../../components/LineChart";
-import ElectionTable from '../../components/ElectionTable';
-import { useAuthStore } from '../../hooks/state';
-import NavBar from '../../components/NavBar';
-import CandidatesResults from '../../components/CandidatesResults';
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import LineChart from "../../../components/LineChart";
+import ElectionTable from '../../../components/ElectionTable';
+import { useAuthStore } from '../../../hooks/state';
+import NavBar from '../../../components/NavBar';
+import CandidatesResults from '../../../components/CandidatesResults';
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Skeleton } from 'antd'
 import {useQuery} from '@tanstack/react-query'

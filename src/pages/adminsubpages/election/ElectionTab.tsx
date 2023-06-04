@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import {BsPlus} from 'react-icons/bs'
-import Pagination from './Pagination';
-import Table from './Table';
-import CreateElection from './CreateElection';
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import Pagination from '../../../components/Pagination';
+import Table from '../../../components/Table';
+import CreateElection from '../../../components/CreateElection';
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function ElectionTab() {
