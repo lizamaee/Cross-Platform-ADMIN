@@ -4,14 +4,15 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
-import {FaCamera} from 'react-icons/fa'
-import { Drawer, Modal, Progress, Spin, Tooltip, message } from 'antd';
+import {FaCamera} from 'react-icons/fa' 
+import {IoMdRemoveCircle} from 'react-icons/io' 
+import { Drawer, Dropdown, Menu, MenuProps, Modal, Progress, Space, Spin, Tooltip, message } from 'antd';
 import DatePicker from "react-datepicker";
 import { useDropzone } from 'react-dropzone';
 import React from 'react';
 import moment from 'moment';
 import axios from 'axios';
-
+import { DownOutlined } from '@ant-design/icons';
 
 interface DataType {
   id: string;
@@ -84,7 +85,7 @@ export default function OrganizationTab() {
   const fetchData = async (endpoints: string) => {
     try {
       const response = await axiosPrivate.get(`/${endpoints}`);
-      console.log(response.data);
+      //console.log(response.data);
       
       return response.data
     } catch (error: any) {
@@ -249,8 +250,14 @@ export default function OrganizationTab() {
   const [modifyUrl, setModifyUrl] = useState<string>('')
   const [modifyStartDate, setModifyStartDate] = useState<Date | null>()
   const [modifyEndDate, setModifyEndDate] = useState<Date | null>()
+  const [availablePositions, setAvailablePositions] = useState([])
+  const [currentPositions, setCurrentPositions] = useState([])
+  const [ballotID, setBallotID] = useState<string>('')
+  const [isDisconnectiong, setIsDisConnecting] = useState<boolean>(false)
+  const [isConnectiong, setIsConnecting] = useState<boolean>(false)
+
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [uploadProgress, setUploadProgress] = useState(0);
   
   const openMultiDrawer = (id: string, name: string) => {
@@ -273,7 +280,80 @@ export default function OrganizationTab() {
     setOpenMulti(false)
   }
   
+  const getAvailablePositions = async () => {
+    const response = await fetchData(`seat/null`)
+    setAvailablePositions(response)
+  }
+  const getCurrentPositions = async () => {
+    const response = await fetchData(`organization/org-ballot/${modifyId}`)
+    if(response[0]?.error === 'Network Error'){
+        message.open({
+          type: 'error',
+          content: 'Server Unavailable',
+          className: 'custom-class pop-medium',
+          duration: 2.5,
+        })
+    }
+    setBallotID(response.id)
+    setCurrentPositions(response.seats)
+  }
+
+  const disConnectPosition = async (positionId: string, ballotId: string) => {
+    setIsDisConnecting(true)
+
+    const key = 'diconnectPositionKEY'
+    const disconnectPosition = {
+      ballot_id: ballotId,
+      seat_id: positionId,
+    }
+
+    await axiosPrivate.patch('seat/disconnect-seat-ballot', disconnectPosition)
+    .then((response) => {
+        //console.log('Success:', response.data);
+        message.open({
+          key,
+          type: 'success',
+          content: 'Disconnected Successfully',
+          duration: 2,
+        });  
+        getCurrentPositions()
+        getAvailablePositions()
+        setIsDisConnecting(false)
+    })
+    .catch((error) => {
+        //console.error('Error:', error);
+        setIsDisConnecting(false)
+        if (error.message === 'Network Error') {
+          message.open({
+            type: 'error',
+            content: 'Server Unavailable',
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        } else if(error.response.data?.message){
+          message.open({
+            type: 'error',
+            content: `${error.response.data.message}`,
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        }else {
+          // Handle other errors
+          error.response.data.errors?.map((err:any) => {
+            message.open({
+              type: 'error',
+              content: `${err.msg}`,
+              className: 'custom-class pop-medium',
+              duration: 2.5,
+            })
+          })
+        }
+    });
+  }
+
   const showChildrenDrawer = () => {
+    getAvailablePositions()
+    getCurrentPositions()
     setChildrenDrawer(true);
   };
   
@@ -384,6 +464,74 @@ export default function OrganizationTab() {
         }
     });
   }
+
+
+  const onClick: MenuProps['onClick'] = async ({ key }) => {
+    setIsConnecting(true)
+
+    const messageKey = 'diconnectPositionKEY'
+    const connectPosition = {
+      ballot_id: ballotID,
+      seat_id: key,
+    }
+
+    await axiosPrivate.patch('seat/connect-seat-ballot', connectPosition)
+    .then((response) => {
+        //console.log('Success:', response.data);
+        message.open({
+          key: messageKey,
+          type: 'success',
+          content: 'Connected Successfully',
+          duration: 2,
+        });  
+        getCurrentPositions()
+        getAvailablePositions()
+        setIsConnecting(false)
+    })
+    .catch((error) => {
+        //console.error('Error:', error);
+        setIsConnecting(false)
+        if (error.message === 'Network Error') {
+          message.open({
+            type: 'error',
+            content: 'Server Unavailable',
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        } else if(error.response.data?.message){
+          message.open({
+            type: 'error',
+            content: `${error.response.data.message}`,
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        }else {
+          // Handle other errors
+          error.response.data.errors?.map((err:any) => {
+            message.open({
+              type: 'error',
+              content: `${err.msg}`,
+              className: 'custom-class pop-medium',
+              duration: 2.5,
+            })
+          })
+        }
+    });
+
+  };
+
+  const items: MenuProps['items'] = availablePositions?.length === 0 
+    ? [{
+        label: "No Position Available",
+        key: "No Key"
+      }]
+    : availablePositions?.map((pos:any) => {
+        return {
+          label: pos.position,
+          key: pos.id,
+        }
+      })
+
 
   return (
     <div className='Election bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
@@ -620,7 +768,7 @@ export default function OrganizationTab() {
                 ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={updateOrganization}>
                     <p className='pop-medium'>Update</p>   
                   </button>
-                : <button className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                : <button disabled={isUpdating} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
                     Updating...
                     <Spin className='pl-1'/> 
                   </button>
@@ -633,7 +781,34 @@ export default function OrganizationTab() {
           onClose={onChildrenDrawerClose}
           open={childrenDrawer}
         >
-          Connnection Drawer
+          <div className="wrap border-2 w-fit p-1 rounded-lg pop-medium">
+            <Dropdown menu={{ items, onClick }}>
+              <a onClick={(e) => e.preventDefault()}>
+                <Space>
+                  Available Positions
+                  <DownOutlined />
+                </Space>
+              </a>
+            </Dropdown>
+          </div>
+          <div className="wrapp px-1 rounded-xl py-2 pop-regular mt-16 shadow-sm">
+            <h3 className='py-3 pop-semibold text-center shadow-sm rounded-xl bg-gray-100 mb-3'>Current Positions</h3>
+            {currentPositions?.length === 0
+              ? <div className="no-current text-gray-600 flex justify-center items-center p-5 opacity-80 pop-medium">
+                  <h4>No Position Assigned </h4>
+                </div>
+              : currentPositions?.map((current:any, index:any) => (
+                <div key={index} className="item flex justify-between items-center py-2 px-3 odd:bg-gray-100 rounded-md hover:bg-blue-100">
+                  <h3>{current.position}</h3>
+                  <Tooltip title='Remove' color='#f87171'>
+                    <button onClick={() => disConnectPosition(current.id, current.ballotId)} className='p-1'>
+                      <IoMdRemoveCircle size={25} className='text-red-400'/>
+                    </button>
+                  </Tooltip>
+                </div>
+              ))
+            }
+          </div>
         </Drawer>
       </Drawer>
       
