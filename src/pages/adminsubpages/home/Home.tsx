@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Skeleton } from 'antd'
 import {useQuery} from '@tanstack/react-query'
 import { useElections } from "../../../hooks/queries/useElection";
+import { useOrganizations } from "../../../hooks/queries/useOrganization";
 
 
 interface Election {
@@ -100,12 +101,7 @@ export default function Home(){
   const ongoingElections: Election[] = electionsQuery.data?.filter((election: Election)=> election.status === 'ongoing');
 
   //Organizations Query
-  const fetchOrganizations = async () => {
-    return await fetchData('organization');
-  };
-  const organizationsQuery = useQuery(
-    {queryKey: ['organizations'], queryFn: fetchOrganizations},
-  ) 
+  const organizationsQuery = useOrganizations()
 
   //Voters Query
   const fetchVoters = async () => {
