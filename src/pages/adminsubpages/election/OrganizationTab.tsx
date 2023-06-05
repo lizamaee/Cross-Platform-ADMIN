@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import {BsPlus} from 'react-icons/bs'
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
 import {FaCamera} from 'react-icons/fa' 
 import {IoMdRemoveCircle} from 'react-icons/io' 
@@ -14,6 +13,7 @@ import React from 'react';
 import moment from 'moment';
 import axios from 'axios';
 import { DownOutlined } from '@ant-design/icons';
+import { useCreateOrganization, useDeleteOrganization, useOrganizations, useUpdateOrganization } from '../../../hooks/queries/useOrganization';
 
 interface DataType {
   id: string;
@@ -35,9 +35,20 @@ export default function OrganizationTab() {
   const axiosPrivate = useAxiosPrivate()
   const navigate = useNavigate()
   const location = useLocation()
+
+  //ORGANIZATION HOOKS
+  //GET ALL
+  const organizationsQuery = useOrganizations()
+  //CREATE SINGLE
+  const { mutate: createOrganization} = useCreateOrganization()
+  //DELETE SINGLE
+  const { mutate: deleteOrganization} = useDeleteOrganization()
+
+  //SORT ORGANIZATION ARRAY IN DESCENDING ORDER
+  const descendingOrganizations = organizationsQuery.data?.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   
+  //CALL BACK TO FIRE WHEN FILE IS DRAGGED INSIDE DROPZONE
   const onDrop = React.useCallback((acceptedFiles: any) => {
-    //console.log(acceptedFiles);
     setImage(
       acceptedFiles.map((file:any) =>
         Object.assign(file, {
@@ -46,6 +57,7 @@ export default function OrganizationTab() {
       )
     )}, []);
   
+  //DROPZONE CONFIG
   const {
     fileRejections,
     getRootProps,
@@ -60,6 +72,7 @@ export default function OrganizationTab() {
     validator: fileSizeValidator,
   })
 
+  //VALIDATE FILE SIZE OF SELECTED IMAGE
   function fileSizeValidator(file:any) {
     if (file.size > 1024 ** 2 * 2) {
       return {
@@ -70,6 +83,7 @@ export default function OrganizationTab() {
     return null;
   }
 
+  //THUMBNAIL OR PREVIEW OF SELECTED IMAGE
   const thumbs = image.map((file:any) => (
     <div className='w-full p-3 flex justify-center' key={file.name}>
       <div className=''>
@@ -83,17 +97,13 @@ export default function OrganizationTab() {
     </div>
   ));
 
+  //FETCH DATA FOR CURRENT AND AVAILABLE POSITIONS
   const fetchData = async (endpoints: string) => {
     try {
-      const response = await axiosPrivate.get(`/${endpoints}`);
-      //console.log(response.data);
-      
+      const response = await axiosPrivate.get(`/${endpoints}`)
       return response.data
     } catch (error: any) {
       if (error.response) {
-        // ✅ log status code here
-        //Live Server Return
-        //console.log(error.response.status);
         if(error.response.status === 403){
           navigate('/login', {state: {from: location}, replace: true});
         }
@@ -103,24 +113,13 @@ export default function OrganizationTab() {
       return [{error: error.message }];
     }
   }
-  
-  //Organizations Query
-  const fetchOrganizations = async () => {
-    return await fetchData('organization');
-  };
-  const organizationsQuery = useQuery(
-    {queryKey: ['organizations'], queryFn: fetchOrganizations},
-  ) 
-
+   
+  //ASYNCRONOUS DELETE ORGANIZATION FUNCTION
   async function handleDeleteOrganization(id: string) {
-    try {
-      const response = await axiosPrivate.delete(`organization/${id}`);
-      console.log(response.data.message);
-    } catch (error) {
-      console.log('Oops, an error occurred:', error);
-    }
+    deleteOrganization(id)
   }
 
+  //DELETE ORGANIZATION CONFIRMATION MODAL
   const deleteIt = (id: string, name: string) => {
     Modal.confirm({
       title: 'Do you want to delete this Organization?',
@@ -137,14 +136,19 @@ export default function OrganizationTab() {
     });
   }
 
+  //AVOID MEMORY LEAK DURING IMAGE UPLOAD @ DROPZONE
   useEffect(()=> {
     return () => image.forEach((file:any) => URL.revokeObjectURL(file.preview));
   }, [singleOrganization])
 
+  //OPEN CREATE DRAWER STATE
   const [open, setOpen] = useState(false)
+  //OPEN CREATE DRAWER FUNCTION
   const showDrawer = () => {
     setOpen(true)
   }
+  
+  //CLOSE CREATE DRAWER FUNCTION
   const onClose = () => {
     setImage([])
     setName('')
@@ -153,69 +157,23 @@ export default function OrganizationTab() {
     setOpen(false)
   }
 
-  const createOrganization = async (logo_url: string) => {
-
-    const key = 'createOrganizationKEY';
-
-    //console.log(logoCloudLink);
-    
+  //CREATE ORGANIZATION FUNCTION
+  const handleUpload = async (logo_url: string) => {
     const uploadOrgData = {
       org_name: name,
       logo_url,
       startDate: moment(startDate).utc().format('YYYY-MM-DD').toString(),
       endDate: moment(endDate).utc().format('YYYY-MM-DD').toString()
     }
-
-    await axiosPrivate.post('/organization', uploadOrgData)
-    .then((response) => {
-        //console.log('Success:', response.data);
-        message.open({
-          key,
-          type: 'success',
-          content: 'Organization Created',
-          duration: 2,
-        });
-        onClose()
-        setIsCreating(false)
-
-        
-    })
-    .catch((error) => {
-        //console.error('Error:', error);
-        setIsCreating(false)
-        if (error.message === 'Network Error') {
-          message.open({
-            type: 'error',
-            content: 'Server Unavailable',
-            className: 'custom-class pop-medium',
-            duration: 2.5,
-          });
-        } else if(error.response.data?.message){
-          message.open({
-            type: 'error',
-            content: `${error.response.data.message}`,
-            className: 'custom-class pop-medium',
-            duration: 2.5,
-          });
-        }else {
-          // Handle other errors
-          error.response.data.errors?.map((err:any) => {
-            message.open({
-              type: 'error',
-              content: `${err.msg}`,
-              className: 'custom-class pop-medium',
-              duration: 2.5,
-            })
-          })
-        }
-    });
+    createOrganization(uploadOrgData)
+    setIsCreating(false)
+    onClose()
   }
 
-
+  //UPLOAD SELECTED IMAGE TO CLOUDINARY
   const handleCreate = async (e:any) => {
     e.preventDefault()
     setIsCreating(true)
-    
     if(startDate === null || endDate === null || name === '') {
       setIsCreating(false)
       return message.open({
@@ -239,12 +197,12 @@ export default function OrganizationTab() {
     })
     .then((response) => response.json())
     .then((data) => {
-      //console.log(data)
-      createOrganization(data.url)
+      handleUpload(data.url)
     })
     .catch(error => console.error(error))
   }
 
+  //DRAWER STATES
   const [isUpdating, setIsUpdating] = useState<boolean>(false)
   const [modifyId, setModifyId] = useState<string>('')
   const [modifyName, setModifyName] = useState<string>('')
@@ -257,15 +215,16 @@ export default function OrganizationTab() {
   const [isDisconnectiong, setIsDisConnecting] = useState<boolean>(false)
   const [isConnectiong, setIsConnecting] = useState<boolean>(false)
 
+  //REFERENCE OF CHANGE IMAGE BUTTON
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  //PROGRESS BAR STATE
   const [uploadProgress, setUploadProgress] = useState(0);
   
-  const openMultiDrawer = (id: string, name: string) => {
+  //OPEN MODIFY MULTI-PARENT DRAWER FUNCTION
+  const openMultiDrawer = (id: string) => {
     setOpenMulti(true)
-    // setSingleOrganization(organizationsQuery.data?.filter((org: DataType)=> org.id === id))
     const single = organizationsQuery.data?.filter((org: DataType)=> org.id === id)
-
     const startdate = new Date(single[0].startDate)
     const enddate = new Date(single[0].endDate)
 
@@ -274,17 +233,18 @@ export default function OrganizationTab() {
     setModifyUrl(single[0].logo_url)
     setModifyStartDate(startdate)
     setModifyEndDate(enddate)
-    
   }
   
+  //CLOSE MODIFY MULTI-PARENT DRAWER FUNCTION
   const onCloseMultiDrawer = () => {
     setOpenMulti(false)
   }
-  
+  //GET ALL AVAILABLE POSITIONS REQUEST FUNCTION
   const getAvailablePositions = async () => {
     const response = await fetchData(`seat/null`)
     setAvailablePositions(response)
   }
+  //GET ALL CURRENT POSITIONS REQUEST FUNCTION
   const getCurrentPositions = async () => {
     const response = await fetchData(`organization/org-ballot/${modifyId}`)
     if(response[0]?.error === 'Network Error'){
@@ -299,6 +259,7 @@ export default function OrganizationTab() {
     setCurrentPositions(response.seats)
   }
 
+  //DISCONNECT SINGLE POSITION FROM SPECIFIC ORGANIZATION
   const disConnectPosition = async (positionId: string, ballotId: string) => {
     setIsDisConnecting(true)
 
@@ -310,7 +271,6 @@ export default function OrganizationTab() {
 
     await axiosPrivate.patch('seat/disconnect-seat-ballot', disconnectPosition)
     .then((response) => {
-        //console.log('Success:', response.data);
         message.open({
           key,
           type: 'success',
@@ -352,20 +312,22 @@ export default function OrganizationTab() {
     });
   }
 
+  //OPEN MODIFY MULTI-CHILD DRAWER FUNCTION
   const showChildrenDrawer = () => {
     getAvailablePositions()
     getCurrentPositions()
     setChildrenDrawer(true);
   };
-  
+  //CLOSE MODIFY MULTI-CHILD DRAWER FUNCTION
   const onChildrenDrawerClose = () => {
     setChildrenDrawer(false);
   };
-  
+  //ONCLICK FUNCTION OF REFERENCED CHANGE IMAGE BUTTON
   const handleButtonClick = () => {
     fileInputRef.current?.click();
   };
 
+  //UPDATE IMAGE UPLOAD TO CLOUDINARY
   const handleUpdateImage = async (e:any) => {
     e.preventDefault()
     const file = e.target.files[0];
@@ -395,7 +357,10 @@ export default function OrganizationTab() {
     }
   }
 
-  const updateOrganization = async (e:any) => {
+  //MUTATION HOOK OF UPDATE ORGANIZATION 
+  const {mutate: updateOrganization} = useUpdateOrganization()
+  //UPDATE AN ORGANIZATION FUNCTION
+  const handleUpdateOrganization = async (e:any) => {
     e.preventDefault()
     setIsUpdating(true)
     
@@ -408,69 +373,32 @@ export default function OrganizationTab() {
         duration: 2.5,
       });
     }
-
-    const key = 'updateOrganizationKEY'
+    
     const updateOrgData = {
+      id: modifyId,
       org_name: modifyName,
       logo_url: modifyUrl,
-      start_date: moment(modifyStartDate).utc().format('YYYY-MM-DD'),
-      end_date: moment(modifyEndDate).utc().format('YYYY-MM-DD')
+      startDate: moment(modifyStartDate).utc().format('YYYY-MM-DD'),
+      endDate: moment(modifyEndDate).utc().format('YYYY-MM-DD')
     }
 
-    await axiosPrivate.patch(`/organization/${modifyId}`, updateOrgData)
-    .then((response) => {
-        //console.log('Success:', response.data);
-        message.open({
-          key,
-          type: 'success',
-          content: 'Organization Updated',
-          duration: 2,
-        });
-        onCloseMultiDrawer()
-        setIsUpdating(false)
-        setModifyId('')
-        setModifyName('')
-        setModifyUrl('')
-        setModifyStartDate(null)
-        setModifyEndDate(null)
-        setUploadProgress(0)     
-    })
-    .catch((error) => {
-        //console.error('Error:', error);
-        setIsUpdating(false)
-        if (error.message === 'Network Error') {
-          message.open({
-            type: 'error',
-            content: 'Server Unavailable',
-            className: 'custom-class pop-medium',
-            duration: 2.5,
-          });
-        } else if(error.response.data?.message){
-          message.open({
-            type: 'error',
-            content: `${error.response.data.message}`,
-            className: 'custom-class pop-medium',
-            duration: 2.5,
-          });
-        }else {
-          // Handle other errors
-          error.response.data.errors?.map((err:any) => {
-            message.open({
-              type: 'error',
-              content: `${err.msg}`,
-              className: 'custom-class pop-medium',
-              duration: 2.5,
-            })
-          })
-        }
-    });
+    updateOrganization(updateOrgData)
+    setIsCreating(false)
+    onCloseMultiDrawer()
+    setIsUpdating(false)
+    setModifyId('')
+    setModifyName('')
+    setModifyUrl('')
+    setModifyStartDate(null)
+    setModifyEndDate(null)
+    setUploadProgress(0)
   }
 
-
+  //CONNECT SINGLE POSITION FROM SPECIFIC ORGANIZATION
   const onClick: MenuProps['onClick'] = async ({ key }) => {
     setIsConnecting(true)
 
-    const messageKey = 'diconnectPositionKEY'
+    const messageKey = 'connectPositionKEY'
     const connectPosition = {
       ballot_id: ballotID,
       seat_id: key,
@@ -521,6 +449,7 @@ export default function OrganizationTab() {
 
   };
 
+  //POPULATE AVAILABLE POSITION INSIDE A DROPDOWN
   const items: MenuProps['items'] = availablePositions?.length === 0 
     ? [{
         label: "No Position Available",
@@ -535,7 +464,7 @@ export default function OrganizationTab() {
 
 
   return (
-    <div className='Election bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
+    <div className=' bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
       {/* CREATE BUTTON */}
       <div className="top flex justify-between items-center pt-10  mx-5">
         <h3 className='text-lg pop-semibold text-gray-950 dark:text-gray-100'>Organizations</h3>
@@ -550,15 +479,18 @@ export default function OrganizationTab() {
       <div className="container w-full mx-auto p-4 overflow-x-auto">
         {organizationsQuery.status === 'error' || organizationsQuery.data?.[0]?.error === 'Network Error'
             ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
-            : organizationsQuery.data?.length === 0 
+            : descendingOrganizations?.length === 0 
                 ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Organization</h4>
                 : <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 md:gap-5">
-                {organizationsQuery.data?.map((org:DataType, index: any) =>(
+                {descendingOrganizations?.map((org:DataType, index: any) =>(
                   <div key={index} className="card p-2 shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
+                    {/* IMAGE DISPLAY */}
                     <div className="img-container w-full rounded-lg overflow-hidden">
                       <img className='object-cover h-40 w-full' src={org.logo_url} alt="" />
                     </div>
+                    {/* IMAGE DISPLAY */}
                     <h3 className='pop-semibold text-[#303030] dark:text-gray-200 text-center pt-3 pb-1'>{org.org_name}</h3>
+                    {/* DATE DISPLAY */}
                     <div className="dates flex text-xs justify-between text-gray-500 pop-regular">
                       <p className="">
                         {new Date(org.startDate).toLocaleDateString("en-US", {
@@ -577,6 +509,8 @@ export default function OrganizationTab() {
                         })}
                       </p>
                     </div>
+                    {/* DATE DISPLAY */}
+                    {/* ACTIONS DISPLAY */}
                     <div className="actions flex justify-between py-2">
                       <Tooltip title='Delete' color='#f87171'>
                         <button
@@ -590,7 +524,7 @@ export default function OrganizationTab() {
                       <Tooltip title='Modify' color='#60a5fa'>
                         <button
                           onClick={()=> {
-                            openMultiDrawer(org.id,org.org_name)
+                            openMultiDrawer(org.id)
                           }}
                           className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-blue-400 shadow-sm shadow-blue-400 focus:outline-none`}
                           >
@@ -598,12 +532,14 @@ export default function OrganizationTab() {
                         </button>
                       </Tooltip>
                     </div>
+                    {/* ACTIONS DISPLAY */}
                   </div>
                 ))}
             </div>
             }
-        
       </div>
+      
+      {/* CREATE ORGANIZATION DRAWER */}
       <Drawer title="Create Organization" placement="right" onClose={onClose} open={open}>
         <form className="create-organization-container py-3">
           <div className="name flex flex-col pop-medium">
@@ -692,10 +628,14 @@ export default function OrganizationTab() {
         )}
         {/* CREATE BUTTON */}
       </Drawer>
+      {/* CREATE ORGANIZATION DRAWER */}
 
+      {/* UPDATE ORGANIZATION MULTI-PARENT DRAWER */}
       <Drawer title="Modify" onClose={onCloseMultiDrawer} open={openMulti}>
         <div className='pop-medium'>
+          {/* CONNECTIONS BUTTON */}
           <button onClick={showChildrenDrawer} className='border-2 py-1 px-2 rounded-md'>Connections</button>
+          {/* CONNECTIONS BUTTON */}
           <div className="img-holder flex justify-center relative mb-7">
             <img 
               src={modifyUrl} alt={`${modifyName} Image`} 
@@ -714,11 +654,13 @@ export default function OrganizationTab() {
               <FaCamera className="w-6 h-6 text-gray-600" />
             </button>
           </div>
-          {uploadProgress > 0 && (
-            <span>
-              <Progress percent={uploadProgress} size="small" />
-            </span>
-          )}
+          {/* PROGRESS BAR UI */}
+            {uploadProgress > 0 && (
+              <span>
+                <Progress percent={uploadProgress} size="small" />
+              </span>
+            )}
+          {/* PROGRESS BAR UI */}
           <label className='pb-1 opacity-80 mt-8'>Organization Name</label>
           <input value={modifyName} onChange={(e) => setModifyName(e.target.value)} type="text" className='py-1 px-3 text-lg focus:outline-indigo-400 rounded-md border-solid border-2 w-full' />
 
@@ -763,25 +705,27 @@ export default function OrganizationTab() {
               </div>
             </div>
             {/* DATE PICKER */}
-
-            <div className="cnt flex items-center justify-center p-5">
-              {!isUpdating 
-                ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={updateOrganization}>
-                    <p className='pop-medium'>Update</p>   
-                  </button>
-                : <button disabled={isUpdating} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
-                    Updating...
-                    <Spin className='pl-1'/> 
-                  </button>
-              }
-            </div>
+            {/* UPDATE BUTTON */}
+              <div className="cnt flex items-center justify-center p-5">
+                {!isUpdating 
+                  ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={handleUpdateOrganization}>
+                      <p className='pop-medium'>Update</p>   
+                    </button>
+                  : <button disabled={isUpdating} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                      Updating...
+                      <Spin className='pl-1'/> 
+                    </button>
+                }
+              </div>
+            {/* UPDATE BUTTON */}
           </div>
+        {/* UPDATE ORGANIZATION MULTI-CHILD DRAWER */}
         <Drawer
           title="Connections"
           width={320}
           onClose={onChildrenDrawerClose}
           open={childrenDrawer}
-        >
+          >
           <div className="wrap border-2 w-fit p-1 rounded-lg pop-medium">
             <Dropdown menu={{ items, onClick }}>
               <a onClick={(e) => e.preventDefault()}>
@@ -811,9 +755,11 @@ export default function OrganizationTab() {
             }
           </div>
         </Drawer>
+        {/* UPDATE ORGANIZATION MULTI-CHILD DRAWER */}
       </Drawer>
+      {/* UPDATE ORGANIZATION MULTI-PARENT DRAWER */}
       
-      {/* ALL ORGANIZATIONS */}
+    {/* ALL ORGANIZATIONS */}
     </div>
   )
 }
