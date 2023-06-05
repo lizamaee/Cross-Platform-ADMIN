@@ -1,87 +1,53 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { axiosPrivate } from "../../api/axios";
 import { message } from "antd";
+import useAxiosPrivate from "../useAxiosPrivate";
 
-const fetchElections = async () => {
-    try {
-        const response = await axiosPrivate.get('/election')
-        //console.log(response.data);
-        return response.data
-    } catch (error:any) {
-        if (error.message === 'Network Error') {
-            message.open({
-              type: 'error',
-              content: 'Server Unavailable',
-              className: 'custom-class pop-medium',
-              duration: 2.5,
-            });
-          } else if(error.response.data?.message){
-            message.open({
-              type: 'error',
-              content: `${error.response.data.message}`,
-              className: 'custom-class pop-medium',
-              duration: 2.5,
-            });
-          }else {
-            // Handle other errors
-            error.response.data.errors?.map((err:any) => {
-              message.open({
-                type: 'error',
-                content: `${err.msg}`,
-                className: 'custom-class pop-medium',
-                duration: 2.5,
-              })
-            })
-          } 
-    }
+
+//QUERY FOR GETTING ALL ELECTIONS
+export const useElections = () => {
+  const axiosPrivate = useAxiosPrivate()
+  return useQuery({
+      queryKey: ['elections'], 
+      queryFn: async () => {
+        try {
+          const response = await axiosPrivate.get('/election')
+          return response.data
+        } catch (error:any) {
+            if (error.message === 'Network Error') {
+                message.open({
+                  type: 'error',
+                  content: 'Server Unavailable',
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                });
+              } else if(error.response.data?.message){
+                message.open({
+                  type: 'error',
+                  content: `${error.response.data.message}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                });
+              }else {
+                // Handle other errors
+                error.response.data.errors?.map((err:any) => {
+                  message.open({
+                    type: 'error',
+                    content: `${err.msg}`,
+                    className: 'custom-class pop-medium',
+                    duration: 2.5,
+                  })
+                })
+              } 
+        }
+      },
+  }) 
+
 }
 
-export const useElections = () => 
-    useQuery({
-        queryKey: ['elections'], 
-        queryFn: () => fetchElections(),
-    }) 
-export const useAvailableOrganizations = () => 
-    useQuery({
-        queryKey: ['null-orgs'], 
-        queryFn: async () => {
-            try {
-                const response = await axiosPrivate.get(`organization/null`)
-                return response.data
-                
-            } catch (error:any) {
-                if (error.message === 'Network Error') {
-                    message.open({
-                      type: 'error',
-                      content: 'Server Unavailable',
-                      className: 'custom-class pop-medium',
-                      duration: 2.5,
-                    });
-                  } else if(error.response.data?.message){
-                    message.open({
-                      type: 'error',
-                      content: `${error.response.data.message}`,
-                      className: 'custom-class pop-medium',
-                      duration: 2.5,
-                    });
-                  }else {
-                    // Handle other errors
-                    error.response.data.errors?.map((err:any) => {
-                      message.open({
-                        type: 'error',
-                        content: `${err.msg}`,
-                        className: 'custom-class pop-medium',
-                        duration: 2.5,
-                      })
-                    })
-                  } 
-            }
-        },
-    }) 
-
-
+//QUERY FOR CREATING A SINGLE ELECTION
 export const useCreateElection = () => {
     const queryClient = useQueryClient()
+    const axiosPrivate = useAxiosPrivate()
 
     return useMutation({
         mutationFn: async (newEelectionData: {title: string, startDate: string, endDate: string}) =>{
@@ -130,45 +96,108 @@ export const useCreateElection = () => {
     })
 }
 
+//QUERY FOR DELETING A SINGLE ELECTION
 export const useDeleteElection = () => {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn:async (id:string) => {
-            const response = await axiosPrivate.delete(`/election/${id}`)
-            return response.data
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn:async (id:string) => {
+        const response = await axiosPrivate.delete(`/election/${id}`)
+        return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'Election Deleted :)',
+              duration: 2,
+          })
+          await queryClient.invalidateQueries({
+            queryKey: ['elections'],
+              exact: true
+          })
         },
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({
-                queryKey: ['elections'],
-                exact: true
-            })
-        },
-        onError: (error:any) => {
-            if (error.message === 'Network Error') {
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+            message.open({
+              type: 'error',
+              content: 'Server Unavailable',
+              className: 'custom-class pop-medium',
+              duration: 2.5,
+            });
+            } else if(error.response.data?.message){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.message}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
                 message.open({
                   type: 'error',
-                  content: 'Server Unavailable',
+                  content: `${err.msg}`,
                   className: 'custom-class pop-medium',
                   duration: 2.5,
-                });
-              } else if(error.response.data?.message){
-                message.open({
-                  type: 'error',
-                  content: `${error.response.data.message}`,
-                  className: 'custom-class pop-medium',
-                  duration: 2.5,
-                });
-              }else {
-                // Handle other errors
-                error.response.data.errors?.map((err:any) => {
-                  message.open({
-                    type: 'error',
-                    content: `${err.msg}`,
-                    className: 'custom-class pop-medium',
-                    duration: 2.5,
-                  })
                 })
-              }
-        }
-    })
+              })
+            }
+      }
+  })
+}
+
+//QUERY FOR UPDATING A SINGLE ELECTION
+export const useUpdateElection = () => {
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn:async (newData: {id:string, title: string, startDate: string, endDate: string}) => {
+          const response = await axiosPrivate.patch(`/election/single/${newData.id}`, {
+            title: newData.title,
+            start_date: newData.startDate,
+            end_date: newData.endDate,
+          } )
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'Election Updated :)',
+              duration: 2,
+          })
+          await queryClient.invalidateQueries({
+              queryKey: ['elections'],
+              exact: true
+          })
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.message){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.message}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            }
+      }
+  })
 }
