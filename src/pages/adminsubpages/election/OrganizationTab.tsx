@@ -468,7 +468,7 @@ export default function OrganizationTab() {
       {/* CREATE BUTTON */}
       <div className="top flex justify-between items-center pt-10  mx-5">
         <h3 className='text-lg pop-semibold text-gray-950 dark:text-gray-100'>Organizations</h3>
-        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 pr-3 pl-1 text-white pop-medium bg-[#3961ee] hover:text-[#3961ee] border-2 border-[#3961ee] hover:bg-transparent focus:outline-none rounded-2xl'>
+        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 pr-3 pl-1 text-white pop-medium bg-[#1AB98C] hover:text-[#1AB98C] border-2 border-[#1AB98C] hover:bg-transparent focus:outline-none rounded-2xl'>
           <BsPlus size={25} className='' />
           <h3 className='text-sm md:text-md'>CREATE</h3>
         </button>
@@ -481,7 +481,7 @@ export default function OrganizationTab() {
             ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
             : descendingOrganizations?.length === 0 
                 ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Organization</h4>
-                : <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 md:gap-5">
+                : <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
                 {descendingOrganizations?.map((org:DataType, index: any) =>(
                   <div key={index} className="card p-2 shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
                     {/* IMAGE DISPLAY */}
@@ -632,11 +632,11 @@ export default function OrganizationTab() {
 
       {/* UPDATE ORGANIZATION MULTI-PARENT DRAWER */}
       <Drawer title="Modify" onClose={onCloseMultiDrawer} open={openMulti}>
-        <div className='pop-medium'>
+        <div className='pop-medium flex flex-col'>
           {/* CONNECTIONS BUTTON */}
           <button onClick={showChildrenDrawer} className='border-2 py-1 px-2 rounded-md'>Connections</button>
           {/* CONNECTIONS BUTTON */}
-          <div className="img-holder flex justify-center relative mb-7">
+          <div className="img-holder flex justify-center relative my-5">
             <img 
               src={modifyUrl} alt={`${modifyName} Image`} 
               className='object-cover rounded-full border-2 border-gray-400 w-36 h-36'

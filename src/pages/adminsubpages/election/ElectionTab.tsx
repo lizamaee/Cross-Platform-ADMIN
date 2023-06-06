@@ -351,7 +351,7 @@ export default function ElectionTab() {
       {/* CREATE BUTTON */}
       <div className="top flex justify-between items-center pb-3 pt-10  mx-5">
         <h3 className='text-lg pop-semibold text-gray-950 dark:text-gray-100'>Elections</h3>
-        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 pr-3 pl-1 text-white pop-medium bg-[#3961ee] hover:text-[#3961ee] border-2 border-[#3961ee] hover:bg-transparent focus:outline-none rounded-2xl'>
+        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 pr-3 pl-1 text-white pop-medium bg-[#2F92F0] hover:text-[#2F92F0] border-2 border-[#2F92F0] hover:bg-transparent focus:outline-none rounded-2xl'>
           <BsPlus size={25} className='' />
           <h3 className='text-sm md:text-md'>CREATE</h3>
         </button>
@@ -493,7 +493,7 @@ export default function ElectionTab() {
 
       {/* UPDATE ELECTION MULTI-PARENT DRAWER */}
       <Drawer title="Modify" onClose={onCloseMultiDrawer} open={openMulti}>
-        <div className='pop-medium'>
+        <div className='pop-medium flex flex-col'>
           {/* CONNECTIONS BUTTON */}
           <button onClick={showChildrenDrawer} className='border-2 py-1 px-2 rounded-md'>Connections</button>
           {/* CONNECTIONS BUTTON */}
