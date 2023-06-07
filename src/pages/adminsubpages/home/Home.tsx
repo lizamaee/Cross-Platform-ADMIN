@@ -13,6 +13,7 @@ import { Skeleton } from 'antd'
 import {useQuery} from '@tanstack/react-query'
 import { useElections } from "../../../hooks/queries/useElection";
 import { useOrganizations } from "../../../hooks/queries/useOrganization";
+import { useUsers } from "../../../hooks/queries/useAdmin";
 
 
 interface Election {
@@ -104,12 +105,7 @@ export default function Home(){
   const organizationsQuery = useOrganizations()
 
   //Voters Query
-  const fetchVoters = async () => {
-    return await fetchData('get-all-voters');
-  };
-  const votersQuery = useQuery(
-    {queryKey: ['voters'], queryFn: fetchVoters},
-  ) 
+  const votersQuery = useUsers()
 
   //Voted Activites Query
   const fetchVotedActivities = async () => {
