@@ -8,6 +8,7 @@ import { Drawer, Dropdown, MenuProps, Modal, Space, Spin, Tooltip, message } fro
 import "react-datepicker/dist/react-datepicker.css";
 import { DownOutlined } from '@ant-design/icons';
 import { useCreatePosition, useDeletePosition, usePositions, useUpdatePosition } from '../../../hooks/queries/usePosition';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface DataType {
   id: string;
@@ -134,6 +135,8 @@ export default function PositionTab() {
     setCurrentCandidates(response)
   }
 
+  const queryClient = useQueryClient()
+
   //DISCONNECT SINGLE CANDIDATE FROM SPECIFIC POSITION
   const disConnectCandidate = async (candidateId: string, positionID: string) => {
     setIsDisConnecting(true)
@@ -151,6 +154,10 @@ export default function PositionTab() {
           content: 'Disconnected Successfully',
           duration: 2,
         });  
+        queryClient.invalidateQueries({
+          queryKey: ['candidates'],
+          exact: true
+        })
         getCurrentCandidates()
         getAvailableCandidates()
         setIsDisConnecting(false)
@@ -244,6 +251,10 @@ export default function PositionTab() {
           content: 'Connected Successfully',
           duration: 2,
         });  
+        queryClient.invalidateQueries({
+          queryKey: ['candidates'],
+          exact: true
+        })
         getCurrentCandidates()
         getAvailableCandidates()
         setIsConnecting(false)

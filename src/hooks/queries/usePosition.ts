@@ -104,6 +104,12 @@ export const useDeletePosition = () => {
             return response.data
         },
         onSuccess: async () => {
+            message.open({
+                key: 'successCreation',
+                type: 'success',
+                content: 'Position Deleted :)',
+                duration: 2,
+            })
             await queryClient.invalidateQueries({
                 queryKey: ['positions'],
                 exact: true
@@ -154,7 +160,7 @@ export const useUpdatePosition = () => {
           message.open({
               key: 'successCreation',
               type: 'success',
-              content: 'Organization Updated :)',
+              content: 'Position Updated :)',
               duration: 2,
           })
           await queryClient.invalidateQueries({

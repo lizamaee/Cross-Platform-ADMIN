@@ -157,7 +157,7 @@ export const useUpdateCandidate = () => {
           message.open({
               key: 'successCreation',
               type: 'success',
-              content: 'Organization Updated :)',
+              content: 'Candidate Updated :)',
               duration: 2,
           })
           await queryClient.invalidateQueries({

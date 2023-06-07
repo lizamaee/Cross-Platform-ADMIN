@@ -104,6 +104,12 @@ export const useDeleteOrganization = () => {
             return response.data
         },
         onSuccess: async () => {
+            message.open({
+                key: 'successCreation',
+                type: 'success',
+                content: 'Organization Deleted :)',
+                duration: 2,
+            })
             await queryClient.invalidateQueries({
                 queryKey: ['organizations'],
                 exact: true
