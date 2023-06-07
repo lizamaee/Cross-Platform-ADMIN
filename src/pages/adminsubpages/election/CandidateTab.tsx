@@ -4,7 +4,7 @@ import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
 import {FaCamera} from 'react-icons/fa' 
-import { Drawer, Modal, Progress, Spin, Tooltip, message } from 'antd';
+import { Drawer, Modal, Progress, Spin, Tag, Tooltip, message } from 'antd';
 import "react-datepicker/dist/react-datepicker.css";
 import { useDropzone } from 'react-dropzone';
 import React from 'react';
@@ -281,6 +281,22 @@ export default function CandidateTab() {
     setUploadProgress(0)
   }
 
+  const [modal2Open, setModal2Open] = useState(false);
+  const [selectedFullName, setSelectedFullName] = useState<string>('')
+  const [selectedUrl, setSelectedUrl] = useState<string>('')
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('')
+  const [selectedParty, setSelectedParty] = useState<string>('')
+
+  const handleSeeMore = (id: string) => {
+    setModal2Open(true)
+    const selectedCandidate = candidatesQuery.data?.filter((org: DataType)=> org.id === id)
+
+    setSelectedFullName(selectedCandidate[0].fullname)
+    setSelectedUrl(selectedCandidate[0].imageUrl)
+    setSelectedPlatform(selectedCandidate[0].platform)
+    setSelectedParty(selectedCandidate[0].party)
+  }
+
   return (
     <div className=' bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
       {/* CREATE BUTTON */}
@@ -292,6 +308,27 @@ export default function CandidateTab() {
         </button>
       </div>
       {/* CREATE BUTTON */}
+
+      <Modal
+        title="Candidate"
+        open={modal2Open}
+        onCancel={() => setModal2Open(false)}
+        footer={[]}
+      >
+        <div className="party pop-medium capitalize flex justify-end text-sm text-purple-500">
+          <Tag bordered={false} color="purple">
+          {selectedParty}
+          </Tag>
+        </div>
+        <div className="img-profile shrink-0 flex justify-center">
+          <img className='h-32 w-32 object-cover rounded-full drop-shadow-lg' src={selectedUrl} alt={selectedFullName + selectedParty} />
+        </div>
+        <h2 className='pop-semibold capitalize text-center py-2 text-gray-900'>{selectedFullName}</h2>
+        <h5 className='py-3 px-2 pop-semibold text-xs'>Platform</h5>
+        <div className="candidate-platform px-2 max-h-56 overflow-y-auto centered">
+          <p className='text-justify indent-7'>{selectedPlatform}</p>
+        </div>
+      </Modal>
 
       {/* ALL CANDIDATES */}
       <div className="container w-full mx-auto p-4 overflow-x-auto">
@@ -313,8 +350,8 @@ export default function CandidateTab() {
 
                     <div className="lower grid grid-cols-2 items-center pt-3">
                     <div className="btn-more px-1 flex justify-center">
-                      <Tooltip title='See More' color='#a75de1'>
-                        <button className='pop-semibold text-sm p-1 border-2 border-[#a75de1] text-[#a75de1] hover:bg-[#a75de1] hover:text-white rounded-xl'>More Details</button>
+                      <Tooltip title='See More' color='#4b5563'>
+                        <button onClick={() => handleSeeMore(can.id)} className='pop-semibold text-sm p-1 border-2 border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white rounded-lg'>More Details</button>
                       </Tooltip>   
                     </div>
                       {/* ACTIONS DISPLAY */}
