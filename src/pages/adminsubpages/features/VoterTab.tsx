@@ -5,13 +5,17 @@ import { useMemo, useState } from "react"
 import { ZodType, z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRecoverAccount } from "../../../hooks/queries/useVoter"
+import { useDeleteAccount, useRecoverAccount } from "../../../hooks/queries/useVoter"
 
 type RecoverFormData = {
     student_id: string;
     newMobileNumber: string;
     newPassword: string;
     pin_code: string;
+}
+
+type DeleteFormData = {
+    student_id: string;
 }
 
 export default function VoterTab() {
@@ -35,7 +39,9 @@ export default function VoterTab() {
      //OPEN RECOVER DRAWER STATE
     const [open, setOpen] = useState(false)
     const [showPassword, setShowPassword] = useState(false);
-    const [studentID,setStudentID] = useState('')
+
+    //OPEN DELETE DRAWER STATE
+    const [openDelete, setOpenDelete] = useState(false)
 
     //OPEN RECOVER DRAWER FUNCTION
     const showDrawer = () => {
@@ -79,11 +85,34 @@ export default function VoterTab() {
         .regex(/^\d{4}$/, { message: "PIN code must be 4 digit numbers" })
         .min(4)
         .max(4),
-      })
-    
-      const {register, handleSubmit, formState:{errors}, reset} = useForm<RecoverFormData>({resolver: zodResolver(schema)})
-    
+    })
+    const {register, handleSubmit, formState:{errors}, reset} = useForm<RecoverFormData>({resolver: zodResolver(schema)})
 
+
+    //OPEN DELETE DRAWER FUNCTION
+    const showDeleteDrawer = () => {
+        setOpenDelete(true)
+    }
+    
+    //CLOSE DELETE DRAWER FUNCTION
+    const onCloseDelete = () => {
+        deleteReset()
+        setOpenDelete(false)
+    }
+
+    //DELETE ACCOUNT FORM SCHEMA
+    const deleteSchema: ZodType<DeleteFormData> = z.object({
+        student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7)
+    })
+    const {register:deleteRegister, handleSubmit:handleSubmitDelete, formState:{errors:errorDelete}, reset:deleteReset} = useForm<DeleteFormData>({resolver: zodResolver(deleteSchema)})
+
+
+    //DELETE USE QUERY HOOK
+    const {mutate: deleteAccount, isLoading: isDeleting} = useDeleteAccount()
+    //DELETE ACCOUNT FUNCTION
+    const handleDelete = (data: DeleteFormData) => {
+        deleteAccount(data.student_id)
+    }
 
     return (
         <div className="py-5 px-3 bg-white dark:bg-[#303030] rounded-b-lg shadow-md">
@@ -110,9 +139,9 @@ export default function VoterTab() {
 
                 {/* ACTIONS */}
                 <h3 className="pt-5 pop-semibold text-gray-900 dark:text-gray-300">Actions</h3>
-                <div className="actions pop-medium flex gap-2 md:gap-5 border-b-2 py-4 border-dashed dark:border-gray-500">
+                <div className="actions pop-medium flex flex-col md:flex-row gap-2 md:gap-5 border-b-2 py-4 border-dashed dark:border-gray-500">
                     <button onClick={showDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Recover Voters Account</button>
-                    <button className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Delete Voters Account</button>
+                    <button onClick={showDeleteDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Delete Voters Account</button>
                 </div>
                 {/* ACTIONS */}
 
@@ -160,7 +189,7 @@ export default function VoterTab() {
                             placeholder="ex. 1234567"
                             maxLength={7}
                             minLength={7}
-                            required onChange={(e) => setStudentID(e.target.value)} type="text" className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
+                            className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
                         />
                         {errors.student_id && <span className="text-red-400 text-center text-sm">{errors.student_id.message}</span>}
                         <label className='pb-1 pt-2 opacity-80'>New PIN</label>
@@ -220,6 +249,37 @@ export default function VoterTab() {
                 {/* RECOVER BUTTON */}
             </Drawer>
             {/* RECOVER ACCOUNT DRAWER */}
+
+            {/* DELETE ACCOUNT DRAWER */}
+            <Drawer title="Delete Account" placement="right" onClose={onCloseDelete} open={openDelete}>
+                <form className="delete-account-container py-3">
+                    <div className="name flex flex-col pop-medium">
+                        <label className='pb-1 pt-5 opacity-80'>Enter Student ID</label>
+                        <input 
+                            {...deleteRegister('student_id')}
+                            placeholder="ex. 1234567"
+                            maxLength={7}
+                            minLength={7}
+                            className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
+                        />
+                        {errorDelete.student_id && <span className="text-red-400 text-center text-sm">{errorDelete.student_id.message}</span>}
+                    </div>
+                </form>
+                {/* DELETE BUTTON */}
+                <div className="btn-container flex items-center justify-center pt-3">
+                    {!isDeleting
+                    ? <button className='flex items-center border-2 border-red-400 text-red-400 py-2 px-7 rounded-full' onClick={handleSubmitDelete(handleDelete)}>
+                        <p className='pop-medium'>Delete</p>   
+                        </button>
+                    : <button disabled={isDeleting} className='flex pop-medium items-center border-2 border-red-400 text-red-400 py-2 px-3 rounded-full'>
+                        Deleting...
+                        <Spin className='pl-1'/> 
+                        </button>
+                    }
+                </div>
+                {/* DELETE BUTTON */}
+            </Drawer>
+            {/* DELETE ACCOUNT DRAWER */}
         </div>
     )
 }
