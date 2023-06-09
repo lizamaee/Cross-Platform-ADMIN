@@ -1,17 +1,26 @@
-import { Drawer, Modal, Skeleton, Spin } from 'antd'
+import { Button, Drawer, Modal, Skeleton, Spin, message } from 'antd'
 import { FaUserShield } from 'react-icons/fa'
 import { useChangeRole, useUsers } from '../../../hooks/queries/useAdmin'
 import { useState } from 'react'
 import { ZodType, z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import * as XLSX from 'xlsx';
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 
 type PromoteFormData = {
     student_id: string;
 }
 
+type XlsxFormData = {
+    sheet: string;
+    column: string;
+}
 
 export default function AdminTab() {
+
+    const axiosPrivate = useAxiosPrivate()
+
     //USER HOOKS
     //GET ALL
     const usersQuery = useUsers()
@@ -77,6 +86,144 @@ export default function AdminTab() {
             new_role: 'admin'
         })
     }
+    
+    const [childrenDrawer, setChildrenDrawer] = useState(false);
+    const [openMulti, setOpenMulti] = useState(false);
+    const [isUploading, setIsUploading] = useState(false)
+
+    //OPEN UPLOAD XLSX ID MULTI-PARENT DRAWER FUNCTION
+    const openMultiDrawer = () => {
+        setOpenMulti(true)
+    }
+
+    //CLOSE UPLOAD XLSX ID MULTI-PARENT DRAWER FUNCTION
+    const onCloseMultiDrawer = () => {
+        setOpenMulti(false)
+    }
+
+    //OPEN UPLOAD XLSX ID MULTI-CHILD DRAWER FUNCTION
+    const showChildrenDrawer = () => {
+        setChildrenDrawer(true);
+    };
+    //CLOSE UPLOAD XLSX ID MULTI-CHILD DRAWER FUNCTION
+    const onChildrenDrawerClose = () => {
+        setChildrenDrawer(false);
+        xlsxReset()
+    };
+
+    const handleUploadSingleId = () => {}
+
+    //UPLOAD XLSX ID
+    // onchange states
+    const [excelFile, setExcelFile] = useState<null>(null);
+    const [typeError, setTypeError] = useState<string>('');
+
+    const [xlsxFile, setXlsxFile] = useState<null>(null);
+
+    // submit state
+    const [excelData, setExcelData] = useState<any[] | null>(null);
+
+    const [viewXlsx, setViewXlsx] = useState(false);
+
+    //SELECTING XLSX FILE EVENT HANDLE
+    const handleFile=(e:any)=>{
+        let fileTypes = ['application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','text/csv'];
+        let selectedFile = e.target.files[0];
+        if(selectedFile){
+            if(selectedFile&&fileTypes.includes(selectedFile.type)){
+                setTypeError('');
+                let reader = new FileReader();
+                reader.readAsArrayBuffer(selectedFile);
+                reader.onload=(e:any)=>{
+                setXlsxFile(selectedFile);
+                console.log(selectedFile);
+                setExcelFile(e.target.result);
+                }
+            }
+            else{
+                setTypeError('Please select only excel file types');
+                setExcelFile(null);
+                setExcelData(null)
+            }
+        }else{
+        console.log('Please select your file');
+        }
+    }
+    
+    const handleFileSubmit = async (data: XlsxFormData) => {
+        if (excelFile !== null && xlsxFile !== null) {
+            setIsUploading(true)
+            try {
+                const formData = new FormData();
+                formData.append('file', xlsxFile);
+                formData.append('sheet', data.sheet); // default to sheet '0' if not assigned
+                formData.append('column', data.column); // default to column 'A' if not assigned
+        
+                const response = await axiosPrivate.post('/id/xlsx', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                setIsUploading(false)
+                message.open({
+                    key: 'successCreation',
+                    type: 'success',
+                    content: `${response.data.message}`,
+                    duration: 2,
+                })
+            } catch (error:any) {
+                setIsUploading(false)
+                if(error.message === 'Network Error') {
+                    message.open({
+                    type: 'error',
+                    content: 'Server Unavailable',
+                    className: 'custom-class pop-medium',
+                    duration: 2.5,
+                    });
+                } else if(error.response.data?.message){
+                    message.open({
+                    type: 'error',
+                    content: `${error.response.data.message}`,
+                    className: 'custom-class pop-medium',
+                    duration: 2.5,
+                    });
+                }else {
+                    // Handle other errors
+                    error.response.data.errors?.map((err:any) => {
+                    message.open({
+                        type: 'error',
+                        content: `${err.msg}`,
+                        className: 'custom-class pop-medium',
+                        duration: 2.5,
+                    })
+                    })
+                }
+            }
+        }
+    };
+
+    //XLSX UPLOAD ID FORM SCHEMA
+    const xlsxSchema: ZodType<XlsxFormData> = z.object({
+        sheet: z.string()
+        .regex(/^(?:[0-9]|[1-9][0-9]?)$/, { message: "Sheet must be a number between 0 and 99" })
+        .max(2),
+        column: z.string()
+        .regex(/^[A-Z]$/, { message: "Column Letter must be a capital letter between A-Z" })
+        .min(1)
+        .max(1),
+    })
+    const {register:xlsxRegister, handleSubmit:handleSubmitXlsx, formState:{errors:errorXlxs}, reset:xlsxReset} = useForm<XlsxFormData>({resolver: zodResolver(xlsxSchema)})
+
+    //PREVIEW TABLE FUNCTION
+    const previewExcel = (e:any) => {
+        e.preventDefault();
+        if(excelFile!==null){
+            const workbook = XLSX.read(excelFile,{type: 'buffer'});
+            const worksheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[worksheetName];
+            const data = XLSX.utils.sheet_to_json(worksheet);
+            setExcelData(data);
+        }   
+        setViewXlsx(true)
+    }
 
     return (
         <div className='py-5 px-3 bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
@@ -102,7 +249,7 @@ export default function AdminTab() {
                 <h3 className="pt-5 pop-semibold text-gray-900 dark:text-gray-300">Actions</h3>
                 <div className="actions pop-medium flex flex-col md:flex-row gap-2 md:gap-5 border-b-2 py-4 border-dashed dark:border-gray-500">
                     <button onClick={showPromoteDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Promote to Admin</button>
-                    <button className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Upload Student ID</button>
+                    <button onClick={openMultiDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Upload Student ID</button>
                 </div>
                 {/* ACTIONS */}
                 {/* ADMINS */}
@@ -162,6 +309,127 @@ export default function AdminTab() {
                 {/* PROMOTE BUTTON */}
             </Drawer>
             {/* PROMOTE ACCOUNT DRAWER */}
+
+            {/* UPLOAD XLSX ID MULTI-PARENT DRAWER */}
+            <Drawer title="Upload Student ID" onClose={onCloseMultiDrawer} open={openMulti}>
+                <div className='pop-medium flex flex-col'>
+                {/* UPLOAD XLSX BUTTON */}
+                <button onClick={showChildrenDrawer} className='border-2 py-1 px-2 rounded-md'>Upload Excel File</button>
+                {/* UPLOAD XLSX BUTTON */}
+
+                {/* UPLOAD SINGLE BUTTON */}
+                <div className="cnt flex items-center justify-center p-5">
+                    {!isUploading 
+                    ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={handleUploadSingleId}>
+                        <p className='pop-medium'>Upload</p>   
+                        </button>
+                    : <button disabled={isUploading} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                        Uploading...
+                        <Spin className='pl-1'/> 
+                        </button>
+                    }
+                </div>
+                {/* UPLOAD SINGLE BUTTON */}
+                </div>
+                {/* UPLOAD XLSX ID MULTI-CHILD DRAWER */}
+                <Drawer
+                    title="Upload Excel File"
+                    width={320}
+                    onClose={onChildrenDrawerClose}
+                    open={childrenDrawer}
+                >
+                <div className="wrapp px-1 rounded-xl py-2 pop-regular mt-16 shadow-sm">
+                    {/* UPLOAD ID VIA XLXS */}
+                    <button onClick={previewExcel} className="bg-gray-100 py-1 px-2 rounded-full border-blue-200 border-2">Preview</button>
+                    <form className="py-8 w-full">
+                        <input type="file" className="block w-full text-sm text-slate-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-violet-50 file:text-violet-700
+                        hover:file:bg-violet-100
+                        " required onChange={handleFile} />
+
+                        {typeError&&(
+                            <div className="text-red-400 py-1 my-2 text-sm text-center border-[1px] border-red-400 rounded-md" role="alert">{typeError}</div>
+                        )}
+
+                        <div className="inputs py-5">
+                            <label className='pb-1 block opacity-80'>Sheet Number</label>
+                            <input 
+                                {...xlsxRegister("sheet")}
+                                placeholder="ex. 0"
+                                maxLength={2}
+                                minLength={1}
+                                className='py-1 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
+                            />
+                            {errorXlxs.sheet && <span className="block text-red-400 text-center text-sm">{errorXlxs.sheet.message}</span>}
+
+                            <label className='pb-1 block mt-4 opacity-80'>Column Letter</label>
+                            <input 
+                                {...xlsxRegister("column")}
+                                placeholder="ex. A"
+                                maxLength={1}
+                                minLength={1}
+                                className='py-1 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
+                            />
+                            {errorXlxs.column && <span className="block text-red-400 text-center text-sm">{errorXlxs.column.message}</span>}
+                        </div>
+                        
+                        <div className="btn flex items-center justify-center py-5">
+                            <button onClick={handleSubmitXlsx(handleFileSubmit)} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] rounded-full">UPLOAD</button>
+                        </div>
+                        
+                    </form>
+                    <Modal
+                        title="Selected Excel File Preview"
+                        centered
+                        open={viewXlsx}
+                        onCancel={() => setViewXlsx(false)}
+                        footer={[
+                            <Button key="close" onClick={() => setViewXlsx(false)}>
+                                Close
+                            </Button>,        
+                        ]}
+                        width={1000}
+                    >
+                        {/* view data */}
+                        <div className="viewer py-10">
+                            {excelData?(
+                            <div className="table-responsive w-full max-h-[450px] overflow-y-auto overflow-scroll centered text-center">
+                                <table className="table border-2">
+
+                                <thead>
+                                    <tr className=' border-2'>
+                                    {Object.keys(excelData[0]).map((key)=>(
+                                        <th key={key} className=' border-2 border-gray-400 py-1 px-2'>{key}</th>
+                                    ))}
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {excelData?.map((individualExcelData:any, index:any)=>(
+                                    <tr key={index} className=' border-2'>
+                                        {Object.keys(individualExcelData).map((key)=>(
+                                        <td key={key} className=' border-2 p-1'>{individualExcelData[key]}</td>
+                                        ))}
+                                    </tr>
+                                    ))}
+                                </tbody>
+
+                                </table>
+                            </div>
+                            ):(
+                            <div>Please upload Excel (.xlsx) file.</div>
+                            )}
+                        </div>
+                    </Modal>
+                    {/* UPLOAD ID VIA XLXS */}
+                </div>
+                </Drawer>
+                {/* UPLOAD XLSX ID MULTI-CHILD DRAWER */}
+            </Drawer>
+            {/* UPLOAD XLSX ID MULTI-PARENT DRAWER */}
         </div>
     )
 }
