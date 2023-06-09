@@ -1,8 +1,14 @@
-import { Modal, Skeleton } from 'antd'
+import { Drawer, Modal, Skeleton, Spin } from 'antd'
 import { FaUserShield } from 'react-icons/fa'
-import { useDemoteAdmin, useUsers } from '../../../hooks/queries/useAdmin'
+import { useChangeRole, useUsers } from '../../../hooks/queries/useAdmin'
+import { useState } from 'react'
+import { ZodType, z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 
-
+type PromoteFormData = {
+    student_id: string;
+}
 
 
 export default function AdminTab() {
@@ -14,7 +20,7 @@ export default function AdminTab() {
     const adminFilter = usersQuery?.data?.filter((user:any) => user.role === 'admin')
 
     //DEMOTION HOOKS
-    const {mutate:demoteAdmin} = useDemoteAdmin()
+    const {mutate:demoteAdmin} = useChangeRole()
 
     //DEMOTE FUNCTION
     const handleDemote = async (id:string) => {
@@ -40,6 +46,38 @@ export default function AdminTab() {
         onCancel() {},
         });
     }
+
+    //OPEN PROMOTE DRAWER STATE
+    const [openPromote, setOpenPromote] = useState(false)
+
+    //OPEN PROMOTE DRAWER FUNCTION
+    const showPromoteDrawer = () => {
+        setOpenPromote(true)
+    }
+    
+    //CLOSE PROMOTE DRAWER FUNCTION
+    const onClosePromote = () => {
+        promoteReset()
+        setOpenPromote(false)
+    }
+
+    //PROMOTE ACCOUNT FORM SCHEMA
+    const promoteSchema: ZodType<PromoteFormData> = z.object({
+        student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7)
+    })
+    const {register:promoteRegister, handleSubmit:handleSubmitPromote, formState:{errors:errorPromote}, reset:promoteReset} = useForm<PromoteFormData>({resolver: zodResolver(promoteSchema)})
+
+
+    //PROMOTE USE QUERY HOOK
+    const {mutate: promoteAccount, isLoading: isPromoting} = useChangeRole()
+    //PROMOTE ACCOUNT FUNCTION
+    const handlePromote = (data: PromoteFormData) => {
+        promoteAccount({
+            student_id: data.student_id,
+            new_role: 'admin'
+        })
+    }
+
     return (
         <div className='py-5 px-3 bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
             <div className="adminTab-container">
@@ -63,7 +101,7 @@ export default function AdminTab() {
                 {/* ACTIONS */}
                 <h3 className="pt-5 pop-semibold text-gray-900 dark:text-gray-300">Actions</h3>
                 <div className="actions pop-medium flex flex-col md:flex-row gap-2 md:gap-5 border-b-2 py-4 border-dashed dark:border-gray-500">
-                    <button className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Promote to Admin</button>
+                    <button onClick={showPromoteDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Promote to Admin</button>
                     <button className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Upload Student ID</button>
                 </div>
                 {/* ACTIONS */}
@@ -94,6 +132,36 @@ export default function AdminTab() {
                 </div>
                 {/* ADMINS */}
             </div>
+            {/* PROMOTE ACCOUNT DRAWER */}
+            <Drawer title="Promote Account" placement="right" onClose={onClosePromote} open={openPromote}>
+                <form className="promote-account-container py-3">
+                    <div className="name flex flex-col pop-medium">
+                        <label className='pb-1 pt-5 opacity-80'>Enter Student ID</label>
+                        <input 
+                            {...promoteRegister('student_id')}
+                            placeholder="ex. 1234567"
+                            maxLength={7}
+                            minLength={7}
+                            className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
+                        />
+                        {errorPromote.student_id && <span className="text-red-400 text-center text-sm">{errorPromote.student_id.message}</span>}
+                    </div>
+                </form>
+                {/* PROMOTE BUTTON */}
+                <div className="btn-container flex items-center justify-center pt-3">
+                    {!isPromoting
+                    ? <button className='flex items-center border-2 border-blue-400 text-blue-400 py-2 px-7 rounded-full' onClick={handleSubmitPromote(handlePromote)}>
+                        <p className='pop-medium'>Promote</p>   
+                        </button>
+                    : <button disabled={isPromoting} className='flex pop-medium items-center border-2 border-blue-400 text-blue-400 py-2 px-3 rounded-full'>
+                        Promoting...
+                        <Spin className='pl-1'/> 
+                        </button>
+                    }
+                </div>
+                {/* PROMOTE BUTTON */}
+            </Drawer>
+            {/* PROMOTE ACCOUNT DRAWER */}
         </div>
     )
 }

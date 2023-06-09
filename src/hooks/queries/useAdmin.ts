@@ -42,8 +42,8 @@ export const useUsers = () =>{
   }) 
 } 
 
-//QUERY FOR DEMOTING ADMIN
-export const useDemoteAdmin = () => {
+//QUERY FOR DEMOTING/PROMOTING ADMIN
+export const useChangeRole = () => {
   const queryClient = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
   return useMutation({
@@ -58,7 +58,7 @@ export const useDemoteAdmin = () => {
           message.open({
               key: 'successCreation',
               type: 'success',
-              content: 'Admin Demoted :)',
+              content: 'Success :)',
               duration: 2,
           })
           await queryClient.invalidateQueries({
@@ -74,10 +74,10 @@ export const useDemoteAdmin = () => {
                 className: 'custom-class pop-medium',
                 duration: 2.5,
               });
-            } else if(error.response.data?.message){
+            } else if(error.response.data?.error){
               message.open({
                 type: 'error',
-                content: `${error.response.data.message}`,
+                content: `${error.response.data.error}`,
                 className: 'custom-class pop-medium',
                 duration: 2.5,
               });
