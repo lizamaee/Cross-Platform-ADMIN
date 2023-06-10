@@ -1,12 +1,13 @@
 import { Button, Drawer, Modal, Skeleton, Spin, message } from 'antd'
-import { FaUserShield } from 'react-icons/fa'
-import { useChangeRole, useUsers } from '../../../hooks/queries/useAdmin'
+import { FaUpload, FaUserShield } from 'react-icons/fa'
+import { useChangeRole, useUploadId, useUsers } from '../../../hooks/queries/useAdmin'
 import { useState } from 'react'
 import { ZodType, z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as XLSX from 'xlsx';
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
+import { MdCloudUpload } from 'react-icons/md'
 
 type PromoteFormData = {
     student_id: string;
@@ -98,6 +99,7 @@ export default function AdminTab() {
 
     //CLOSE UPLOAD XLSX ID MULTI-PARENT DRAWER FUNCTION
     const onCloseMultiDrawer = () => {
+        singleReset()
         setOpenMulti(false)
     }
 
@@ -110,8 +112,6 @@ export default function AdminTab() {
         setChildrenDrawer(false);
         xlsxReset()
     };
-
-    const handleUploadSingleId = () => {}
 
     //UPLOAD XLSX ID
     // onchange states
@@ -225,6 +225,20 @@ export default function AdminTab() {
         setViewXlsx(true)
     }
 
+    //UPLOAD SINGLE STUDENT ID
+    const singleSchema: ZodType<PromoteFormData> = z.object({
+        student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7)
+    })
+    const {register:singleRegister, handleSubmit:handleSubmitSingle, formState:{errors:errorSingle}, reset:singleReset} = useForm<PromoteFormData>({resolver: zodResolver(singleSchema)})
+
+    //SINGLE ID QUERY HOOKS
+    const {mutate:uploadSingleID} = useUploadId()
+    
+    //UPLOAD SINGLE ID FUNCTION
+    const handleUploadSingleId = (data:PromoteFormData) => {
+        uploadSingleID({student_id: data.student_id})
+    }
+
     return (
         <div className='py-5 px-3 bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
             <div className="adminTab-container">
@@ -311,25 +325,39 @@ export default function AdminTab() {
             {/* PROMOTE ACCOUNT DRAWER */}
 
             {/* UPLOAD XLSX ID MULTI-PARENT DRAWER */}
-            <Drawer title="Upload Student ID" onClose={onCloseMultiDrawer} open={openMulti}>
+            <Drawer title="Upload Student ID" className='centered' onClose={onCloseMultiDrawer} open={openMulti}>
                 <div className='pop-medium flex flex-col'>
-                {/* UPLOAD XLSX BUTTON */}
-                <button onClick={showChildrenDrawer} className='border-2 py-1 px-2 rounded-md'>Upload Excel File</button>
-                {/* UPLOAD XLSX BUTTON */}
+                    {/* UPLOAD XLSX BUTTON */}
+                    <button onClick={showChildrenDrawer} className='border-2 py-1 px-2 rounded-md'>Upload Excel File</button>
+                    {/* UPLOAD XLSX BUTTON */}
 
-                {/* UPLOAD SINGLE BUTTON */}
-                <div className="cnt flex items-center justify-center p-5">
-                    {!isUploading 
-                    ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={handleUploadSingleId}>
-                        <p className='pop-medium'>Upload</p>   
-                        </button>
-                    : <button disabled={isUploading} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
-                        Uploading...
-                        <Spin className='pl-1'/> 
-                        </button>
-                    }
-                </div>
-                {/* UPLOAD SINGLE BUTTON */}
+                    {/* UPLOAD SINGLE ID */}
+                    <div className="single flex justify-center rounded-2xl mt-10 border-t-2 py-5 uppercase pop-semibold">
+                        <h4>Single ID Upload</h4>
+                    </div>
+                    <form>
+                        <label className='pb-1 opacity-80 block'>Student ID</label>
+                        <div className="single-input flex justify-between">
+                            <input 
+                                    {...singleRegister('student_id')}
+                                    placeholder="ex. 1234567"
+                                    maxLength={7}
+                                    minLength={7}
+                                    className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
+                            />
+
+                            {/* UPLOAD SINGLE BUTTON */}
+                            <div className="cnt flex items-center h-full w-10  justify-center">
+                                <button className='flex items-center border-2 border-gray-400 text-gray-400 py-2 px-2 rou rounded-3xl  hover:bg-gray-400 hover:text-white' onClick={handleSubmitSingle(handleUploadSingleId)}>
+                                    <MdCloudUpload size={30}/> 
+                                </button>
+                            </div>
+                            {/* UPLOAD SINGLE BUTTON */}
+                        </div>
+                        {errorSingle.student_id && <span className="text-red-400 block py-4 text-center text-sm">{errorSingle.student_id.message}</span>}
+                    </form>
+                    {/* UPLOAD SINGLE ID */}
+
                 </div>
                 {/* UPLOAD XLSX ID MULTI-CHILD DRAWER */}
                 <Drawer
@@ -377,7 +405,7 @@ export default function AdminTab() {
                         </div>
                         
                         <div className="btn flex items-center justify-center py-5">
-                            <button onClick={handleSubmitXlsx(handleFileSubmit)} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] rounded-full">UPLOAD</button>
+                            <button onClick={handleSubmitXlsx(handleFileSubmit)} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white rounded-full">UPLOAD</button>
                         </div>
                         
                     </form>
