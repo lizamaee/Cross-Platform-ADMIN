@@ -90,6 +90,52 @@ export const useUploadId = () => {
   })
 }
 
+//QUERY FOR UPLOADING MULTIPLE STUDENT ID
+export const useUploadIds = () => {
+  const axiosPrivate = useAxiosPrivate()
+
+  return useMutation({
+      mutationFn: async (newStudentIds: {student_ids: string}) =>{
+          const response = await axiosPrivate.post('/id/multiple', newStudentIds)
+          return response.data
+      },
+      onSuccess: async (data) => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: `${data.message} Successfully`,
+              duration: 2,
+          });
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            } 
+      }
+  })
+}
 //QUERY FOR DEMOTING/PROMOTING ADMIN
 export const useChangeRole = () => {
   const queryClient = useQueryClient()
