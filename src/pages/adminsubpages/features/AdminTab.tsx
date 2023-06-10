@@ -1,6 +1,6 @@
 import { Button, Drawer, Modal, Skeleton, Spin, message } from 'antd'
-import { FaUpload, FaUserShield } from 'react-icons/fa'
-import { useChangeRole, useUploadId, useUsers } from '../../../hooks/queries/useAdmin'
+import { FaUserShield } from 'react-icons/fa'
+import { useChangeRole, useUploadId, useUploadIds, useUsers } from '../../../hooks/queries/useAdmin'
 import { useState } from 'react'
 import { ZodType, z } from 'zod'
 import { useForm } from 'react-hook-form'
@@ -100,6 +100,7 @@ export default function AdminTab() {
     //CLOSE UPLOAD XLSX ID MULTI-PARENT DRAWER FUNCTION
     const onCloseMultiDrawer = () => {
         singleReset()
+        multipleReset()
         setOpenMulti(false)
     }
 
@@ -232,11 +233,28 @@ export default function AdminTab() {
     const {register:singleRegister, handleSubmit:handleSubmitSingle, formState:{errors:errorSingle}, reset:singleReset} = useForm<PromoteFormData>({resolver: zodResolver(singleSchema)})
 
     //SINGLE ID QUERY HOOKS
-    const {mutate:uploadSingleID} = useUploadId()
+    const {mutate:uploadSingleID, isLoading:isSingleLoading} = useUploadId()
     
     //UPLOAD SINGLE ID FUNCTION
     const handleUploadSingleId = (data:PromoteFormData) => {
         uploadSingleID({student_id: data.student_id})
+    }
+
+    //UPLOAD MULTIPLE STUDENT ID
+    const multipleSchema: ZodType<PromoteFormData> = z.object({
+        student_id: z
+        .string()
+        .refine((value) => {
+          const studentIds = value.split(',');
+          return studentIds.every((id) => /^\d{7}$/.test(id.trim()));
+        }, 'Student IDs should be comma-separated 7-digit numbers'),
+    });
+    const {register:multipleRegister, handleSubmit:handleSubmitMultiple, formState:{errors:errorMultiple}, reset:multipleReset} = useForm<PromoteFormData>({resolver: zodResolver(multipleSchema)})
+    
+    //MULTIPLE ID QUERY HOOKS
+    const {mutate:uploadMultipleID, isLoading: isMultiLoading} = useUploadIds()
+    const handleUploadMultipleId = (data: PromoteFormData) => {
+        uploadMultipleID({student_ids: data.student_id})
     }
 
     return (
@@ -347,16 +365,39 @@ export default function AdminTab() {
                             />
 
                             {/* UPLOAD SINGLE BUTTON */}
-                            <div className="cnt flex items-center h-full w-10  justify-center">
-                                <button className='flex items-center border-2 border-gray-400 text-gray-400 py-2 px-2 rou rounded-3xl  hover:bg-gray-400 hover:text-white' onClick={handleSubmitSingle(handleUploadSingleId)}>
-                                    <MdCloudUpload size={30}/> 
-                                </button>
+                            <div className="cnt flex items-center h-12 w-10  justify-center">
+                                {isSingleLoading
+                                    ? <Spin size='large' className=' pt-3 pb-1'/>
+                                    : <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] h-12 px-2 rou rounded-full box-border  hover:bg-[#1677ff] hover:text-white' onClick=   {handleSubmitSingle(handleUploadSingleId)}>
+                                        <MdCloudUpload size={30}/> 
+                                    </button>
+                                }
                             </div>
                             {/* UPLOAD SINGLE BUTTON */}
                         </div>
                         {errorSingle.student_id && <span className="text-red-400 block py-4 text-center text-sm">{errorSingle.student_id.message}</span>}
                     </form>
                     {/* UPLOAD SINGLE ID */}
+
+                    {/* UPLOAD MULTIPLE ID */}
+                    <div className="single flex justify-center mt-10 border-t-2 py-5 uppercase pop-semibold">
+                        <h4>Multiple ID Upload</h4>
+                    </div>
+                    {/* UPLOAD MULTIPLE ID */}
+                    <form onSubmit={handleSubmitMultiple(handleUploadMultipleId)}>
+                        <textarea className='p-3 resize-none focus:outline-indigo-400 rounded-md border-solid border-2'  {...multipleRegister('student_id')} name="student_id" placeholder='ex. 1234567,0987654, ...' cols={40} rows={8}/>
+                        
+                        {errorMultiple.student_id && <span className="text-red-400 block py-4 text-center text-sm">{errorMultiple.student_id.message}</span>}
+
+                        {/* UPLOAD MULTIPLE BUTTON */}
+                        <div className="btn flex items-center justify-center pt-5">
+                            {isMultiLoading 
+                                ? <button disabled={isMultiLoading} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white rounded-full">Uploading...</button>
+                                : <button type='submit' disabled={isMultiLoading} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white rounded-full">Upload</button>
+                            }
+                        </div>
+                        {/* UPLOAD MULTIPLE BUTTON */}
+                    </form>
 
                 </div>
                 {/* UPLOAD XLSX ID MULTI-CHILD DRAWER */}
