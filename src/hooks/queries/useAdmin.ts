@@ -42,6 +42,54 @@ export const useUsers = () =>{
   }) 
 } 
 
+//QUERY FOR UPLOADING A SINGLE STUDENT ID
+export const useUploadId = () => {
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+
+  return useMutation({
+      mutationFn: async (newStudentId: {student_id: string}) =>{
+          const response = await axiosPrivate.post('/id', newStudentId)
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'ID Uploaded Successfully',
+              duration: 2,
+          });
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            } 
+      }
+  })
+}
+
 //QUERY FOR DEMOTING/PROMOTING ADMIN
 export const useChangeRole = () => {
   const queryClient = useQueryClient()
