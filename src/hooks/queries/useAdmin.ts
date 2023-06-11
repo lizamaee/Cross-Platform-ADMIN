@@ -189,3 +189,111 @@ export const useChangeRole = () => {
       }
   })
 }
+//QUERY FOR UPDATING ADMIN PROFILE
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn:async (newData: {student_id:string, fullname: string, new_student_id: string}) => {
+          const response = await axiosPrivate.patch(`/admin-profile`, {
+            student_id: newData.student_id,
+            fullname: newData.fullname,
+            new_student_id: newData.new_student_id
+          } )
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'Profile Updated :)',
+              duration: 2,
+          })
+          await queryClient.invalidateQueries({
+              queryKey: ['users'],
+              exact: true
+          })
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            }
+      }
+  })
+}
+
+//QUERY FOR UPDATING ADMIN IMAGE
+export const useUpdateImage = () => {
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn:async (newData: {student_id:string, profile_picture: string,}) => {
+          const response = await axiosPrivate.patch(`/change-admin-picture`, {
+            student_id: newData.student_id,
+            new_profile_picture: newData.profile_picture,
+          } )
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'Profile Picture Updated :)',
+              duration: 2,
+          })
+          await queryClient.invalidateQueries({
+              queryKey: ['users'],
+              exact: true
+          })
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            }
+      }
+  })
+}
