@@ -394,3 +394,56 @@ export const useAdminConfirmOTP = () => {
       }
   })
 }
+//QUERY FOR UPDATING ADMIN PIN
+export const useChangePin = () => {
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn:async (newData: {student_id:string, new_pin_number: string,}) => {
+          const response = await axiosPrivate.patch(`/admin/change-student-pin-number`, {
+            student_id: newData.student_id,
+            new_pin_number: newData.new_pin_number,
+          } )
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'Pin Code Changed :)',
+              duration: 2,
+          })
+          await queryClient.invalidateQueries({
+              queryKey: ['users'],
+              exact: true
+          })
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            }
+      }
+  })
+}
