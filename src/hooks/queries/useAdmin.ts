@@ -297,3 +297,100 @@ export const useUpdateImage = () => {
       }
   })
 }
+
+//QUERY FOR CHANGING ADMIN MOBILE NUMBER (SEND OTP)
+export const useAdminSendOTP = () => {
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn: async (newMobileNumber: {student_id: string, new_mobile_number: string}) =>{
+          const response = await axiosPrivate.get('/admin/check-mobile-number', { params: newMobileNumber })
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'OTP Sent',
+              duration: 3,
+          });
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            } 
+      }
+  })
+}
+
+//QUERY FOR CHANGING ADMIN MOBILE NUMBER (CONFIRM OTP)
+export const useAdminConfirmOTP = () => {
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn: async (newMobileNumber: {student_id: string, new_mobile_number: string, new_otp_code: string}) =>{
+          const response = await axiosPrivate.post('/admin/confirm-mobile-number', newMobileNumber)
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'Mobile Number Successfully Change',
+              duration: 3,
+          });
+          await queryClient.invalidateQueries({
+            queryKey: ['users'],
+            exact: true
+        })
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            } 
+      }
+  })
+}
