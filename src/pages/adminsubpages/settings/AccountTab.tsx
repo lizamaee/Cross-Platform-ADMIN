@@ -25,6 +25,7 @@ export default function AccountTab() {
     const [profile, setProfile] = useState<string>('')
     const [number, setNumber] = useState<string>('')
     const [isPassOpen, setIsPassOpen] = useState<boolean>(false)
+    const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false)
     const [showPassword, setShowPassword] = useState<boolean>(false)
 
     //PROGRESS BAR STATE
@@ -131,11 +132,11 @@ export default function AccountTab() {
     <div className="pop-semibold py-3 dark:text-gray-300">
         <h2 className="pop-bold text-xl dark:text-gray-300">Profile</h2>
         <div className="profile-container ">
-            <div className="img-holder flex my-5 gap-10">
+            <div className="img-holder flex  my-5 gap-3 md:gap-10">
                 <div className="img flex flex-col justify-center items-center">
                     <img 
                         src={profile ?? "https://shorturl.at/tJU24"} alt={`${fullname} Image`} 
-                        className='object-cover rounded-full border-[10px] shadow-md border-white dark:border-zinc-700 w-36 h-36'
+                        className='object-cover rounded-full border-[6px] shadow-md border-white dark:border-zinc-700 w-36 h-36'
                     />
                     <span className="w-full">
                         {/* PROGRESS BAR UI */}
@@ -167,7 +168,7 @@ export default function AccountTab() {
         </div>
 
         <form onSubmit={handleSubmitProfile(handleSave)}>
-            <div className="flex gap-5">
+            <div className="grid md:grid-cols-2 md:gap-10 md:pr-16">
                 <div className="">
                     <label className='pb-1 opacity-80 mt-8 block text-sm pop-regular'>Fullname</label>
                     <input {...profileRegister("fullname")} defaultValue={fullname ?? "John Doe"} onChange={(e) => setFullname(e.target.value)} type="text" className='bg-transparent py-4 px-4 outline-none focus:outline-indigo-400 rounded-md border-solid border-[1px] dark:border-zinc-700 opacity-90 w-full' />
@@ -175,7 +176,7 @@ export default function AccountTab() {
                 </div>
 
                 <div className="">
-                    <label className='pb-1 opacity-80 mt-8 block text-sm pop-regular'>Student ID</label>
+                    <label className='pb-1 opacity-80 mt-4 md:mt-8 block text-sm pop-regular'>Student ID</label>
                     <input {...profileRegister("student_id")} defaultValue={id ?? "1234567"} onChange={(e) => setId(e.target.value)} type="text" minLength={7} maxLength={7} required className='bg-transparent py-4 px-4 outline-none focus:outline-indigo-400 rounded-md border-solid border-[1px] dark:border-zinc-700 opacity-90 w-full' />
                     {errorProfile.student_id && <span className="text-red-400 text-center text-sm">{errorProfile.student_id.message}</span>}
                     {/* SAVE BUTTON */}
@@ -196,16 +197,22 @@ export default function AccountTab() {
         </form>
 
         {/* SECURITY */}
-        <div className="security py-4 ">
+        <div className="security py-4 md:pr-16">
             <h2 className="text-xl py-5 pop-bold">Security</h2>
 
             <p className="text-sm opacity-75 pop-light">Mobile Number</p>
             <div className="number flex justify-between pb-3">
-                <h4 className="">{number}</h4>
+                <h4 className="pop-regular">{number}</h4>
                 <button className="pop-regular text-sm underline text-blue-500">Change</button>
             </div>
 
-            <div className="password py-5 flex justify-between">
+            <p className="text-sm opacity-75 pop-light">PIN Number</p>
+            <div className="number flex justify-between pb-3  border-b-2 border-dashed dark:border-zinc-700">
+                <h4 className="">••••</h4>
+                <button className="pop-regular text-sm underline text-blue-500">Change</button>
+            </div>
+
+            <div className="password pt-5 flex justify-between">
                 <h4 className="">Password</h4>
                 {!isPassOpen
                     ? <button onClick={() => setIsPassOpen(!isPassOpen)} className="pop-regular text-sm underline text-blue-500">Show</button>
@@ -215,30 +222,30 @@ export default function AccountTab() {
 
             {isPassOpen 
                 ? <form onSubmit={handleSubmitPassword(handleChange)}>
-                    <div className="flex gap-5">
+                    <div className="grid md:grid-cols-2 md:gap-10">
                         <div className="">
                             <label className='pb-1 opacity-80 mt-8 block text-sm pop-regular'>New password</label>
                             <input {...passwordRegister("new_password")} type={showPassword ? "text" : "password"} placeholder="••••••••" required className='bg-transparent py-4 px-4 outline-none focus:outline-indigo-400 rounded-md border-solid border-[1px] dark:border-zinc-700 opacity-90 w-full' />
-                            {errorPassword.new_password && <span className="text-red-400 text-center text-sm">{errorPassword.new_password.message}</span>}
+                            {errorPassword.new_password && <span className="text-red-400 text-center block pt-2 text-xs md:text-sm">{errorPassword.new_password.message}</span>}
                         </div>
         
                         <div className="">
-                            <label className='pb-1 opacity-80 mt-8 block text-sm pop-regular'>Current password</label>
+                            <label className='pb-1 opacity-80 mt-4 md:mt-8 block text-sm pop-regular'>Current password</label>
                             <input {...passwordRegister("current_password")} type={showPassword ? "text" : "password"} placeholder="••••••••" required className='bg-transparent py-4 px-4 outline-none focus:outline-indigo-400 rounded-md border-solid border-[1px] dark:border-zinc-700 opacity-90 w-full' />
-                            {errorPassword.current_password && <span className="text-red-400 text-center text-sm">{errorPassword.current_password.message}</span>}
+                            {errorPassword.current_password && <span className="text-red-400 text-center block pt-2 text-xs md:text-sm">{errorPassword.current_password.message}</span>}
                         </div>
                     </div>
                     <div className="showpass py-3 flex gap-2 text-sm pop-regular">
                         <Checkbox className="dark:text-gray-300 pop-regular" onChange={onChecked}>Show password</Checkbox>
                     </div>
-                    <div className="resetpasss flex text-sm pop-regular pt-6 pb-4 gap-2">
+                    <div className="resetpasss flex flex-col text-xs pop-regular pt-6 pb-4 md:gap-2">
                         <p>Can't remember your current password?</p>
                         <span className="text-blue-500 underline cursor-pointer">Reset your password</span>
                     </div>
-                    <div className="button">
+                    <div className="button flex justify-end">
                         <button
                         onClick={handleSavePassword}
-                        className="bg-[#202142] dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-3 px-5">Save password</button>
+                        className="bg-[#202142] text-sm dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-2 px-3">Save password</button>
                     </div>
                   </form>
                 : ""}
@@ -246,15 +253,24 @@ export default function AccountTab() {
         {/* SECURITY */}
 
         {/* DELETE ACCOUNT */}
-        <div className="delete pop-regular">
-            <h2 className="text-xl py-5 pop-bold">Delete account</h2>
-
-            <div className="warning text-sm w-4/5">
-                <p>Would you like to delete your account?</p>
-                <p>This account contains sensitive informations. Deleting your account will remove all the content associated with it.</p>
-
-                <button className="underline text-red-400 mt-5">I want to delete my account</button>
+        <div className="delete md:pr-16">
+            <div className="delete pb-5 flex justify-between  border-t-2 border-dashed dark:border-zinc-700">
+                <h2 className="py-5">Delete account</h2>
+                {!isDeleteOpen
+                    ? <button onClick={() => setIsDeleteOpen(!isDeleteOpen)} className="pop-regular text-sm underline text-red-500">Show</button>
+                    : <button onClick={() => setIsDeleteOpen(!isDeleteOpen)} className="pop-regular text-sm underline text-red-500">Hide</button>
+                }
             </div>
+
+            {isDeleteOpen 
+                ?<div className="warning text-xs md:w-3/5 ">
+                    <h1>Would you like to delete your account?</h1>
+                    <div className="">This account contains sensitive informations. Deleting your account will remove all the content associated with it.</div>
+
+                    <button className="underline py-4 text-red-400">I want to delete my account</button>
+                 </div>
+                : ""
+            }
         </div>
         {/* DELETE ACCOUNT */}
 
