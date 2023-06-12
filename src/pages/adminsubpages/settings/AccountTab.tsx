@@ -1,7 +1,7 @@
 import { useAuthStore } from "../../../hooks/state";
-import { useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
+import { useAdminConfirmOTP, useAdminSendOTP, useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
 import { useEffect, useRef, useState } from "react";
-import { Checkbox, Progress, Spin } from "antd";
+import { Checkbox, Drawer, Progress, Spin, message } from "antd";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ZodType, z } from "zod";
@@ -16,6 +16,14 @@ type ProfileFormData = {
 type PasswordFormData = {
     new_password: string;
     current_password: string;
+}
+
+type MobileFormData = {
+    new_mobile_number: string;
+}
+
+type OtpFormData = {
+    new_otp_code: string;
 }
 
 export default function AccountTab() {
@@ -123,10 +131,69 @@ export default function AccountTab() {
         e.target.checked ? setShowPassword(true) : setShowPassword(false)
     };
 
-    const handleChange = () => {}
+    const handleChangePassword = () => {}
 
     //SAVE PASSWORD FUNCTION
     const handleSavePassword = () => {}
+
+    //CHANGE MOBILE NUMBER
+    const [openChangeNumber, setOpenChangeNumber] = useState<boolean>(false)
+    const [changeNumber, setChangeNumber] = useState<string>('')
+
+    //OPEN DRAWER FUNCTION
+    const showNumberDrawer = () => {
+        setOpenChangeNumber(true)
+    }
+  
+    //CLOSE DRAWER FUNCTION
+    const closeNumberDrawer = () => {
+        setOpenChangeNumber(false)
+        mobileReset()
+        otpReset()
+    }
+
+    //CHANGE MOBILE SCHEMA (SEND OTP)
+    const mobileSchema: ZodType<MobileFormData> = z.object({
+        new_mobile_number: z.string().regex(/^09\d{9}$/, {message: "Mobile number must be a valid PH Mobile Number",
+        }).min(11).max(11)
+    })
+    const {register:mobileRegister, handleSubmit:handleSubmitMobile, formState:{errors:errorMobile}, reset:mobileReset} = useForm<MobileFormData>({resolver: zodResolver(mobileSchema)})
+
+    //CHANGE NUMBER HOOK
+    //SEND OTP
+    const {mutate:changeMobileNumber, isLoading:isSendingOtp, status: mobileStatus} = useAdminSendOTP()
+
+    const handleSendOtp = (data:MobileFormData) => {
+        if(number === data.new_mobile_number){
+            message.open({
+                type: 'error',
+                content: "Mobile number cannot be same as old Number",
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+            });
+        }else{
+            const philFormat = data.new_mobile_number.slice(1)
+            changeMobileNumber({student_id: id, new_mobile_number: `+63${philFormat}`})
+            setChangeNumber(`+63${philFormat}`)
+        }
+    }
+
+    //CHANGE MOBILE SCHEMA (CONFIRM OTP)
+    const otpSchema: ZodType<OtpFormData> = z.object({
+        new_otp_code:  z.string().regex(/^\d{6}$/, {message: "OTP code must be 6 digit number"}).min(6).max(6),
+    })
+    const {register:otpRegister, handleSubmit:handleSubmitOtp, formState:{errors:errorOtp}, reset:otpReset} = useForm<OtpFormData>({resolver: zodResolver(otpSchema)})
+
+    //CHANGE NUMBER HOOK
+    //CONFIRM OTP
+    const {mutate:confirmMobileNumber, isLoading:isConfirmingOtp, status:otpStatus} = useAdminConfirmOTP()
+    const handleConfirmOtp = (data: OtpFormData) => {
+        confirmMobileNumber({student_id: id, new_mobile_number: changeNumber, new_otp_code: data.new_otp_code})
+        
+        if(otpStatus === 'success'){
+            setNumber(changeNumber)
+        }
+    }
 
   return (
     <div className="pop-semibold py-3 dark:text-gray-300">
@@ -203,7 +270,7 @@ export default function AccountTab() {
             <p className="text-sm opacity-75 pop-light">Mobile Number</p>
             <div className="number flex justify-between pb-3">
                 <h4 className="pop-regular">{number}</h4>
-                <button className="pop-regular text-sm underline text-blue-500">Change</button>
+                <button onClick={showNumberDrawer} className="pop-regular text-sm underline text-blue-500">Change</button>
             </div>
 
             <p className="text-sm opacity-75 pop-light">PIN Number</p>
@@ -221,7 +288,7 @@ export default function AccountTab() {
             </div>
 
             {isPassOpen 
-                ? <form onSubmit={handleSubmitPassword(handleChange)}>
+                ? <form onSubmit={handleSubmitPassword(handleChangePassword)}>
                     <div className="grid md:grid-cols-2 md:gap-10">
                         <div className="">
                             <label className='pb-1 opacity-80 mt-8 block text-sm pop-regular'>New password</label>
@@ -274,7 +341,70 @@ export default function AccountTab() {
         </div>
         {/* DELETE ACCOUNT */}
 
-        
+        {/* NUMBER DRAWER */}
+        <Drawer title="Change Mobile Number" placement="right" onClose={closeNumberDrawer} open={openChangeNumber}>
+            <form onSubmit={handleSubmitMobile(handleSendOtp)} className="change-number-container pt-10">
+                <div className="name flex flex-col pop-medium">
+                    
+                <label className="pop-regular opacity-80 text-sm">New Mobile Number</label>
+                <input
+                className="bg-transparent px-4 py-3 mb-2 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 tracking-wider"
+                type="text"
+                {...mobileRegister("new_mobile_number")}
+                placeholder="ex. 09123456789"
+                maxLength={11}
+                minLength={11}
+                required
+                />
+                {errorMobile.new_mobile_number && <span className="text-red-400 text-center block pt-2 text-xs md:text-sm">{errorMobile.new_mobile_number.message}</span>}
+                    
+                </div>
+                {/* SEND OTP BUTTON */}
+                <div className="btn-container flex items-center justify-center pt-3">
+                    {!isSendingOtp 
+                    ? <button disabled={isSendingOtp}  type='submit' className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full'>
+                        <p className='pop-medium'>Send OTP</p>   
+                        </button>
+                    : <button disabled={isSendingOtp} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                        Sending OTP...
+                        <Spin className='pl-1'/> 
+                        </button>
+                    }
+                </div>
+                {/* SEND OTP BUTTON */}
+            </form>
+            {mobileStatus === "success" && (
+                <div className="input-otp">
+                    <div className="otp pt-20">
+                        <label className="pop-regular opacity-80 text-sm block py-1">OTP Code</label>
+                        <form className="flex justify-between" onSubmit={handleSubmitOtp(handleConfirmOtp)}>
+                            <input
+                            className="bg-transparent px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2  tracking-wider"
+                            {...otpRegister("new_otp_code")}
+                            type="text"
+                            placeholder="ex. 123456"
+                            maxLength={6}
+                            minLength={6}
+                            required
+                            />
+                            
+                            {!isConfirmingOtp 
+                            ? <button disabled={isConfirmingOtp}  type='submit' className='flex items-center border-2 border-blue-400 text-blue-400 px-2 rounded-xl'>
+                                <p className='pop-medium'>Confirm</p>   
+                                </button>
+                            : <button disabled={isConfirmingOtp} className='flex pop-medium items-center border-2 border-blue-400 text-blue-400 py-2 px-3 rounded-full'>
+                                Confirming...
+                                <Spin className='pl-1'/> 
+                                </button>
+                            }
+                        </form>
+                        {errorOtp.new_otp_code && <span className="text-red-400 text-center block pt-2 text-xs md:text-sm">{errorOtp.new_otp_code.message}</span>}
+                    </div>
+                </div>
+            )}
+        </Drawer>
+        {/* NUMBER DRAWER */}
+
     </div>
   )
 }
