@@ -1,5 +1,5 @@
 import { useAuthStore } from "../../../hooks/state";
-import { useAdminConfirmOTP, useAdminSendOTP, useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
+import { useAdminConfirmOTP, useAdminSendOTP, useChangePin, useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
 import { useEffect, useRef, useState } from "react";
 import { Checkbox, Drawer, Progress, Spin, message } from "antd";
 import { useForm } from "react-hook-form";
@@ -26,12 +26,17 @@ type OtpFormData = {
     new_otp_code: string;
 }
 
+type PinFormData = {
+    new_pin_code: string;
+}
+
 export default function AccountTab() {
     const {student_id} = useAuthStore((state) => state)
     const [fullname, setFullname] = useState<string>('')
     const [id, setId] = useState<string>('')
     const [profile, setProfile] = useState<string>('')
     const [number, setNumber] = useState<string>('')
+    const [pinCode, setPinCode] = useState<string>('')
     const [isPassOpen, setIsPassOpen] = useState<boolean>(false)
     const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false)
     const [showPassword, setShowPassword] = useState<boolean>(false)
@@ -60,6 +65,7 @@ export default function AccountTab() {
             setId(adminInfo[0].student_id);
             setProfile(adminInfo[0].profile_picture)
             setNumber(adminInfo[0].mobile_number)
+            setPinCode(adminInfo[0].pin_number)
         }
     }, []);
 
@@ -195,6 +201,68 @@ export default function AccountTab() {
         }
     }
 
+    //CHANGE PIN
+    //CHANGE MOBILE NUMBER
+    const [openChangePin, setOpenChangePin] = useState<boolean>(false)
+    const [currentPin, setCurrentPin] = useState<string>('')
+
+    //OPEN DRAWER FUNCTION PIN
+    const showPinDrawer = () => {
+        setOpenChangePin(true)
+    }
+  
+    //CLOSE DRAWER FUNCTION PIN
+    const closePinDrawer = () => {
+        pinReset()
+        setCurrentPin('')
+        setOpenChangePin(false)
+    }
+
+    //PIN SCHEMA  
+    const pinSchema: ZodType<PinFormData> = z
+    .object({
+      new_pin_code: z
+        .string()
+        .regex(/^\d{4}$/, { message: "New PIN code must be 4 digit number" })
+        .min(4)
+        .max(4)
+    })
+
+    const {
+        register:pinRegister,
+        handleSubmit:handleSubmitPin,
+        reset: pinReset,
+        formState: { errors:errorPin },
+    } = useForm<PinFormData>({ resolver: zodResolver(pinSchema) })
+
+    //CHANGE PIN HOOOK
+    const {mutate:changePin, isLoading:isPinChanging, status: pinStatus} = useChangePin()
+
+    const handlePin = (data: PinFormData) => {
+        if(currentPin !== pinCode){
+            message.open({
+                type: 'error',
+                content: "Incorrect current pin code",
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+            });
+        }else if(pinCode === data.new_pin_code){
+            message.open({
+                type: 'error',
+                content: "New pin code cannot be same as old pin code",
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+            });
+        }else{
+            changePin({student_id: id, new_pin_number: data.new_pin_code})
+            if(pinStatus === 'success'){
+                setPinCode(data.new_pin_code);
+            }
+            
+        }
+        
+    }
+
   return (
     <div className="pop-semibold py-3 dark:text-gray-300">
         <h2 className="pop-bold text-xl dark:text-gray-300">Profile</h2>
@@ -276,7 +344,7 @@ export default function AccountTab() {
             <p className="text-sm opacity-75 pop-light">PIN Number</p>
             <div className="number flex justify-between pb-3  border-b-2 border-dashed dark:border-zinc-700">
                 <h4 className="">••••</h4>
-                <button className="pop-regular text-sm underline text-blue-500">Change</button>
+                <button onClick={showPinDrawer} className="pop-regular text-sm underline text-blue-500">Change</button>
             </div>
 
             <div className="password pt-5 flex justify-between">
@@ -404,6 +472,53 @@ export default function AccountTab() {
             )}
         </Drawer>
         {/* NUMBER DRAWER */}
+
+        {/* PIN DRAWER */}
+        <Drawer title="Change PIN Code" placement="right" onClose={closePinDrawer} open={openChangePin}>
+            <form onSubmit={handleSubmitPin(handlePin)} className="change-pin-container pt-10">
+                <div className="name flex flex-col pop-medium">
+                    <label className="pop-regular opacity-80 text-sm">Current Pin</label>
+                    <input
+                    className="bg-transparent px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 focus:border-indigo-400  tracking-wider"
+                    type="text"
+                    value={currentPin}
+                    onChange={(e) => setCurrentPin(e.target.value)}
+                    placeholder="ex. 1234"
+                    maxLength={4}
+                    minLength={4}
+                    required
+                    />
+                    
+                    <label className="pop-regular opacity-80 text-sm pt-5">New Pin</label>
+                    <input
+                    className="bg-transparent px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 focus:border-indigo-400  tracking-wider"
+                    type="text"
+                    {...pinRegister("new_pin_code")}
+                    placeholder="ex. 1234"
+                    maxLength={4}
+                    minLength={4}
+                    required
+                    />
+                    {errorPin.new_pin_code && <span className="text-red-400 text-center block pt-2 text-xs md:text-sm">{errorPin.new_pin_code.message}</span>}
+
+                        
+                </div>
+                {/* CHANGE PIN BUTTON */}
+                <div className="btn-change flex justify-center py-5">
+                    {!isPinChanging 
+                    ? <button disabled={isPinChanging}  type='submit' className='flex items-center border-2 border-[#1677ff] hover:bg-[#1677ff] hover:text-white text-[#1677ff] py-2 px-4 rounded-full'>
+                        <p className='pop-medium'>Change</p>   
+                        </button>
+                    : <button disabled={isPinChanging} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                        Changing...
+                        <Spin className='pl-1'/> 
+                        </button>
+                    }
+                </div>
+                {/* CHANGE PIN BUTTON */}
+            </form>
+        </Drawer>
+        {/* PIN DRAWER */}
 
     </div>
   )
