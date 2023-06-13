@@ -322,12 +322,12 @@ export const useAdminSendOTP = () => {
                 className: 'custom-class pop-medium',
                 duration: 2.5,
               });
-            } else if(error.response.data?.error){
+          } else if(error.response.data?.error){
               message.open({
                 type: 'error',
-                content: `${error.response.data.error}`,
-                className: 'custom-class pop-medium',
-                duration: 2.5,
+                  content: `${error.response.data.error}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
               });
             }else {
               // Handle other errors
@@ -480,6 +480,154 @@ export const useChangePassword = () => {
               message.open({
                 type: 'error',
                 content: `${error.response.data.message}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            }
+      }
+  })
+}
+
+//QUERY FOR RESETTING ADMIN PASSWORD (SEND OTP)
+export const useAdminResetSendOTP = () => {
+  const axiosPrivate = useAxiosPrivate()  
+  return useMutation({
+      mutationFn: async (newMobileNumber: {mobile_number: string}) =>{
+          const response = await axiosPrivate.get('/forgot-password-send', {params: newMobileNumber})
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'OTP has been Sent :)',
+              duration: 3,
+          })
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            } 
+      }
+  })
+}
+//QUERY FOR RESETTING ADMIN PASSWORD (CONFIRM OTP)
+export const useAdminResetConfirmOTP = () => {
+  const axiosPrivate = useAxiosPrivate()  
+  return useMutation({
+      mutationFn: async (newMobileNumber: {mobile_number: string, otp_code: string}) =>{
+          const response = await axiosPrivate.post('/otp/verify', newMobileNumber)
+          return response.data
+      },
+      onSuccess: async (data) => {
+          if(data?.check_status?.status === 'approved'){
+            message.open({
+                key: 'successCreation',
+                type: 'success',
+                content: 'OTP Verified :)',
+                duration: 3,
+            })
+          }else{
+            message.open({
+              type: 'error',
+              content: `Incorrect OTP code`,
+              className: 'custom-class pop-medium',
+              duration: 2.5,
+            });
+          }
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            } 
+      }
+  })
+}
+//QUERY FOR RESETTING ACTUAL ADMIN PASSWORD
+export const useAdminResetPassword = () => {
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn:async (newData: {mobile_number:string, new_password: string}) => {
+          const response = await axiosPrivate.patch(`/admin/forgot-password`, {
+            mobile_number: newData.mobile_number,
+            new_password: newData.new_password
+          } )
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'Password Changed Successfully :)',
+              duration: 2,
+          })
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
                 className: 'custom-class pop-medium',
                 duration: 2.5,
               });
