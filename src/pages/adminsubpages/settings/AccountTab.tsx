@@ -1,5 +1,5 @@
 import { useAuthStore } from "../../../hooks/state";
-import { useAdminConfirmOTP, useAdminSendOTP, useChangePassword, useChangePin, useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
+import { useAdminConfirmOTP, useAdminResetConfirmOTP, useAdminResetPassword, useAdminResetSendOTP, useAdminSendOTP, useChangePassword, useChangePin, useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
 import { useEffect, useRef, useState } from "react";
 import { Checkbox, Drawer, Progress, Spin, message } from "antd";
 import { useForm } from "react-hook-form";
@@ -16,6 +16,10 @@ type ProfileFormData = {
 type PasswordFormData = {
     new_password: string;
     current_password: string;
+}
+type ResetPasswordFormData = {
+    new_password: string;
+    confirm_new_password: string;
 }
 
 type MobileFormData = {
@@ -244,7 +248,6 @@ export default function AccountTab() {
     }
 
     //CHANGE PASSWORD
-    
     //CHANGE PASSWORD SCHEMA
     const passwordSchema: ZodType<PasswordFormData> = z.object({
         new_password: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/,{
@@ -266,6 +269,73 @@ export default function AccountTab() {
     //CHANGE PASSWORD FUNCTION
     const handleChangePassword = (data:PasswordFormData) => {
         changePassword({student_id: id,current_password: data.current_password, new_password: data.new_password})
+    }
+
+    //RESET PASSWORD
+    const [openResetPassword, setOpenResetPassword] = useState<boolean>(false)
+
+    
+    //RESET PASSWORD OTP HOOK
+    //SEND OTP
+    const {mutate:resetSendOTP,isLoading: isResetSendingOTP, status: resetSendStatus} = useAdminResetSendOTP()
+    //VERIFY OTP
+    const {mutate:resetConfirmOTP, isLoading:isResetOTPConfirming, data:resetConfirmData} = useAdminResetConfirmOTP()
+    
+    //RESET SEND OTP FUNCTION
+    const handleResetSendOTP = () => {
+        const philFormat = number.slice(1)
+        resetSendOTP({mobile_number: `+63${philFormat}`})
+        resetOtpReset()
+    }
+
+    //OPEN DRAWER FUNCTION
+    const showResetPasswordDrawer = () => {
+        handleResetSendOTP()
+        setOpenResetPassword(true)
+    }
+  
+    //CLOSE DRAWER FUNCTION
+    const closeResetPasswordDrawer = () => {
+        resetOtpReset()
+        resetPasswordReset()
+        setOpenResetPassword(false)
+    }
+
+    //RESET PASSWORD OTP SCHEMA (CONFIRM OTP)
+    const resetOtpSchema: ZodType<OtpFormData> = z.object({
+        new_otp_code:  z.string().regex(/^\d{6}$/, {message: "OTP code must be 6 digit number"}).min(6).max(6),
+    })
+    const {register:resetOtpRegister, handleSubmit:handleSubmitResetOtp, formState:{errors:errorResetOtp}, reset:resetOtpReset} = useForm<OtpFormData>({resolver: zodResolver(resetOtpSchema)})
+
+    //RESET CONFIRM OTP FUNCTION
+    const handleResetConfirmOtp = (data: OtpFormData) => {
+        const philFormat = number.slice(1)
+        resetConfirmOTP({mobile_number: `+63${philFormat}`, otp_code: data.new_otp_code})
+    }
+
+    
+    //RESET PASSWORD SCHEMA
+    const resetPasswordSchema: ZodType<ResetPasswordFormData> = z.object({
+        new_password: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/,{
+            message:
+                "Password must contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character",
+            }).min(14, {message: "Password must contain at least 14 character(s)"}).max(30),
+        confirm_new_password: z.string(),
+    
+      }).refine((data) => data.new_password === data.confirm_new_password, {
+        message: "Password do not match",
+        path: ["confirm_new_password"],
+    })
+
+    const {register:resetPasswordRegister, handleSubmit:handleSubmitResetPassword, formState:{errors:errorResetPassword}, reset:resetPasswordReset} = useForm<ResetPasswordFormData>({resolver: zodResolver(resetPasswordSchema)})
+
+    //RESET PASSWORD HOOK
+    const {mutate:resetPassword, isLoading: isPasswordResetting} = useAdminResetPassword()
+
+    //RESET PASSWORD FUNCTION
+    const handleResetPassword = (data: ResetPasswordFormData) => {
+        resetPassword({mobile_number: number, new_password: data.new_password})
+        closeResetPasswordDrawer()
     }
 
   return (
@@ -383,7 +453,7 @@ export default function AccountTab() {
                     </div>
                     <div className="resetpasss flex flex-col md:flex-row text-xs pop-regular pt-6 pb-4 md:gap-2">
                         <p>Can't remember your current password?</p>
-                        <span className="text-blue-500 underline cursor-pointer">Reset your password</span>
+                        <span onClick={showResetPasswordDrawer} className="text-blue-500 underline cursor-pointer">Reset your password</span>
                     </div>
                     <div className="button flex justify-end">
                         {isPasswordChanging 
@@ -533,6 +603,89 @@ export default function AccountTab() {
             </form>
         </Drawer>
         {/* PIN DRAWER */}
+
+        {/* RESET PASSWORD DRAWER */}
+        <Drawer title="Reset Password" placement="right" onClose={closeResetPasswordDrawer} open={openResetPassword}>
+            {/* SEND OTP BUTTON */}
+            <div className="btn-container flex items-center justify-end pt-3">
+                {!isResetSendingOTP 
+                ? <button onClick={handleResetSendOTP} disabled={isResetSendingOTP}  type='submit' className='flex items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white  py-1 px-3 rounded-xl'>
+                    <p className='pop-medium'>Resend</p>   
+                    </button>
+                : <button disabled={isResetSendingOTP} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white py-1 px-3 rounded-xl'>
+                    Sending...
+                    <Spin className='pl-1'/> 
+                    </button>
+                }
+            </div>
+            {/* SEND OTP BUTTON */}
+            {resetSendStatus === "success" && (
+                <div className="input-otp">
+                    <div className="otp">
+                        <h4 className="block text-center pop-semibold opacity-90 text-orange-400 py-5">OTP Has been sent to mobile number associated to your account</h4>
+
+                        <label className="pop-regular opacity-80 text-sm block py-1">OTP Code</label>
+                        <form className="flex justify-between" onSubmit={handleSubmitResetOtp(handleResetConfirmOtp)}>
+                            <input
+                            className="bg-transparent px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2  tracking-wider"
+                            {...resetOtpRegister("new_otp_code")}
+                            type="text"
+                            placeholder="ex. 123456"
+                            maxLength={6}
+                            minLength={6}
+                            required
+                            />
+                            
+                            {!isResetOTPConfirming 
+                                ? <button disabled={isResetOTPConfirming}  type='submit' className='flex items-center border-2 border-blue-400 text-blue-400 px-2 rounded-xl'>
+                                    <p className='pop-medium'>Confirm</p>   
+                                </button>
+                                : <button disabled={isResetOTPConfirming} className='flex pop-medium items-center border-2 border-blue-400 text-blue-400 py-2 px-3 rounded-full'>
+                                    Confirming...
+                                    <Spin className='pl-1'/> 
+                                </button>
+                            }
+                        </form>
+                        {errorResetOtp.new_otp_code && <span className="text-red-400 text-center block pt-2 text-xs md:text-sm">{errorResetOtp.new_otp_code.message}</span>}
+                    </div>
+                </div>
+            )}
+            {/* RESET PASSWORD FORM */}
+            {resetConfirmData?.check_status?.status === "approved" ? (
+                <form onSubmit={handleSubmitResetPassword(handleResetPassword)}>
+                    <div className="pt-10 ">
+                        <h2 className="pop-semibold text-center block pb-5">Reset your password</h2>
+                        <div className="">
+                            <label className='pb-1 opacity-80 block text-sm pop-regular'>New password</label>
+                            <input {...resetPasswordRegister("new_password")} type={showPassword ? "text" : "password"} placeholder="••••••••" required className='bg-transparent py-4 px-4 outline-none outline:none focus:border-indigo-400 rounded-md border-solid border-2 border-zinc-300 opacity-90 w-full' />
+                            {errorResetPassword.new_password && <span className="text-red-400 text-center block pt-2 text-xs">{errorResetPassword.new_password.message}</span>}
+                        </div>
+        
+                        <div className="">
+                            <label className='pb-1 opacity-80 mt-5 block text-sm pop-regular'>Confirm new password</label>
+                            <input {...resetPasswordRegister("confirm_new_password")} type={showPassword ? "text" : "password"} placeholder="••••••••" required className='bg-transparent py-4 px-4 outline-none outline:none focus:border-indigo-400 rounded-md border-solid border-2 border-zinc-300 opacity-90 w-full' />
+                        </div>
+                    </div>
+                    <div className="showpass pt-2 pb-1 flex gap-2 text-sm pop-regular">
+                        <Checkbox className="dark:text-gray-500 pop-regular" onChange={onChecked}>Show password</Checkbox>
+                    </div>
+                    {errorResetPassword.confirm_new_password && <span className="text-red-400 text-center block text-xs">{errorResetPassword.confirm_new_password.message}</span>}
+                    <div className="button flex justify-end">
+                        {isPasswordResetting 
+                            ? <button
+                                disabled={isPasswordResetting}
+                                className="bg-[#202142] text-sm dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg mt-4 flex py-2 px-3">Saving password...</button>
+                            : <button
+                                type="submit"
+                                disabled={isPasswordResetting}
+                                className="bg-[#202142] text-sm dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg mt-4 flex py-2 px-3">Save password</button>
+                        }
+                    </div>
+                </form>
+            ) : ''}
+            {/* RESET PASSWORD FORM */}
+        </Drawer>
+        {/* RESET PASSWORD DRAWER */}
 
     </div>
   )
