@@ -1,5 +1,5 @@
 import { useAuthStore } from "../../../hooks/state";
-import { useAdminConfirmOTP, useAdminSendOTP, useChangePin, useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
+import { useAdminConfirmOTP, useAdminSendOTP, useChangePassword, useChangePin, useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
 import { useEffect, useRef, useState } from "react";
 import { Checkbox, Drawer, Progress, Spin, message } from "antd";
 import { useForm } from "react-hook-form";
@@ -122,26 +122,6 @@ export default function AccountTab() {
         updateProfile({student_id: adminInfo[0]?.student_id, fullname: data.fullname, new_student_id: data.student_id })
     }
 
-    //CHANGE PASSWORD SCHEMA
-    const passwordSchema: ZodType<PasswordFormData> = z.object({
-        new_password: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/,{
-            message:
-                "Password must contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character",
-            }).min(14, {message: "Password must contain at least 14 character(s)"}).max(30),
-        current_password: z.string().min(1, {message: "Please enter current password"})
-    })
-    const {register:passwordRegister, handleSubmit:handleSubmitPassword, formState:{errors:errorPassword}, reset:passwordReset} = useForm<PasswordFormData>({resolver: zodResolver(passwordSchema)})
-
-    //CHECKBOX EVENT LISTENER
-    const onChecked = (e: CheckboxChangeEvent) => {
-        e.target.checked ? setShowPassword(true) : setShowPassword(false)
-    };
-
-    const handleChangePassword = () => {}
-
-    //SAVE PASSWORD FUNCTION
-    const handleSavePassword = () => {}
-
     //CHANGE MOBILE NUMBER
     const [openChangeNumber, setOpenChangeNumber] = useState<boolean>(false)
     const [changeNumber, setChangeNumber] = useState<string>('')
@@ -263,6 +243,31 @@ export default function AccountTab() {
         
     }
 
+    //CHANGE PASSWORD
+    
+    //CHANGE PASSWORD SCHEMA
+    const passwordSchema: ZodType<PasswordFormData> = z.object({
+        new_password: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/,{
+            message:
+                "Password must contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character",
+            }).min(14, {message: "Password must contain at least 14 character(s)"}).max(30),
+        current_password: z.string().min(1, {message: "Please enter current password"})
+    })
+    const {register:passwordRegister, handleSubmit:handleSubmitPassword, formState:{errors:errorPassword}, reset:passwordReset} = useForm<PasswordFormData>({resolver: zodResolver(passwordSchema)})
+
+    //CHECKBOX EVENT LISTENER
+    const onChecked = (e: CheckboxChangeEvent) => {
+        e.target.checked ? setShowPassword(true) : setShowPassword(false)
+    };
+
+    //CHANGE PASSWORD HOOK
+    const {mutate:changePassword, isLoading:isPasswordChanging} = useChangePassword()
+
+    //CHANGE PASSWORD FUNCTION
+    const handleChangePassword = (data:PasswordFormData) => {
+        changePassword({student_id: id,current_password: data.current_password, new_password: data.new_password})
+    }
+
   return (
     <div className="pop-semibold py-3 dark:text-gray-300">
         <h2 className="pop-bold text-xl dark:text-gray-300">Profile</h2>
@@ -351,7 +356,10 @@ export default function AccountTab() {
                 <h4 className="">Password</h4>
                 {!isPassOpen
                     ? <button onClick={() => setIsPassOpen(!isPassOpen)} className="pop-regular text-sm underline text-blue-500">Show</button>
-                    : <button onClick={() => setIsPassOpen(!isPassOpen)} className="pop-regular text-sm underline text-blue-500">Hide</button>
+                    : <button onClick={() => {
+                        setIsPassOpen(!isPassOpen)
+                        passwordReset()
+                        }} className="pop-regular text-sm underline text-blue-500">Hide</button>
                 }
             </div>
 
@@ -361,26 +369,32 @@ export default function AccountTab() {
                         <div className="">
                             <label className='pb-1 opacity-80 mt-8 block text-sm pop-regular'>New password</label>
                             <input {...passwordRegister("new_password")} type={showPassword ? "text" : "password"} placeholder="••••••••" required className='bg-transparent py-4 px-4 outline-none focus:outline-indigo-400 rounded-md border-solid border-[1px] dark:border-zinc-700 opacity-90 w-full' />
-                            {errorPassword.new_password && <span className="text-red-400 text-center block pt-2 text-xs md:text-sm">{errorPassword.new_password.message}</span>}
+                            {errorPassword.new_password && <span className="text-red-400 text-center block pt-2 text-xs">{errorPassword.new_password.message}</span>}
                         </div>
         
                         <div className="">
                             <label className='pb-1 opacity-80 mt-4 md:mt-8 block text-sm pop-regular'>Current password</label>
                             <input {...passwordRegister("current_password")} type={showPassword ? "text" : "password"} placeholder="••••••••" required className='bg-transparent py-4 px-4 outline-none focus:outline-indigo-400 rounded-md border-solid border-[1px] dark:border-zinc-700 opacity-90 w-full' />
-                            {errorPassword.current_password && <span className="text-red-400 text-center block pt-2 text-xs md:text-sm">{errorPassword.current_password.message}</span>}
+                            {errorPassword.current_password && <span className="text-red-400 text-center block pt-2 text-xs">{errorPassword.current_password.message}</span>}
                         </div>
                     </div>
                     <div className="showpass py-3 flex gap-2 text-sm pop-regular">
                         <Checkbox className="dark:text-gray-300 pop-regular" onChange={onChecked}>Show password</Checkbox>
                     </div>
-                    <div className="resetpasss flex flex-col text-xs pop-regular pt-6 pb-4 md:gap-2">
+                    <div className="resetpasss flex flex-col md:flex-row text-xs pop-regular pt-6 pb-4 md:gap-2">
                         <p>Can't remember your current password?</p>
                         <span className="text-blue-500 underline cursor-pointer">Reset your password</span>
                     </div>
                     <div className="button flex justify-end">
-                        <button
-                        onClick={handleSavePassword}
-                        className="bg-[#202142] text-sm dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-2 px-3">Save password</button>
+                        {isPasswordChanging 
+                            ? <button
+                                disabled={isPasswordChanging}
+                                className="bg-[#202142] text-sm dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-2 px-3">Saving password...</button>
+                            : <button
+                                type="submit"
+                                disabled={isPasswordChanging}
+                                className="bg-[#202142] text-sm dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-2 px-3">Save password</button>
+                        }
                     </div>
                   </form>
                 : ""}
