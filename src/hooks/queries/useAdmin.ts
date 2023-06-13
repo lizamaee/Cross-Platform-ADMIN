@@ -447,3 +447,53 @@ export const useChangePin = () => {
       }
   })
 }
+
+//QUERY FOR UPDATING ADMIN PASSWORD
+export const useChangePassword = () => {
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn:async (newData: {student_id:string, current_password: string, new_password: string}) => {
+          const response = await axiosPrivate.patch(`/change-admin-password`, {
+            student_id: newData.student_id,
+            current_password: newData.current_password,
+            new_password: newData.new_password,
+          } )
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'Password Changed :)',
+              duration: 2,
+          })
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.message){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.message}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            }
+      }
+  })
+}
