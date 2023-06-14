@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
 import useAxiosPrivate from "../useAxiosPrivate";
+import { useNavigate } from "react-router-dom";
 
 //QUERY FOR GETTING ALL USER
 export const useUsers = () =>{
@@ -628,6 +629,61 @@ export const useAdminResetPassword = () => {
               message.open({
                 type: 'error',
                 content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            }
+      }
+  })
+}
+
+
+//QUERY FOR DELETING ADMIN ACCOUNT
+export const useDeleteAdminAccount = () => {
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+  const navigate = useNavigate()
+  return useMutation({
+      mutationFn:async (id:string) => {
+          const response = await axiosPrivate.delete(`/admin/delete-account/${id}`)
+          return response.data
+      },
+      onSuccess: async () => {
+        message.open({
+            key: 'successCreation',
+            type: 'success',
+            content: 'Account Deleted !',
+            duration: 2,
+        })
+        navigate("/login", {replace: true})
+        
+        await queryClient.invalidateQueries({
+          queryKey: ['users'],
+          exact: true
+      })
+    },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.message){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.message}`,
                 className: 'custom-class pop-medium',
                 duration: 2.5,
               });
