@@ -313,7 +313,7 @@ export default function AdminTab() {
             </div>
             {/* PROMOTE ACCOUNT DRAWER */}
             <Drawer title="Promote Account" placement="right" onClose={onClosePromote} open={openPromote}>
-                <form className="promote-account-container py-3">
+                <form onSubmit={handleSubmitPromote(handlePromote)} className="promote-account-container py-3">
                     <div className="name flex flex-col pop-medium">
                         <label className='pb-1 pt-5 opacity-80'>Enter Student ID</label>
                         <input 
@@ -325,19 +325,19 @@ export default function AdminTab() {
                         />
                         {errorPromote.student_id && <span className="text-red-400 text-center text-sm">{errorPromote.student_id.message}</span>}
                     </div>
+                    {/* PROMOTE BUTTON */}
+                    <div className="btn-container flex items-center justify-center pt-7">
+                        {!isPromoting
+                        ? <button type='submit' className='flex items-center border-2 border-blue-400 text-blue-400 py-2 px-7 rounded-full'>
+                                <p className='pop-medium'>Promote</p>   
+                            </button>
+                        : <button disabled={isPromoting} className='flex pop-medium items-center border-2 border-blue-400 text-blue-400 py-2 px-3 rounded-full'>
+                            Promoting...
+                                <Spin className='pl-1'/> 
+                            </button>
+                        }
+                    </div>
                 </form>
-                {/* PROMOTE BUTTON */}
-                <div className="btn-container flex items-center justify-center pt-3">
-                    {!isPromoting
-                    ? <button className='flex items-center border-2 border-blue-400 text-blue-400 py-2 px-7 rounded-full' onClick={handleSubmitPromote(handlePromote)}>
-                        <p className='pop-medium'>Promote</p>   
-                        </button>
-                    : <button disabled={isPromoting} className='flex pop-medium items-center border-2 border-blue-400 text-blue-400 py-2 px-3 rounded-full'>
-                        Promoting...
-                        <Spin className='pl-1'/> 
-                        </button>
-                    }
-                </div>
                 {/* PROMOTE BUTTON */}
             </Drawer>
             {/* PROMOTE ACCOUNT DRAWER */}
