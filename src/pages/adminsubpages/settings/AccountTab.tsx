@@ -1,5 +1,5 @@
 import { useAuthStore } from "../../../hooks/state";
-import { useAdminConfirmOTP, useAdminResetConfirmOTP, useAdminResetPassword, useAdminResetSendOTP, useAdminSendOTP, useChangePassword, useChangePin, useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
+import { useAdminConfirmOTP, useAdminResetConfirmOTP, useAdminResetPassword, useAdminResetSendOTP, useAdminSendOTP, useChangePassword, useChangePin, useDeleteAdminAccount, useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
 import { useEffect, useRef, useState } from "react";
 import { Checkbox, Drawer, Progress, Spin, message } from "antd";
 import { useForm } from "react-hook-form";
@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ZodType, z } from "zod";
 import axios from "axios";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
+import { TiWarning } from "react-icons/ti";
 
 type ProfileFormData = {
     student_id: string;
@@ -48,7 +49,6 @@ export default function AccountTab() {
     //PROGRESS BAR STATE
     const [uploadProgress, setUploadProgress] = useState(0);
 
-
     //REFERENCE OF IMAGE BUTTON
     const fileInputRef = useRef<HTMLInputElement>(null);
     
@@ -58,9 +58,6 @@ export default function AccountTab() {
 
     //FILTER THE USER
     const adminInfo = usersQuery?.data?.filter((admin:any) => admin.student_id === student_id)
-
-    //console.log(adminInfo);
-    
 
     // Update the fullname state when adminInfo changes
     useEffect(() => {
@@ -338,6 +335,16 @@ export default function AccountTab() {
         closeResetPasswordDrawer()
     }
 
+    //DELETE ACCOUNT
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false)
+
+    //DELETE ACCOUNT HOOK
+    const {mutate:deleteAccount, isLoading: isAdminAccountDeleting} = useDeleteAdminAccount()
+
+    const handleDeleteAccount = () => {
+        deleteAccount(id)
+    }
+
   return (
     <div className="pop-semibold py-3 dark:text-gray-300">
         <h2 className="pop-bold text-xl dark:text-gray-300">Profile</h2>
@@ -486,7 +493,7 @@ export default function AccountTab() {
                     <h1>Would you like to delete your account?</h1>
                     <div className="">This account contains sensitive informations. Deleting your account will remove all the content associated with it.</div>
 
-                    <button className="underline py-4 text-red-400">I want to delete my account</button>
+                    <button onClick={() => setIsDeleteModalOpen(true)} className="underline py-4 text-red-400">I want to delete my account</button>
                  </div>
                 : ""
             }
@@ -686,6 +693,36 @@ export default function AccountTab() {
             {/* RESET PASSWORD FORM */}
         </Drawer>
         {/* RESET PASSWORD DRAWER */}
+
+        {/* DELETE ACCOUNT MODAL */}
+        {isDeleteModalOpen && (
+            <div className="Delete-Modal bg-[#26262690] fixed top-0 left-0 z-10 w-full h-full flex justify-center items-start">
+                <div className="delete-container mt-32 py-5 px-10 rounded-2xl bg-white dark:bg-[#414141]">
+                    <div className="px-10">
+                        <div className="icon flex justify-center">
+                            <div className="warning_icon p-3 shadow-md bg-[#fff5f6] dark:bg-[#504f4f] rounded-full">
+                                <TiWarning size={30} className="text-[#ff3f56]"/>
+                            </div>
+                        </div>
+                        <div className="warn flex justify-center pt-5 pb-3">
+                            <h2 className="md:text-xl text-lg md:tracking-wider pop-bold text-[#334049] dark:text-gray-200">Delete Account</h2>
+                        </div>
+                        <div className="warn-text tracking-wider text-xs md:text-sm">
+                            <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">This action is irreversible.</p>
+                            <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">Are you sure?</p>
+                        </div>
+                    </div>
+                    <div className="choice-btn text-[#334049] dark:text-gray-200 pt-5 flex flex-col-reverse gap-3 md:flex-row  justify-evenly ">
+                        <button onClick={() => setIsDeleteModalOpen(false)} className="bg-[#f5f5f7] dark:bg-zinc-600 px-6 py-3 rounded-full">No, Keep me</button>
+                        {isAdminAccountDeleting
+                            ? <button disabled={isAdminAccountDeleting} className="bg-[#ff3f56] text-white px-6 py-2 rounded-full">Deleting...</button>
+                            : <button disabled={isAdminAccountDeleting} onClick={handleDeleteAccount} className="bg-[#ff3f56] text-white px-6 py-2 rounded-full">Yes, Delete!</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        )}
+        {/* DELETE ACCOUNT MODAL */}
 
     </div>
   )
