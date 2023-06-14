@@ -701,3 +701,43 @@ export const useDeleteAdminAccount = () => {
       }
   })
 }
+
+//QUERY FOR GETTING SINGLE VOTER
+export const useVoter = (student_id:string) =>{
+  const axiosPrivate = useAxiosPrivate()
+  return useQuery({
+      queryKey: ['voter'], 
+      queryFn: async () => {
+        try {
+          const response = await axiosPrivate.get(`/get-voter/${student_id}`)
+          return response.data
+        } catch (error:any) {
+            if (error.message === 'Network Error') {
+                message.open({
+                  type: 'error',
+                  content: 'Server Unavailable',
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                });
+              } else if(error.response.data?.message){
+                message.open({
+                  type: 'error',
+                  content: `${error.response.data.message}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                });
+              }else {
+                // Handle other errors
+                error.response.data.errors?.map((err:any) => {
+                  message.open({
+                    type: 'error',
+                    content: `${err.msg}`,
+                    className: 'custom-class pop-medium',
+                    duration: 2.5,
+                  })
+                })
+              } 
+        }
+      },
+  }) 
+} 
