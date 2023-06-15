@@ -9,6 +9,7 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import useLogout from "../hooks/useLogout";
 import { useAuthStore } from "../hooks/state";
 import { useVoter } from "../hooks/queries/useAdmin";
+import { MdOutlineHowToVote } from "react-icons/md";
 
 export default function VoterDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -98,14 +99,13 @@ export default function VoterDashboard() {
 
         {/* DESKTOP VIEW */}
         <div className="hidden md:block min-h-screen">
-          <span className="absolute top-7 left-5" onClick={switchMode}>
-            { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={18}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={18} /> )}
-            
-          </span>
 
-          <div className="flex flex-col items-center pt-8 ">
-            <img src={profile_picture} alt="profile" className="w-32 border-[6px] shadow-md border-white dark:border-zinc-700 object-cover rounded-full"/>
-            <h3 className="text-md pop-semibold py-2 text-[#414141] dark:text-gray-200">{fullname}</h3>
+          <div className="title-container flex items-center justify-center pt-10 mb-10">
+            <MdOutlineHowToVote className="text-[#6c63ff] h-10 w-10"/>
+            <div className="title-box">
+              <h2 className='text-xl pop-bold text-[#6c63ff]'>CICT</h2>
+              <h3 className='text-xs pop-regular dark:text-gray-300'>Voting System</h3>
+            </div>
           </div>
 
           <ul className="px-3 flex flex-col gap-2 pt-5 pop-medium tracking-wider">
