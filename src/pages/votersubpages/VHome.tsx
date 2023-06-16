@@ -5,19 +5,24 @@ import { useAuthStore } from '../../hooks/state'
 import Lottie from 'lottie-react'
 import welcome from '../../assets/welcome.json'
 import StarterVoter from '../../components/StarterVoter'
+import { useOngoingElections } from '../../hooks/queries/useVoter'
 
 export default function VHome() {
   const { isNight, switchMode, student_id } = useAuthStore((state) => state)
 
+  //ONGOING ELECTIONS QUERY HOOK
+  const ongoingElectionsQuery = useOngoingElections()
+
   const voterQuery = useVoter(student_id)
 
-  const fullname = voterQuery?.data?.voter?.fullname
+  const firstname = voterQuery?.data?.voter?.firstname
+  const surname = voterQuery?.data?.voter?.surname
   const profile_picture = voterQuery?.data?.voter?.profile_picture
 
   return (
     <div>
       {/* NOTIFICATION HEADER */}
-      <div className="notification flex justify-end pt-5">
+      <div className="notification flex justify-end">
         <div className="icons flex items-center bg-white dark:bg-[#313131] shadow-md py-1 px-2 rounded-full justify-center gap-5">
           <div className="bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1" onClick={switchMode}>
               { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={20}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={20} /> )}
@@ -50,8 +55,8 @@ export default function VHome() {
         <div className="profile shadow-md hidden md:flex flex-col col-span-3 p-5 bg-white dark:bg-[#313131] rounded-xl">
           <h4 className='text-[#1c295d] dark:text-gray-400 pop-medium'>Profile</h4>
           <div className="prof flex flex-col justify-center items-center">
-            <img src={profile_picture ?? "https://shorturl.at/tJU24"} alt={`${fullname ?? "John Doe"} Profile Picture`} className='w-20 h-20 border-[6px] shadow-md border-gray-100 dark:border-zinc-700 object-cover rounded-full' />
-            <h2 className='text-[#1c295d] dark:text-gray-200 text-lg pop-semibold pt-3 pb-2 tracking-wide capitalize'>{fullname ?? "John Doe"}</h2>
+            <img src={profile_picture ?? "https://shorturl.at/tJU24"} alt={`${firstname ?? "John Doe"} Profile Picture`} className='w-20 h-20 border-[6px] shadow-md border-gray-100 dark:border-zinc-700 object-cover rounded-full' />
+            <h2 className='text-[#1c295d] dark:text-gray-200 text-lg pop-semibold pt-3 pb-2 tracking-wide capitalize'>{firstname === null ? "John Doe" : firstname + " " + surname}</h2>
             <h5 className='text-[#ccd2e3] dark:text-gray-500'>Student Voter</h5>
           </div>
         </div>
@@ -60,16 +65,57 @@ export default function VHome() {
       {/* WELCOME AND PROFILE CARD */}
 
       {/* EDIT INFO OR SHOW ONGOING ELECTIONS */}
-      {fullname === null || profile_picture === null
-        ? <StarterVoter fullname={fullname} profile={profile_picture} />
-        : <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-5 rounded-lg">
-            <div className="ongoing flex justify-between p-5">
-              <h4 className='pop-medium dark:text-gray-300 text-md md:text-lg'>Ongoing Elections</h4>
-              <button>
-                <BsFillChatSquareDotsFill className='text-[#7268EF] w-7 h-7 md:w-8 md:h-8' />
-              </button>
-            </div>
+      {ongoingElectionsQuery?.isLoading
+        ? <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-10">
+            <h3 className='pop-semibold'>Loading...</h3>
           </div>
+        : firstname === null && surname === null && profile_picture === null
+          ? <StarterVoter firstname={firstname} profile={profile_picture} />
+          : <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-5 rounded-lg">
+              <div className="ongoing flex justify-between p-5">
+                <h4 className='pop-medium dark:text-gray-300 text-md md:text-lg'>Ongoing Elections</h4>
+                <button>
+                  <BsFillChatSquareDotsFill className='text-[#7268EF] w-7 h-7 md:w-8 md:h-8' />
+                </button>
+              </div>
+
+              <div className="elections p-5">
+                {ongoingElectionsQuery?.data === undefined
+                  ? <div className="no-ongoingx">
+                      <div className="h4 text-gray-400 pop-regular text-sm text-center ">No ongoing Election.</div>
+                    </div>
+                  : <div className="elections-cards grid md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
+                        <div key={index} className="ongoing dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
+                          <img src="https://shorturl.at/oqs68" alt="cict logo" className='object-cover w-full h-32' />
+                          <h4 className='text-center py-3 pop-semibold dark:text-gray-200 text-lg'>{ongoing.title}</h4>
+                          {/* DATE DISPLAY */}
+                          <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-5 pop-regular">
+                                  <p className="">
+                                    {new Date(ongoing.startDate).toLocaleDateString("en-US", {
+                                      timeZone: "Asia/Manila",
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                    })}
+                                  </p>
+                                  <span>-</span>
+                                  <p className="text-right">
+                                    {new Date(ongoing.endDate).toLocaleDateString("en-US", {
+                                      timeZone: "Asia/Manila",
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                    })}
+                                  </p>
+                                </div>
+                                {/* DATE DISPLAY */}
+                        </div>
+                    ))}
+                  </div>
+                }
+              </div>
+            </div>
       }
       {/* EDIT INFO OR SHOW ONGOING ELECTIONS */}
     </div>
