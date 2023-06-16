@@ -165,15 +165,18 @@ export const useUploadVoterPicture = () => {
       }
   })
 }
-//QUERY FOR UPLOADING VOTER PROFILE PICTURE
+//QUERY FOR UPLOADING VOTER INFORMATION
 export const useUploadVoterInfo = () => {
   const queryClient = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
   return useMutation({
-      mutationFn:async (newData: {student_id:string, fullname: string,}) => {
+      mutationFn:async (newData: {student_id:string, firstname: string, surname: string, age: string, year_level: string}) => {
           const response = await axiosPrivate.patch(`/new-voter`, {
             student_id: newData.student_id,
-            fullname: newData.fullname,
+            firstname: newData.firstname,
+            surname: newData.surname,
+            age: newData.age,
+            year_level: newData.year_level,
           } )
           return response.data
       },
@@ -181,7 +184,7 @@ export const useUploadVoterInfo = () => {
           message.open({
               key: 'successCreation',
               type: 'success',
-              content: 'Profile Picture Uploaded :)',
+              content: 'Information Uploaded :)',
               duration: 2,
           })
           await queryClient.invalidateQueries({
@@ -218,3 +221,43 @@ export const useUploadVoterInfo = () => {
       }
   })
 }
+
+//QUERY FOR GETTING ALL ONGOING ELECTIONS
+export const useOngoingElections = () =>{
+  const axiosPrivate = useAxiosPrivate()
+  return useQuery({
+      queryKey: ['ongoings'], 
+      queryFn: async () => {
+        try {
+          const response = await axiosPrivate.get('/election/status/ongoing')
+          return response.data
+        } catch (error:any) {
+            if (error.message === 'Network Error') {
+                message.open({
+                  type: 'error',
+                  content: 'Server Unavailable',
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                });
+              } else if(error.response.data?.message){
+                message.open({
+                  type: 'error',
+                  content: `${error.response.data.message}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                });
+              }else {
+                // Handle other errors
+                error.response.data.errors?.map((err:any) => {
+                  message.open({
+                    type: 'error',
+                    content: `${err.msg}`,
+                    className: 'custom-class pop-medium',
+                    duration: 2.5,
+                  })
+                })
+              } 
+        }
+      },
+  }) 
+} 
