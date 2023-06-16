@@ -10,6 +10,7 @@ import useLogout from "../hooks/useLogout";
 import { useAuthStore } from "../hooks/state";
 import { useVoter } from "../hooks/queries/useAdmin";
 import { MdOutlineHowToVote } from "react-icons/md";
+import { Skeleton } from "antd";
 
 export default function VoterDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -29,7 +30,8 @@ export default function VoterDashboard() {
   
   const voterQuery = useVoter(student_id)
 
-  const fullname = voterQuery?.data?.voter?.fullname ?? "John Doe"
+  const firstname = voterQuery?.data?.voter?.firstname 
+  const surname = voterQuery?.data?.voter?.surname 
   const profile_picture = voterQuery?.data?.voter?.profile_picture ?? "https://shorturl.at/tJU24"
   
 
@@ -57,8 +59,17 @@ export default function VoterDashboard() {
               
             </span>
             <div className="flex flex-col items-center">
-              <img src={profile_picture} alt="profile" className="w-20 border-[6px] shadow-md border-white dark:border-zinc-700 object-cover rounded-full"/>
-              <h3 className="text-md pop-semibold py-2 text-[#414141] dark:text-gray-100">{fullname}</h3>
+              
+              {voterQuery?.isLoading
+                ? <Skeleton.Avatar size={128} active />
+                : <img src={profile_picture} alt="profile" className="w-32 h-32 border-[6px] shadow-md border-white dark:border-zinc-700 object-cover rounded-full"/>
+              }
+              {voterQuery?.isLoading
+                ? <span className='pt-2'>
+                    <Skeleton.Input active />
+                  </span>
+                : <h3 className="text-md pop-semibold py-2 text-[#414141] dark:text-gray-100 capitalize">{firstname === null ? "John Doe" : firstname + " " + surname}</h3>
+              }
             </div>
 
             <ul className="px-3 flex flex-col gap-2 pt-5 pop-medium tracking-wider">
