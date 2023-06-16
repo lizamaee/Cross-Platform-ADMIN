@@ -6,6 +6,8 @@ import Lottie from 'lottie-react'
 import welcome from '../../assets/welcome.json'
 import StarterVoter from '../../components/StarterVoter'
 import { useOngoingElections } from '../../hooks/queries/useVoter'
+import { Skeleton } from 'antd'
+import { useState } from 'react'
 
 export default function VHome() {
   const { isNight, switchMode, student_id } = useAuthStore((state) => state)
@@ -55,8 +57,17 @@ export default function VHome() {
         <div className="profile shadow-md hidden md:flex flex-col col-span-3 p-5 bg-white dark:bg-[#313131] rounded-xl">
           <h4 className='text-[#1c295d] dark:text-gray-400 pop-medium'>Profile</h4>
           <div className="prof flex flex-col justify-center items-center">
-            <img src={profile_picture ?? "https://shorturl.at/tJU24"} alt={`${firstname ?? "John Doe"} Profile Picture`} className='w-20 h-20 border-[6px] shadow-md border-gray-100 dark:border-zinc-700 object-cover rounded-full' />
-            <h2 className='text-[#1c295d] dark:text-gray-200 text-lg pop-semibold pt-3 pb-2 tracking-wide capitalize'>{firstname === null ? "John Doe" : firstname + " " + surname}</h2>
+            {voterQuery?.isLoading
+              ?  <Skeleton.Avatar size={80} active />
+              : <img src={profile_picture ?? "https://shorturl.at/tJU24"} alt={`${firstname ?? "John Doe"} Profile Picture`} className='w-20 h-20 border-[6px] shadow-md border-gray-100 dark:border-zinc-700 object-cover rounded-full' />
+            }
+            
+            {voterQuery?.isLoading
+              ? <span className='pt-3'>
+                  <Skeleton.Input active />
+                </span>
+              : <h2 className='text-[#1c295d] dark:text-gray-200 text-lg pop-semibold pt-3 pb-1 tracking-wide capitalize'>{firstname === null ? "John Doe" : firstname + " " + surname}</h2>
+            }
             <h5 className='text-[#ccd2e3] dark:text-gray-500'>Student Voter</h5>
           </div>
         </div>
@@ -85,33 +96,33 @@ export default function VHome() {
                       <div className="h4 text-gray-400 pop-regular text-sm text-center ">No ongoing Election.</div>
                     </div>
                   : <div className="elections-cards grid md:grid-cols-3 lg:grid-cols-4 gap-5">
-                    { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
-                        <div key={index} className="ongoing dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
-                          <img src="https://shorturl.at/oqs68" alt="cict logo" className='object-cover w-full h-32' />
-                          <h4 className='text-center py-3 pop-semibold dark:text-gray-200 text-lg'>{ongoing.title}</h4>
-                          {/* DATE DISPLAY */}
-                          <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-5 pop-regular">
-                                  <p className="">
-                                    {new Date(ongoing.startDate).toLocaleDateString("en-US", {
-                                      timeZone: "Asia/Manila",
-                                      day: "numeric",
-                                      month: "short",
-                                      year: "numeric",
-                                    })}
-                                  </p>
-                                  <span>-</span>
-                                  <p className="text-right">
-                                    {new Date(ongoing.endDate).toLocaleDateString("en-US", {
-                                      timeZone: "Asia/Manila",
-                                      day: "numeric",
-                                      month: "short",
-                                      year: "numeric",
-                                    })}
-                                  </p>
-                                </div>
-                                {/* DATE DISPLAY */}
-                        </div>
-                    ))}
+                      { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
+                          <div key={index} className="ongoing dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
+                            <img src="https://shorturl.at/oqs68" alt="cict logo" className='object-cover w-full h-32' />
+                            <h4 className='text-center py-3 pop-semibold dark:text-gray-200 text-lg'>{ongoing.title}</h4>
+                            {/* DATE DISPLAY */}
+                            <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-5 pop-regular">
+                                    <p className="">
+                                      {new Date(ongoing.startDate).toLocaleDateString("en-US", {
+                                        timeZone: "Asia/Manila",
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                      })}
+                                    </p>
+                                    <span>-</span>
+                                    <p className="text-right">
+                                      {new Date(ongoing.endDate).toLocaleDateString("en-US", {
+                                        timeZone: "Asia/Manila",
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                      })}
+                                    </p>
+                                  </div>
+                                  {/* DATE DISPLAY */}
+                          </div>
+                      ))}
                   </div>
                 }
               </div>
