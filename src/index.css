@@ -87,3 +87,30 @@
   .container > .sidebar{
     z-index: 1;
   }
+
+.custom-shape-divider-top-1686926171 {
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.custom-shape-divider-top-1686926171 svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 30px;
+    transform: rotateY(180deg);
+}
+
+.custom-shape-divider-top-1686926171 .shape-fill1 {
+    fill: #97c07c;
+}
+.custom-shape-divider-top-1686926171 .shape-fill0 {
+    fill: #F8AF6A;
+}
+.custom-shape-divider-top-1686926171 .shape-fill2 {
+    fill: #7268EF;
+}
+.custom-shape-divider-top-1686926171 .shape-fill3 {
+    fill: #C46479;
+}
