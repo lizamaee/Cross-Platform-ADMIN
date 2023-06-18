@@ -18,6 +18,7 @@ interface DataType {
 export default function PositionTab() {
   const [isCreating, setIsCreating] = useState<boolean>(false)
   const [position, setPosition] = useState<string>('')
+  const [winner, setWinner] = useState<string>('1')
   const [childrenDrawer, setChildrenDrawer] = useState(false);
   const [openMulti, setOpenMulti] = useState(false);
   const axiosPrivate = useAxiosPrivate()
@@ -89,9 +90,13 @@ export default function PositionTab() {
 
   //CREATE POSITION FUNCTION
   const handleCreate = async (e:any) => {
-      createPosition({position})
-      setIsCreating(false)
-      onClose()
+    if(winner.length > 1){
+      console.log("Too many required Winner");
+    }
+    
+    createPosition({position, requiredWinner: winner})  
+    setIsCreating(false)
+    onClose()
       
   }
 
@@ -99,6 +104,7 @@ export default function PositionTab() {
   const [isUpdating, setIsUpdating] = useState<boolean>(false)
   const [modifyId, setModifyId] = useState<string>('')
   const [modifyPosition, setModifyPosition] = useState<string>('')
+  const [modifyWinner, setModifyWinner] = useState<string>('1')
   const [availableCandidates, setAvailableCandidates] = useState([])
   const [currentCandidates, setCurrentCandidates] = useState([])
   const [isDisconnectiong, setIsDisConnecting] = useState<boolean>(false)
@@ -110,6 +116,7 @@ export default function PositionTab() {
     const single = positionsQuery.data?.filter((pos: DataType)=> pos.id === id)
     setModifyId(single[0].id)
     setModifyPosition(single[0].position)
+    setModifyWinner(single[0].requiredWinner)
   }
   
   //CLOSE MODIFY MULTI-PARENT DRAWER FUNCTION
@@ -210,8 +217,16 @@ export default function PositionTab() {
   const handleUpdatePosition = async (e:any) => {
     e.preventDefault()
     setIsUpdating(true)
+    if(modifyWinner.length > 1){
+      return message.open({
+        type: 'error',
+        content: 'Too many required Winner',
+        className: 'custom-class pop-medium',
+        duration: 2.5,
+      });
+    }
     
-    if(modifyPosition === '' ) {
+    if(modifyPosition === '' || modifyWinner === '' || modifyWinner === '0') {
       setIsUpdating(false)
       return message.open({
         type: 'error',
@@ -224,6 +239,7 @@ export default function PositionTab() {
     const updatePosData = {
       id: modifyId,
       position: modifyPosition,
+      requiredWinner: modifyWinner
     }
 
     updatePosition(updatePosData)
@@ -231,6 +247,7 @@ export default function PositionTab() {
     onCloseMultiDrawer()
     setIsUpdating(false)
     setModifyId('')
+    setModifyWinner('1')
     setModifyPosition('')
   }
 
@@ -362,12 +379,16 @@ export default function PositionTab() {
           <div className="name flex flex-col pop-medium">
             
             <label className='pb-1 pt-5 opacity-80'>Position Name</label>
-            <input value={position} onChange={(e) => setPosition(e.target.value)} type="text" className='py-1 px-3 text-lg focus:outline-indigo-400 rounded-md border-solid border-2' />
+            <input value={position} onChange={(e) => setPosition(e.target.value)} type="text" className='py-1 px-3 text-lg outline-none focus:border-indigo-400 rounded-md border-solid border-2' />
+            <div className=" py-5 flex flex-col">
+              <label className='pb-1 pt-5 opacity-80'>Required Winner</label>
+              <input value={winner} onChange={(e) => setWinner(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={9} />
+            </div>
             
           </div>
         </form>
         {/* CREATE BUTTON */}
-        {position.length > 5 && (
+        {position.length > 1 && (
           <div className="btn-container flex items-center justify-center pt-3">
             {!isCreating 
               ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={handleCreate}>
@@ -393,6 +414,10 @@ export default function PositionTab() {
             
           <label className='pb-1 opacity-80 pt-10'>Position Name</label>
           <input value={modifyPosition} onChange={(e) => setModifyPosition(e.target.value)} type="text" className='py-1 px-3 text-lg focus:outline-indigo-400 rounded-md border-solid border-2 w-full' />
+          <div className=" py-5 flex flex-col">
+            <label className='pb-1 pt-5 opacity-80'>Required Winner</label>
+            <input value={modifyWinner} onChange={(e) => setModifyWinner(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={9} />
+          </div>
 
           {/* UPDATE BUTTON */}
             <div className="cnt flex items-center justify-center p-5">
