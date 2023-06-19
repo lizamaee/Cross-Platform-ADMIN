@@ -1,7 +1,7 @@
 import { BsFillChatSquareDotsFill, BsFillSunFill, BsMoonFill } from "react-icons/bs";
 import { FiBell } from "react-icons/fi";
 import { useAuthStore } from "../../hooks/state";
-import { useOngoingElections } from "../../hooks/queries/useVoter";
+import { useCastVote, useOngoingElections } from "../../hooks/queries/useVoter";
 import { useState } from "react";
 import VoteModal from "../../components/VoteModal";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -17,11 +17,11 @@ type Position = {
 export default function CVote() {
   const [activeOrgs, setActiveOrgs] = useState([])
   const [isActiveOrgs, setIsActiveOrgs] = useState<boolean>(false)
-  const { isNight, switchMode} = useAuthStore((state) => state)
+  const { isNight, student_id, switchMode} = useAuthStore((state) => state)
+  const [selectedOrganizationID, setSelectedOrganizationID] = useState<string>('') 
 
   //ONGOING ELECTIONS QUERY HOOK
   const ongoingElectionsQuery = useOngoingElections()
-
 
   //SHOW ORGANIZATIONS
   const handleActiveOrganizations = (id: string) => {
@@ -31,7 +31,6 @@ export default function CVote() {
   }
 
   //GET BALLOT
-
   const axiosPrivate = useAxiosPrivate()
   //Vote Modal state
   const [openModal, setOpenModal] = useState<boolean>(false)
@@ -133,18 +132,46 @@ export default function CVote() {
     return candidateElements;
   };
   
-  const handleGetBallot = async (ballots: any) => {
+
+  const [resultBallot, setResultBallot] = useState<Position[]>([])
+  
+  const [openModalResult, setOpenModalResult] = useState<boolean>(false)
+
+
+  const handleGetBallot = async (ballots: any, orgId:string) => {
     try {
-      const response = await axiosPrivate.get(`/seat/get-all-positions/${ballots.id}`);
-      const data = response.data;
-      setPositions(data)
-      // setBallotID(ballots.id);
-      setOpenModal(true);
+      setSelectedOrganizationID(orgId)
+      const isVoted = await axiosPrivate.get('/election/check/check-if-voted-organization', {params: {
+        student_id,
+        organizationId: orgId
+      }})
+
+      if(isVoted?.data?.length === 0){
+        const response = await axiosPrivate.get(`/seat/get-all-positions/${ballots.id}`);
+        const data = response.data;
+        setPositions(data)
+        // setBallotID(ballots.id);
+        setOpenModal(true);
+      }else{
+        // message.open({
+        //   type: 'warning',
+        //   content: "You already voted there :)",
+        //   className: 'custom-class pop-medium',
+        //   duration: 2.5,
+        // });
+        const response = await axiosPrivate.get(`/seat/get-all-positions/${ballots.id}`);
+        const data = response.data;
+        setResultBallot(data)
+        setOpenModalResult(true);
+      }
     } catch (error) {
       // Handle error here
       console.error(error);
     }
   }
+
+  //CAST VOTE HOOK
+  const {mutate:castVote, isLoading: isCastingVote} = useCastVote()
 
   //CAST VOTE FUNCTION
   const handleCastVote = (e:any) => {
@@ -159,9 +186,11 @@ export default function CVote() {
 
     if (hasVotedForAllPositions) {
       // Proceed with submitting the votes
-      // ...
-      console.log(idArray);
-      console.log('Votes submitted successfully!');
+      castVote({student_id, organization_id: selectedOrganizationID, candidate_ids: idArray})
+
+      if(!isCastingVote){
+        setOpenModal(false)
+      } 
     } else {
       // Display an error message or take appropriate action
       message.open({
@@ -173,6 +202,7 @@ export default function CVote() {
     }
     
   }
+
 
 
   return (
@@ -254,7 +284,7 @@ export default function CVote() {
             {activeOrgs?.length === 0
               ? <h3>No Active Organizations</h3>
               : activeOrgs?.map((org:any, index: any) => (
-                <div key={index} onClick={() => handleGetBallot(org.ballots[0])} className="org bg-gray-100 dark:bg-zinc-700 flex flex-col p-4 shadow-md rounded-2xl items-center">
+                <div key={index} onClick={() => handleGetBallot(org.ballots[0], org.id)} className="org bg-gray-100 dark:bg-zinc-700 flex flex-col p-4 shadow-md rounded-2xl items-center">
                   <img src={org.logo_url} alt={org.org_name + " "+ "Logo"} className='object-cover w-24 h-24 rounded-full' />
                   <h2 className="pop-medium pt-3 dark:text-gray-300 text-sm">{org.org_name}</h2>
                   {/* DATE DISPLAY */}
@@ -303,13 +333,52 @@ export default function CVote() {
                 ))}
 
                 <div className="btn flex justify-center px-10 py-6">
-                  <button type="submit" className="bg-blue-600 text-lg text-white pop-semibold py-3 px-6 rounded-full">Cast Vote</button>
+                  {isCastingVote
+                    ? <button disabled={isCastingVote} className="bg-blue-600 text-lg text-white pop-semibold py-3 px-6 rounded-full">Casting Vote...</button>
+                    : <button disabled={isCastingVote} type="submit" className="bg-blue-600 text-lg text-white pop-semibold py-3 px-6 rounded-full">Cast Vote</button>
+                  }
+                  
                 </div>
               </form>
 
             </div>
       </VoteModal>
       {/* CAST VOTE MODAL */}
+
+
+      {/* RESULT BALLOT MODAL */}
+      <VoteModal open={openModalResult} onClose={() => setOpenModalResult(false)}>
+        <div className="result-ballot">
+          <h1 className="text-center text-xl dark:text-gray-100 pb-5 pop-bold uppercase tracking-[.4rem]">Result</h1>
+          {resultBallot?.map((result: Position, index: any) => (
+            <div key={index} className={`result gap-10 p-5 mb-10  odd:bg-blue-100 dark:odd:bg-[#242526] even:bg-red-100 dark:even:bg-[#3a3b3c] shadow-2xl rounded-lg`}>
+              <h3 className="pop-semibold bg-gray-500 dark:bg-gray-700 text-white text-center py-3 rounded-lg mb-2 text-lg">
+                {result.position} 
+              </h3>
+              <div className="candidates-result flex flex-col gap-3">
+                {result?.candidates?.sort((a: any, b: any) => b.count - a.count).map((candidate:any, index:any) => (
+                  <div key={index} className="candidate bg-white dark:bg-[#313131] py-3 px-6 rounded-xl flex items-center justify-between dark:text-gray-100">
+                    <div className="candidate-profile py-2 flex items-center gap-6">
+                      <img
+                        src={candidate.imageUrl}
+                        alt={candidate.fullname + " " + "Profile"}
+                        className="object-cover w-10 h-10 rounded-full"
+                      />
+                      <h3 className="pop-semibold">{candidate.fullname}</h3>
+                    </div>
+                    <div className="candidate-votes flex flex-col items-center">
+                      <h4 className="pop-bold text-xl" >{candidate.count}</h4>
+                      <h5 className="pop-semibold text-sm">votes</h5>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </VoteModal>
+      {/* RESULT BALLOT MODAL */}
+
 
     </div>
   )
