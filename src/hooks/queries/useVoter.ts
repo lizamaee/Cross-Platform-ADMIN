@@ -261,3 +261,55 @@ export const useOngoingElections = () =>{
       },
   }) 
 } 
+
+//QUERY FOR CASTING CONNECTIONS & VOTES
+export const useCastVote= () => {
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+
+  return useMutation({
+      mutationFn: async (newStudentId: {student_id: string, organization_id: string, candidate_ids: {}}) =>{
+          const response = await axiosPrivate.post('/cast-connection', newStudentId)
+          return response.data
+      },
+      onSuccess: async () => {
+          message.open({
+              key: 'successCreation',
+              type: 'success',
+              content: 'Voted Successfully',
+              duration: 2,
+          });
+          await queryClient.invalidateQueries({
+            queryKey: ['voter'],
+            exact: true
+        })
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.error){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.error}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            } 
+      }
+  })
+}
