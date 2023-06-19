@@ -7,7 +7,6 @@ import welcome from '../../assets/welcome.json'
 import StarterVoter from '../../components/StarterVoter'
 import { useOngoingElections } from '../../hooks/queries/useVoter'
 import { Skeleton } from 'antd'
-import { useState } from 'react'
 
 export default function VHome() {
   const { isNight, switchMode, student_id } = useAuthStore((state) => state)
@@ -80,7 +79,7 @@ export default function VHome() {
         ? <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-10">
             <h3 className='pop-semibold'>Loading...</h3>
           </div>
-        : firstname === null && surname === null && profile_picture === null
+        : firstname === null || surname === null || profile_picture === null
           ? <StarterVoter firstname={firstname} profile={profile_picture} />
           : <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-5 rounded-lg">
               <div className="ongoing flex justify-between p-5">
