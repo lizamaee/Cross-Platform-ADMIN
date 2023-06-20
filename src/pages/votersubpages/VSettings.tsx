@@ -98,7 +98,7 @@ export default function VSettings() {
 
     const url = import.meta.env.VITE_CLOUDINARY_URL
     try {
-      const response = await axios.post(url, formData, {
+      const response = await axios.post(`${url}`, formData, {
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total !== undefined) {
             const progress = Math.round(

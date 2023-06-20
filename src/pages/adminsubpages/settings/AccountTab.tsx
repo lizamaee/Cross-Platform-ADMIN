@@ -89,7 +89,7 @@ export default function AccountTab() {
     
         const url = import.meta.env.VITE_CLOUDINARY_URL
         try {
-          const response = await axios.post(url,
+          const response = await axios.post(`${url}`,
             formData,
             {
               onUploadProgress: (progressEvent) => {

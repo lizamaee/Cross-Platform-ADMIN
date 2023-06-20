@@ -167,7 +167,7 @@ export default function CandidateTab() {
       formData.append('file', file);
       formData.append('upload_preset', `${import.meta.env.VITE_CLOUDINARY_PRESET}`);
 
-    await fetch(url, {
+    await fetch(`${url}`, {
       method: 'POST',
       body: formData,
     })
@@ -225,7 +225,7 @@ export default function CandidateTab() {
 
     const url = import.meta.env.VITE_CLOUDINARY_URL
     try {
-      const response = await axios.post(url,
+      const response = await axios.post(`${url}`,
         formData,
         {
           onUploadProgress: (progressEvent) => {
