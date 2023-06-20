@@ -7,23 +7,21 @@ export default function PPolicy() {
   const { isNight, student_id, switchMode} = useAuthStore((state) => state)
   return (
     <div className="dark:text-gray-300">
-
+      <h1 className='text-[#1c295d] dark:text-gray-300 text-xl pt-1 md:pt-5 text-center pop-bold'>Privacy & Policy</h1>
       {/* NOTIFICATION HEADER */}
-      <div className="notification flex justify-end">
-      <div className="icons flex items-center bg-white dark:bg-[#313131] shadow-md py-1 px-2 rounded-full justify-center gap-5">
-        <div className="bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1" onClick={switchMode}>
-            { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={20}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={20} /> )}
-        </div>
-        <div className="bell bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1">
-          <FiBell className='text-[#a3aed0] dark:text-gray-400  dark:hover:text-gray-200 hover:text-slate-500' size={20}/>
-        </div>
+      <div className="notification pt-3 flex justify-end">
+        <div className="icons flex items-center bg-white dark:bg-[#313131] shadow-md py-1 px-2 rounded-full justify-center gap-5">
+          <div className="bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1" onClick={switchMode}>
+              { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={20}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={20} /> )}
+          </div>
+          <div className="bell bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1">
+            <FiBell className='text-[#a3aed0] dark:text-gray-400  dark:hover:text-gray-200 hover:text-slate-500' size={20}/>
+          </div>
         </div>
       </div>
       {/* NOTIFICATION HEADER */}
 
-      <h1 className='text-[#1c295d] pb-5 dark:text-gray-300 text-xl pop-bold text-center'>Privacy & Policy</h1>
-
-      <div className="privacy-policy p-5 pop-regular text-justify centered max-h-[33rem] overflow-y-auto rounded-3xl shadow-2xl bg-white dark:bg-[#313131]">
+      <div className="privacy-policy pb-5 pt-7 px-5 mt-3 pop-regular text-justify centered max-h-[33rem] overflow-y-auto rounded-xl shadow-2xl bg-white dark:bg-[#313131]">
         <p className="indent-10">
           This Privacy Policy describes Our policies and procedures on the
           collection, use and disclosure of Your information when You use the

@@ -101,7 +101,7 @@ export default function CVote() {
               <Tag color="magenta">{candidate.party}</Tag>
             </h6>
             <div className="name-btn flex flex-grow items-center gap-2 pb-3">
-              <h4 className="pop-medium capitalize dark:text-gray-200">{candidate.fullname}</h4>
+              <h4 className="pop-medium text-sm md:text-md capitalize dark:text-gray-200">{candidate.fullname}</h4>
               <div className="vote">
                 <input
                   type="radio"
@@ -196,8 +196,8 @@ export default function CVote() {
     } else {
       // Display an error message or take appropriate action
       message.open({
-        type: 'error',
-        content: 'Please vote for all positions before submitting.',
+        type: 'warning',
+        content: 'Please vote to all positions before sending votes.',
         className: 'custom-class pop-medium',
         duration: 2.5,
       });
@@ -209,8 +209,9 @@ export default function CVote() {
 
   return (
     <div>
-         {/* NOTIFICATION HEADER */}
-         <div className="notification flex justify-end">
+      <h1 className='text-[#1c295d] dark:text-gray-300 text-xl pt-1 md:pt-5 text-center pop-bold'>Cast Vote</h1>
+      {/* NOTIFICATION HEADER */}
+      <div className="notification pt-3 flex justify-end">
         <div className="icons flex items-center bg-white dark:bg-[#313131] shadow-md py-1 px-2 rounded-full justify-center gap-5">
           <div className="bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1" onClick={switchMode}>
               { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={20}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={20} /> )}
@@ -222,14 +223,12 @@ export default function CVote() {
       </div>
       {/* NOTIFICATION HEADER */}
 
-      <h1 className='text-[#1c295d] pb-5 dark:text-gray-300 text-xl pop-bold text-center'>Cast Vote</h1>
-
       {/* SHOW ONGOING ELECTIONS */}
       {ongoingElectionsQuery?.isLoading
-        ? <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-10">
+        ? <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-6">
             <h3 className='pop-semibold'>Loading...</h3>
           </div>
-        : <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-5 rounded-lg">
+        : <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-3 rounded-lg">
               <div className="ongoing flex justify-between p-5">
                 <h4 className='pop-medium dark:text-gray-300 text-md md:text-lg'>Ongoing Elections</h4>
                 <button>
@@ -360,13 +359,13 @@ export default function CVote() {
               <div className="candidates-result flex flex-col gap-3">
                 {result?.candidates?.sort((a: any, b: any) => b.count - a.count).map((candidate:any, index:any) => (
                   <div key={index} className="candidate bg-white dark:bg-[#313131] py-3 px-6 rounded-xl flex items-center justify-between dark:text-gray-100">
-                    <div className="candidate-profile py-2 flex items-center gap-6">
+                    <div className="candidate-profile py-2 flex items-center gap-2 md:gap-6">
                       <img
                         src={candidate.imageUrl}
                         alt={candidate.fullname + " " + "Profile"}
                         className="object-cover w-10 h-10 rounded-full"
                       />
-                      <h3 className="pop-semibold">{candidate.fullname}</h3>
+                      <h3 className="pop-semibold text-sm md:text-md">{candidate.fullname}</h3>
                     </div>
                     <div className="candidate-votes flex flex-col items-center">
                       <h4 className="pop-bold text-xl" >{candidate.count}</h4>

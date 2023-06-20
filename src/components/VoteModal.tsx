@@ -17,7 +17,7 @@ export default function VoteModal({ open, onClose, children }: VoteModalProps) {
             {/* Modal */}
             <div
             onClick={(e:any) => e.stopPropagation()} 
-            className={`bg-white dark:bg-[#313131] h-5/6 w-5/6 rounded-xl overflow-y-auto centered shadow p-6 transition-all ${open ? 'scale-100 opacity-100': 'scale-125 opacity-0'}`}>
+            className={`bg-white dark:bg-[#313131] h-5/6 w-5/6 rounded-xl overflow-y-auto centered shadow py-6 px-3 md:px-6 transition-all ${open ? 'scale-100 opacity-100': 'scale-125 opacity-0'}`}>
                 {children}  
 
             </div>

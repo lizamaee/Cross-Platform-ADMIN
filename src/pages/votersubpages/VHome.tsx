@@ -7,6 +7,7 @@ import welcome from '../../assets/welcome.json'
 import StarterVoter from '../../components/StarterVoter'
 import { useOngoingElections } from '../../hooks/queries/useVoter'
 import { Skeleton } from 'antd'
+import { NavLink } from 'react-router-dom'
 
 export default function VHome() {
   const { isNight, switchMode, student_id } = useAuthStore((state) => state)
@@ -22,8 +23,9 @@ export default function VHome() {
 
   return (
     <div>
+      <h1 className='text-[#1c295d] dark:text-gray-300 text-lg md:text-xl pt-1 md:pt-5 text-center pop-bold'>Dashboard</h1>
       {/* NOTIFICATION HEADER */}
-      <div className="notification flex justify-end">
+      <div className="notification py-3 flex justify-end">
         <div className="icons flex items-center bg-white dark:bg-[#313131] shadow-md py-1 px-2 rounded-full justify-center gap-5">
           <div className="bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1" onClick={switchMode}>
               { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={20}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={20} /> )}
@@ -35,19 +37,17 @@ export default function VHome() {
       </div>
       {/* NOTIFICATION HEADER */}
 
-      <h1 className='text-[#1c295d] dark:text-gray-300 text-lg pop-medium'>Dashboard</h1>
-
       {/* WELCOME AND PROFILE CARD */}
       <div className="cards grid grid-cols-10 gap-5">
         <div className="welcome relative bg-[#585de5a3] shadow-md p-5 rounded-xl col-span-10 md:col-span-7">
           <div className="welcome-info flex flex-col justify-center h-full">
             <h2 className="md:text-2xl pop-bold text-white tracking-widest">Welcome!</h2>
-            <p className='md:pr-32 text-white pop-regular pt-1 text-sm'>Greetings dear student, your votes shape the future. Engage, express, and make a difference through our student voting system.</p>
+            <p className='pr-20 md:pr-32 text-white pop-regular pt-1 text-sm'>Greetings dear student, your votes shape the future. Engage, express, and make a difference through our student voting system.</p>
             <div className="btn-vote-now flex justify-center pt-1 md:pt-4">
-              <button className='bg-[#ffc739] transition duration-300 ease-in-out hover:bg-yellow-500 text-white pop-semibold rounded-full py-2 px-4 text-sm md:text-md'>Participate Now</button>
+              <NavLink to="/voter/cast-vote" className='bg-[#ffc739] transition duration-300 ease-in-out hover:bg-yellow-500 text-white pop-semibold rounded-full py-2 px-4 text-sm md:text-md'>Participate Now</NavLink>
             </div>
           </div>
-          <div className="welcome-animation hidden translate-x-6 -translate-y-10 md:block absolute top-0 right-0" style={{ width: '200px', height: '200px' }}>
+          <div className="welcome-animation lg:translate-x-6 lg:-translate-y-10 md:block absolute top-0 right-0 w-[100px] h-[100px] lg:w-[200px] lg:h-[200px]"  >
             <Lottie animationData={welcome} loop={true} />
           </div>
         </div>
@@ -83,10 +83,7 @@ export default function VHome() {
           ? <StarterVoter firstname={firstname} profile={profile_picture} />
           : <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-5 rounded-lg">
               <div className="ongoing flex justify-between p-5">
-                <h4 className='pop-medium dark:text-gray-300 text-md md:text-lg'>Ongoing Elections</h4>
-                <button>
-                  <BsFillChatSquareDotsFill className='text-[#7268EF] w-7 h-7 md:w-8 md:h-8' />
-                </button>
+                <h4 className='pop-medium dark:text-gray-300 text-md md:text-lg'>Todays Elections</h4>
               </div>
 
               <div className="elections p-5">

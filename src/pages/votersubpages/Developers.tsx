@@ -9,8 +9,9 @@ export default function Developers() {
   const {isNight, switchMode} = useAuthStore((state) => state)
   return (
     <div>
+      <h1 className='text-[#1c295d] dark:text-gray-300 text-xl pt-1 md:pt-5 text-center pop-bold'>Developers</h1>
       {/* NOTIFICATION HEADER */}
-      <div className="notification flex justify-end">
+      <div className="notification pt-3 flex justify-end">
         <div className="icons flex items-center bg-white dark:bg-[#313131] shadow-md py-1 px-2 rounded-full justify-center gap-5">
           <div className="bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1" onClick={switchMode}>
               { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={20}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={20} /> )}
@@ -22,11 +23,8 @@ export default function Developers() {
       </div>
       {/* NOTIFICATION HEADER */}
 
-      <h1 className='text-[#1c295d] pb-5 dark:text-gray-300 text-xl pop-bold text-center'>Developers</h1>
-
-
       {/* DEVELOPER PROFILE CARD */}
-      <div className="dev-cards gap-10 grid md:grid-cols-2 lg:grid-cols-3 p-5">
+      <div className="dev-cards gap-10 grid md:grid-cols-2 lg:grid-cols-3 pb-5 pt-3 px-5">
         {/* MENARD PAJARES */}
         <DeveloperCard fullname='Menard M. Pajares' tag='@menardpajares' profile={menard} motto='" The best revenge is a massive success. "' role='Fullstack Developer'>
           <ul className='flex justify-center gap-3 py-5 '>

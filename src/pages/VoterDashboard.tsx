@@ -11,10 +11,11 @@ import { useAuthStore } from "../hooks/state";
 import { useVoter } from "../hooks/queries/useAdmin";
 import { MdOutlineHowToVote } from "react-icons/md";
 import { Skeleton } from "antd";
+import { IoMenu } from "react-icons/io5";
 
 export default function VoterDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const {  isNight, switchMode, student_id } = useAuthStore((state) => state)
+  const { student_id } = useAuthStore((state) => state)
   const navigate = useNavigate()
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -51,12 +52,8 @@ export default function VoterDashboard() {
                   className="md:hidden p-2"
                   onClick={toggleSidebar}
                 >
-                  {isSidebarOpen && (<RxCross2 size={28} className="text-[#444A5E] dark:text-gray-400 font-bold rounded-full"/>)}
+                  {isSidebarOpen && (<RxCross2 size={30} className="text-[#444A5E] dark:text-gray-400 font-bold shadow-sm rounded-full"/>)}
               </button>
-            </span>
-            <span className="absolute top-16 left-5" onClick={switchMode}>
-              { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={18}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={18} /> )}
-              
             </span>
             <div className="flex flex-col items-center">
               
@@ -158,12 +155,12 @@ export default function VoterDashboard() {
       </nav>
 
       <div className={`main flex-[2] md:flex-[6] lg:flex-[4] p-5 md:overflow-y-auto bg-[#E5E0FF] dark:bg-[#2B2B2B]`}>
-        <div className="wrapper flex items-center md:block">
+        <div className="wrapper absolute flex items-center md:block">
           <button
             className="md:hidden"
             onClick={toggleSidebar}
           >
-            {isSidebarOpen ? (<RxCross2 size={35}/>) : (<CgMenuLeftAlt size={40} className="text-[#7268EF]" />)}
+            <IoMenu size={37} className="text-[#7268EF] shadow-sm rounded-lg bg-white dark:bg-zinc-700" />
           </button>
 
         </div>
