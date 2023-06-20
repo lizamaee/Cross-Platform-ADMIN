@@ -25,6 +25,7 @@ import { useAuthStore } from "../../hooks/state";
 import { BsFillSunFill, BsMoonFill } from "react-icons/bs";
 import { FiBell } from "react-icons/fi";
 import DeleteMe from "../../components/DeleteMe";
+import blank from '../../images/blank.jpg'
 
 type ProfileFormData = {
   student_id: string;
@@ -483,7 +484,7 @@ export default function VSettings() {
               {voterQuery?.isLoading
                 ? <Skeleton.Avatar size={144} active />
                 : <img
-                src={profile ?? "https://shorturl.at/tJU24"}
+                src={profile ?? blank}
                 alt={`${firstname + " " + surname} Image`}
                 className="object-cover rounded-full border-[6px] shadow-md border-white dark:border-zinc-700 w-28 h-28 md:w-36 md:h-36"
               />

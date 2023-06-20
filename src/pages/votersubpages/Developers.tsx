@@ -4,6 +4,7 @@ import { FiBell } from 'react-icons/fi'
 import { RiFacebookFill, RiGithubFill, RiInstagramFill, RiLinkedinFill, RiTwitterFill } from 'react-icons/ri'
 import DeveloperCard from '../../components/DeveloperCard'
 import menard from '../../images/menard.png'
+import zamae from '../../images/mae.jpg'
 
 export default function Developers() {
   const {isNight, switchMode} = useAuthStore((state) => state)
@@ -52,7 +53,7 @@ export default function Developers() {
         </DeveloperCard>
         {/* MENARD PAJARES */}
         {/* LIZA MAE NECERIO */}
-        <DeveloperCard fullname='Liza Mae N. Necerio' tag='@lizamaenecerio' profile='https://shorturl.at/dmHUW' motto='" Lorem ipsum dolor sit amet consectetur adipisicing elit. "' role='UI/UX Designer'>
+        <DeveloperCard fullname='Liza Mae N. Necerio' tag='@lizamaenecerio' profile={zamae} motto='" Lorem ipsum dolor sit amet consectetur adipisicing elit. "' role='UI/UX Designer'>
           <ul className='flex justify-center gap-3 py-5 '>
             <li className='text-gray-800 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300'>
               <a href="https://github.com/lizamaee" target="_blank">

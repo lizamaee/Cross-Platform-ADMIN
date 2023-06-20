@@ -1,4 +1,4 @@
-import { BsFillChatSquareDotsFill, BsFillSunFill, BsMoonFill } from 'react-icons/bs'
+import { BsFillSunFill, BsMoonFill } from 'react-icons/bs'
 import {FiBell} from 'react-icons/fi'
 import { useVoter } from '../../hooks/queries/useAdmin'
 import { useAuthStore } from '../../hooks/state'
@@ -8,6 +8,8 @@ import StarterVoter from '../../components/StarterVoter'
 import { useOngoingElections } from '../../hooks/queries/useVoter'
 import { Skeleton } from 'antd'
 import { NavLink } from 'react-router-dom'
+import blankImg from '../../images/blank.jpg'
+import cict from '../../images/cict.jpg'
 
 export default function VHome() {
   const { isNight, switchMode, student_id } = useAuthStore((state) => state)
@@ -58,7 +60,7 @@ export default function VHome() {
           <div className="prof flex flex-col justify-center items-center">
             {voterQuery?.isLoading
               ?  <Skeleton.Avatar size={80} active />
-              : <img src={profile_picture ?? "https://shorturl.at/tJU24"} alt={`${firstname ?? "John Doe"} Profile Picture`} className='w-20 h-20 border-[6px] shadow-md border-gray-100 dark:border-zinc-700 object-cover rounded-full' />
+              : <img src={profile_picture ?? blankImg} alt={`${firstname ?? "John Doe"} Profile Picture`} className='w-20 h-20 border-[6px] shadow-md border-gray-100 dark:border-zinc-700 object-cover rounded-full' />
             }
             
             {voterQuery?.isLoading
@@ -94,7 +96,7 @@ export default function VHome() {
                   : <div className="elections-cards grid md:grid-cols-3 lg:grid-cols-4 gap-5">
                       { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
                           <div key={index} className="ongoing dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
-                            <img src="https://shorturl.at/oqs68" alt="cict logo" className='object-cover w-full h-32' />
+                            <img src={cict} alt="cict logo" className='object-cover w-full h-32' />
                             <h4 className='text-center py-3 pop-semibold dark:text-gray-200 text-lg'>{ongoing.title}</h4>
                             {/* DATE DISPLAY */}
                             <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-5 pop-regular">

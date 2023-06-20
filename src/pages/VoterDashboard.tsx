@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { RiHistoryLine, RiSettings2Fill } from "react-icons/ri";
-import { BsFillSunFill, BsMoonFill, BsShieldLockFill } from "react-icons/bs";
-import { CgMenuLeftAlt } from "react-icons/cg";
+import { BsShieldLockFill } from "react-icons/bs";
 import { FaVoteYea } from "react-icons/fa";
 import { HiHome, HiOutlineLogout, HiUserGroup } from "react-icons/hi";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
@@ -12,6 +11,7 @@ import { useVoter } from "../hooks/queries/useAdmin";
 import { MdOutlineHowToVote } from "react-icons/md";
 import { Skeleton } from "antd";
 import { IoMenu } from "react-icons/io5";
+import blank from '../images/blank.jpg'
 
 export default function VoterDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -33,7 +33,7 @@ export default function VoterDashboard() {
 
   const firstname = voterQuery?.data?.voter?.firstname 
   const surname = voterQuery?.data?.voter?.surname 
-  const profile_picture = voterQuery?.data?.voter?.profile_picture ?? "https://shorturl.at/tJU24"
+  const profile_picture = voterQuery?.data?.voter?.profile_picture ?? blank
   
 
   return (
