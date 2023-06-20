@@ -14,6 +14,7 @@ import {useQuery} from '@tanstack/react-query'
 import { useElections } from "../../../hooks/queries/useElection";
 import { useOrganizations } from "../../../hooks/queries/useOrganization";
 import { useUsers } from "../../../hooks/queries/useAdmin";
+import blank from '../../../images/blank.jpg'
 
 
 interface Election {
@@ -39,7 +40,8 @@ interface Activity {
   createdAt: string;
   user: {
     profile_picture: string;
-    fullname: string;
+    surname: string;
+    firstname: string;
   }
 }
 
@@ -368,8 +370,8 @@ export default function Home(){
 
             <div className="card p-10 bg-[#090650] dark:bg-[#4a4a4a] rounded-xl text-center text-white">
               <h2 className="text-2xl pop-bold">
-                <span className="text-[#00ffdf] dark:text-[#49ecd6]">{String(votedActivitiesQuery.data?.count ?? "0")}</span>
-                <span className="pop-regular px-4">out of</span>{votersQuery.data?.length}
+                <span className="text-[#00ffdf] dark:text-[#49ecd6]">{String(votedActivitiesQuery?.data?.count ?? "0")}</span>
+                <span className="pop-regular px-4">out of</span>{votersQuery?.data?.length}
               </h2>
               <p className="opacity-50">the votes used</p>
             </div>
@@ -385,15 +387,15 @@ export default function Home(){
 
                   <h3 className="pop-normal w-full text-center text-sm tracking-wide pt-5 opacity-50 dark:text-gray-200">{activitiesError}</h3>
               )}
-              {!activitiesError && votedActivitiesQuery.data?.activities?.map((activity: Activity) => (
+              {!activitiesError && votedActivitiesQuery?.data?.activities?.map((activity: Activity) => (
                   <div key={activity.id} className="activity flex justify-between items-center shadow-sm py-1 text-[#090650] dark:text-gray-400">
                     <img
                       className="w-6 h-6 rounded-full"
-                      src={activity.user.profile_picture === "" || activity.user.profile_picture === null ? "https://bit.ly/3LpSOvc" : activity.user.profile_picture}
+                      src={activity?.user?.profile_picture ?? blank}
                       alt="profile picture"
                     />
                     <div className="name-date">
-                      <h2 className="pop-semibold lg:text-xs">{activity.user.fullname}</h2>
+                      <h2 className="pop-semibold lg:text-xs">{activity?.user?.surname ?? "Doe"}</h2>
                       <p className="opacity-50 pop-regular text-xs">
                         {formatStamp(activity.createdAt)}
                       </p>

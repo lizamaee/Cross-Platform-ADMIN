@@ -8,7 +8,7 @@ import { ZodType, z } from "zod";
 import axios from "axios";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { TiWarning } from "react-icons/ti";
-
+import blank from '../../../images/blank.jpg'
 type ProfileFormData = {
     student_id: string;
     fullname: string;
@@ -352,7 +352,7 @@ export default function AccountTab() {
             <div className="img-holder flex  my-5 gap-3 md:gap-10">
                 <div className="img flex flex-col justify-center items-center">
                     <img 
-                        src={profile ?? "https://shorturl.at/tJU24"} alt={`${fullname} Image`} 
+                        src={profile ?? blank} alt={`${fullname} Image`} 
                         className='object-cover rounded-full border-[6px] shadow-md border-white dark:border-zinc-700 w-36 h-36'
                     />
                     <span className="w-full">
