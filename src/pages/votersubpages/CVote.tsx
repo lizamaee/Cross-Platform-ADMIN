@@ -19,12 +19,14 @@ export default function CVote() {
   const [isActiveOrgs, setIsActiveOrgs] = useState<boolean>(false)
   const { isNight, student_id, switchMode} = useAuthStore((state) => state)
   const [selectedOrganizationID, setSelectedOrganizationID] = useState<string>('') 
+  const [selectedElectionID, setSelectedElectionID] = useState<string>('')
 
   //ONGOING ELECTIONS QUERY HOOK
   const ongoingElectionsQuery = useOngoingElections()
 
   //SHOW ORGANIZATIONS
   const handleActiveOrganizations = (id: string) => {
+    setSelectedElectionID(id)
     const orgs = ongoingElectionsQuery?.data?.filter((elec:any) => elec.id === id)
     setActiveOrgs(orgs[0]?.organizations);
     setIsActiveOrgs(true)
