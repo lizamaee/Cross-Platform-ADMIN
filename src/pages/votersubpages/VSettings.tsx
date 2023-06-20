@@ -94,9 +94,9 @@ export default function VSettings() {
     if (!file) return;
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", import.meta.env.CLOUDINARY_PRESET);
+    formData.append("upload_preset", `${import.meta.env.VITE_CLOUDINARY_PRESET}`);
 
-    const url = import.meta.env.CLOUDINARY_URL
+    const url = import.meta.env.VITE_CLOUDINARY_URL
     try {
       const response = await axios.post(url, formData, {
         onUploadProgress: (progressEvent) => {

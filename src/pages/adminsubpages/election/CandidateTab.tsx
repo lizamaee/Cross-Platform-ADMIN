@@ -160,12 +160,12 @@ export default function CandidateTab() {
       });
     }
 
-    const url = import.meta.env.CLOUDINARY_URL
+    const url = import.meta.env.VITE_CLOUDINARY_URL
     const formData = new FormData();
       // Use the first item to upload
       let file = image[0]
       formData.append('file', file);
-      formData.append('upload_preset', import.meta.env.CLOUDINARY_PRESET);
+      formData.append('upload_preset', `${import.meta.env.VITE_CLOUDINARY_PRESET}`);
 
     await fetch(url, {
       method: 'POST',
@@ -221,9 +221,9 @@ export default function CandidateTab() {
     if (!file) return;
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', import.meta.env.CLOUDINARY_PRESET);
+    formData.append('upload_preset', `${import.meta.env.VITE_CLOUDINARY_PRESET}`);
 
-    const url = import.meta.env.CLOUDINARY_URL
+    const url = import.meta.env.VITE_CLOUDINARY_URL
     try {
       const response = await axios.post(url,
         formData,

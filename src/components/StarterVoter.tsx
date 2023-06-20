@@ -22,7 +22,6 @@ type InfoFormData = {
 
 export default function ({profile,firstname}:StarterProp) {
     const [voterPicture, setVoterPicture] = useState<string>('')
-    const [voterFullname, setVoterFullname] = useState<string>('')
     const {student_id} = useAuthStore((state) => state)
 
     //PROGRESS BAR STATE
@@ -44,9 +43,9 @@ export default function ({profile,firstname}:StarterProp) {
         if (!file) return;
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', import.meta.env.CLOUDINARY_PRESET);
+        formData.append('upload_preset', `${import.meta.env.VITE_CLOUDINARY_PRESET}`);
     
-        const url = import.meta.env.CLOUDINARY_URL;
+        const url = import.meta.env.VITE_CLOUDINARY_URL
         try {
           const response = await axios.post(url,
             formData,
@@ -60,7 +59,7 @@ export default function ({profile,firstname}:StarterProp) {
                 }
               },
             }
-          );
+          )
           setVoterPicture(response.data.secure_url);
           uploadVoterPicture({student_id: student_id, profile_picture: response.data.secure_url})
 
