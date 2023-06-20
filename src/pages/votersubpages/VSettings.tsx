@@ -14,7 +14,7 @@ import {
   useVoter,
 } from "../../hooks/queries/useAdmin";
 import { useRef, useState } from "react";
-import { Checkbox, Drawer, Progress, Spin, message } from "antd";
+import { Checkbox, Drawer, Progress, Skeleton, Spin, message } from "antd";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ZodType, z } from "zod";
@@ -460,49 +460,35 @@ export default function VSettings() {
 
   return (
     <div className="parent">
+      <h1 className='text-[#1c295d] dark:text-gray-300 text-xl pt-1 md:pt-5 text-center pop-bold'>Settings</h1>
       {/* NOTIFICATION HEADER */}
-      <div className="notification flex justify-end">
+      <div className="notification pt-3 flex justify-end">
         <div className="icons flex items-center bg-white dark:bg-[#313131] shadow-md py-1 px-2 rounded-full justify-center gap-5">
-          <div
-            className="bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1"
-            onClick={switchMode}
-          >
-            {isNight ? (
-              <BsFillSunFill
-                className="text-gray-400 hover:text-gray-200"
-                size={20}
-              />
-            ) : (
-              <BsMoonFill
-                className="text-[#a3aed0] hover:text-slate-500"
-                size={20}
-              />
-            )}
+          <div className="bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1" onClick={switchMode}>
+              { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={20}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={20} /> )}
           </div>
           <div className="bell bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1">
-            <FiBell
-              className="text-[#a3aed0] dark:text-gray-400  dark:hover:text-gray-200 hover:text-slate-500"
-              size={20}
-            />
+            <FiBell className='text-[#a3aed0] dark:text-gray-400  dark:hover:text-gray-200 hover:text-slate-500' size={20}/>
           </div>
         </div>
       </div>
       {/* NOTIFICATION HEADER */}
 
-      <h1 className="text-[#1c295d] pb-5 dark:text-gray-300 text-xl pop-bold text-center">
-        Settings
-      </h1>
-
-      <div className="pop-semibold py-5 px-10 dark:text-gray-300 bg-white dark:bg-[#313131] rounded-xl shadow-xl">
+      <div className="pop-semibold py-5 mt-3 px-4 md:px-10 dark:text-gray-300 bg-white dark:bg-[#313131] rounded-xl shadow-xl">
         <h2 className="pop-bold text-xl dark:text-gray-300">Profile</h2>
         <div className="profile-container ">
           <div className="img-holder flex flex-col md:flex-row  my-5 gap-3 md:gap-10">
             <div className="img flex flex-col justify-center items-center">
-              <img
+              
+              {voterQuery?.isLoading
+                ? <Skeleton.Avatar size={144} active />
+                : <img
                 src={profile ?? "https://shorturl.at/tJU24"}
                 alt={`${firstname + " " + surname} Image`}
                 className="object-cover rounded-full border-[6px] shadow-md border-white dark:border-zinc-700 w-28 h-28 md:w-36 md:h-36"
               />
+              }
+
               <span className="w-full">
                 {/* PROGRESS BAR UI */}
                 {uploadProgress > 0 && (
@@ -520,18 +506,21 @@ export default function VSettings() {
               onChange={handleUpdateImage}
             />
             <div className="choose-btn flex flex-col items-center gap-5 justify-center">
-              {isImageUpdating ? (
-                <button className="bg-[#202142] dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-3 px-5">
-                  Uploading...
-                </button>
-              ) : (
-                <button
-                  onClick={handleButtonClick}
-                  className="bg-[#202142] dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-3 px-5"
-                >
-                  Change picture
-                </button>
-              )}
+              {voterQuery?.isLoading
+                ? <Skeleton.Button shape="round" size="large" active/>
+                : isImageUpdating ? (
+                  <button className="bg-[#202142] dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-3 px-5">
+                    Uploading...
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleButtonClick}
+                    className="bg-[#202142] dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-3 px-5"
+                  >
+                    Change picture
+                  </button>
+                )
+              }
             </div>
           </div>
         </div>
@@ -541,15 +530,18 @@ export default function VSettings() {
             <label className="pb-1 opacity-80 mt-4 md:mt-8 block text-sm pop-regular">
               Student ID
             </label>
-            <input
-              {...profileRegister("student_id")}
-              defaultValue={student_id ?? "1234567"}
-              type="text"
-              minLength={7}
-              maxLength={7}
-              required
-              className="bg-transparent py-4 px-4 outline-none focus:outline-indigo-400 rounded-md border-solid border-[1px] dark:border-zinc-700 opacity-90 w-full"
-            />
+            {voterQuery?.isLoading
+              ? <Skeleton.Input size="large" active/>
+              : <input
+                  {...profileRegister("student_id")}
+                  defaultValue={student_id ?? "1234567"}
+                  type="text"
+                  minLength={7}
+                  maxLength={7}
+                  required
+                  className="bg-transparent py-4 px-4 outline-none focus:outline-indigo-400 rounded-md border-solid border-[1px] dark:border-zinc-700 opacity-90 w-full"
+                />
+            }
             {errorProfile.student_id && (
               <span className="text-red-400 text-center text-sm">
                 {errorProfile.student_id.message}
@@ -558,15 +550,19 @@ export default function VSettings() {
           </div>
           <div className="grid md:grid-cols-2 md:gap-32 pop-regular ">
             <div className="firstname">
-              <label className="pb-1 opacity-80 mt-8 block text-sm dark:text-gray-300">
+              <label className="pb-1 opacity-80 mt-4 md:mt-8 block text-sm dark:text-gray-300">
                 Firstname
               </label>
-              <input
-                {...profileRegister("firstname")}
-                defaultValue={firstname ?? "John"}
-                type="text"
-                className="bg-transparent capitalize py-4 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-full"
-              />
+              {voterQuery?.isLoading
+                ? <Skeleton.Input size="large" active/>
+                : <input
+                    {...profileRegister("firstname")}
+                    defaultValue={firstname ?? "John"}
+                    type="text"
+                    className="bg-transparent capitalize py-4 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-full"
+                  />
+              }
+              
               {errorProfile.firstname && (
                 <span className="text-red-400 text-center text-sm">
                   {errorProfile.firstname.message}
@@ -574,15 +570,19 @@ export default function VSettings() {
               )}
             </div>
             <div className="surname">
-              <label className="pb-1 opacity-80 mt-8 block text-sm dark:text-gray-300">
+              <label className="pb-1 opacity-80 mt-4 md:mt-8 block text-sm dark:text-gray-300">
                 Surname
               </label>
-              <input
-                {...profileRegister("surname")}
-                defaultValue={surname ?? "Doe"}
-                type="text"
-                className="bg-transparent capitalize py-4 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-full"
-              />
+              {voterQuery?.isLoading
+                ? <Skeleton.Input size="large" active/>
+                : <input
+                  {...profileRegister("surname")}
+                  defaultValue={surname ?? "Doe"}
+                  type="text"
+                  className="bg-transparent capitalize py-4 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-full"
+                />
+              }
+              
               {errorProfile.surname && (
                 <span className="text-red-400 text-center text-sm">
                   {errorProfile.surname.message}
@@ -590,60 +590,68 @@ export default function VSettings() {
               )}
             </div>
           </div>
-          <div className="grid grid-cols-2 md:gap-32 pop-regular ">
+          <div className="grid md:grid-cols-2 md:gap-32 pop-regular ">
             <div className="age">
-              <label className="pb-1 opacity-80 mt-8 block text-sm dark:text-gray-300">
+              <label className="pb-1 opacity-80 mt-4 md:mt-8 block text-sm dark:text-gray-300">
                 Age
               </label>
-              <input
-                {...profileRegister("age")}
-                defaultValue={age ?? "16"}
-                maxLength={2}
-                minLength={1}
-                type="text"
-                className="bg-transparent py-4 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-16 text-center"
-              />
+              {voterQuery?.isLoading
+                ? <Skeleton.Input size="large" active/>
+                : <input
+                  {...profileRegister("age")}
+                  defaultValue={age ?? "16"}
+                  maxLength={2}
+                  minLength={1}
+                  type="text"
+                  className="bg-transparent py-4 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-16 text-center"
+                />
+              }
+              
             </div>
             <div className="year_level pop-regular">
-              <label className="pb-1 opacity-80 mt-8 block text-sm dark:text-gray-300">
+              <label className="pb-1 opacity-80 mt-4 md:mt-8 block text-sm dark:text-gray-300">
                 Year Level
               </label>
-              <select
-                {...profileRegister("year_level")}
-                defaultValue={year_level ?? "1st Year"}
-                className=" bg-transparent dark:text-gray-100 rounded-lg focus:border-indigo-400 outline-none dark:border-zinc-700 border-2 py-4 px-4 "
-              >
-                <option
-                  className="bg-transparent rounded dark:bg-[#313131] dark:text-gray-300"
-                  value=""
-                >
-                  Select year level
-                </option>
-                <option
-                  className="bg-transparent dark:bg-[#313131] dark:text-gray-300"
-                  value="1st Year"
-                >
-                  1st Year
-                </option>
-                <option
-                  className="bg-transparent dark:bg-[#313131] dark:text-gray-300"
-                  value="2nd Year"
-                >
-                  2nd Year
-                </option>
-                <option
-                  className="bg-transparent dark:bg-[#313131] dark:text-gray-300"
-                  value="3rd Year"
-                >
-                  3rd Year
-                </option>
-                <option
-                  className="bg-transparent dark:bg-[#313131] dark:text-gray-300"
-                  value="4th Year"
-                >
-                  4th Year
-                </option>
-              </select>
+              {voterQuery?.isLoading
+                ? <Skeleton.Input size="large" active/>
+                : <select
+                    {...profileRegister("year_level")}
+                    defaultValue={year_level ?? "1st Year"}
+                    className=" bg-transparent dark:text-gray-100 rounded-lg focus:border-indigo-400 outline-none dark:border-zinc-700 border-2 py-4 px-4 "
+                  >
+                    <option
+                      className="bg-transparent rounded dark:bg-[#313131] dark:text-gray-300"
+                      value=""
+                    >
+                      Select year level
+                    </option>
+                    <option
+                      className="bg-transparent dark:bg-[#313131] dark:text-gray-300"
+                      value="1st Year"
+                    >
+                      1st Year
+                    </option>
+                    <option
+                      className="bg-transparent dark:bg-[#313131] dark:text-gray-300"
+                      value="2nd Year"
+                    >
+                      2nd Year
+                    </option>
+                    <option
+                      className="bg-transparent dark:bg-[#313131] dark:text-gray-300"
+                      value="3rd Year"
+                    >
+                      3rd Year
+                    </option>
+                    <option
+                      className="bg-transparent dark:bg-[#313131] dark:text-gray-300"
+                      value="4th Year"
+                    >
+                      4th Year
+                    </option>
+                  </select>
+              }
+              
             </div>
           </div>
           <div className="grid grid-cols-2 md:gap-32 pop-regular ">
@@ -662,26 +670,30 @@ export default function VSettings() {
               <div className="empty"></div>
             )}
           </div>
-          {/* SAVE BUTTON */}
-          <div className="save-btn flex justify-end py-5">
-            {!isSaving ? (
-              <button
-                type="submit"
-                className="flex items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white py-2 px-7 rounded-full"
-              >
-                <p className="pop-medium">Save</p>
-              </button>
-            ) : (
-              <button
-                disabled={isSaving}
-                className="flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full"
-              >
-                Saving...
-                <Spin className="pl-1" />
-              </button>
-            )}
-          </div>
-          {/* SAVE BUTTON */}
+          {voterQuery?.isLoading
+            ? <div className="save-btn flex justify-end py-5">
+                <Skeleton.Button shape="round" size="large" active/>
+              </div>
+            : <div className="save-btn flex justify-end py-5">
+                {!isSaving ? (
+                  <button
+                    type="submit"
+                    className="flex items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white py-2 px-7 rounded-full"
+                  >
+                    <p className="pop-medium">Save</p>
+                  </button>
+                ) : (
+                  <button
+                    disabled={isSaving}
+                    className="flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full"
+                  >
+                    Saving...
+                    <Spin className="pl-1" />
+                  </button>
+                )}
+              </div>
+          }
+          
         </form>
 
         {/* SECURITY */}
@@ -690,7 +702,11 @@ export default function VSettings() {
 
           <p className="text-sm opacity-75 pop-light">Mobile Number</p>
           <div className="number flex justify-between pb-3">
-            <h4 className="pop-regular">{number}</h4>
+            
+            {voterQuery?.isLoading
+              ? <div className="w-32 h-6 bg-gray-300 rounded-md dark:bg-gray-600 animate-pulse"></div>
+              : <h4 className="pop-regular">{number}</h4>
+            }
             <button
               onClick={showNumberDrawer}
               className="pop-regular text-sm underline text-blue-500"
