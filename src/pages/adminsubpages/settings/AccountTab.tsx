@@ -85,9 +85,9 @@ export default function AccountTab() {
         if (!file) return;
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', 'dz4hcr6r');
+        formData.append('upload_preset', import.meta.env.CLOUDINARY_PRESET);
     
-        const url = 'http://api.cloudinary.com/v1_1/nanad/image/upload';
+        const url = import.meta.env.CLOUDINARY_URL
         try {
           const response = await axios.post(url,
             formData,

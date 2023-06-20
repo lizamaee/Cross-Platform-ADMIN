@@ -6,6 +6,7 @@ import { useAuthStore } from "../hooks/state";
 import { ZodType, z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import blank from '../images/blank.jpg'
 
 interface StarterProp {
     profile: string;
@@ -43,9 +44,9 @@ export default function ({profile,firstname}:StarterProp) {
         if (!file) return;
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', 'dz4hcr6r');
+        formData.append('upload_preset', import.meta.env.CLOUDINARY_PRESET);
     
-        const url = 'http://api.cloudinary.com/v1_1/nanad/image/upload';
+        const url = import.meta.env.CLOUDINARY_URL;
         try {
           const response = await axios.post(url,
             formData,
@@ -114,7 +115,7 @@ export default function ({profile,firstname}:StarterProp) {
             <div className="img-holder flex flex-col items-center md:flex-row  my-5 gap-3 md:gap-10">
                 <div className="img flex flex-col justify-center items-center">
                     <img 
-                        src={profile ?? "https://shorturl.at/tJU24"} alt={`${firstname} Image`} 
+                        src={profile ?? blank} alt={`${firstname ?? "John Doe"} Image`} 
                         className='object-cover rounded-full border-[6px] shadow-md border-white dark:border-zinc-700 w-36 h-36'
                         />
                     <span className="w-full">
