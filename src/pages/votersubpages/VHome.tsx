@@ -96,7 +96,7 @@ export default function VHome() {
                   : <div className="elections-cards grid md:grid-cols-3 lg:grid-cols-4 gap-5">
                       { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
                           <div key={index} className="ongoing dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
-                            <img src={cict} alt="cict logo" className='object-cover w-full h-32' />
+                            <img src={`${cict}`} alt="cict logo" className='object-cover w-full h-32' />
                             <h4 className='text-center py-3 pop-semibold dark:text-gray-200 text-lg'>{ongoing.title}</h4>
                             {/* DATE DISPLAY */}
                             <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-5 pop-regular">

@@ -17,6 +17,7 @@ type Position = {
 export default function CVote() {
   const [activeOrgs, setActiveOrgs] = useState([])
   const [isActiveOrgs, setIsActiveOrgs] = useState<boolean>(false)
+  const [isPlatformVisible, setIsPlatformVisible] = useState<boolean>(false)
   const { isNight, student_id, switchMode} = useAuthStore((state) => state)
   const [selectedOrganizationID, setSelectedOrganizationID] = useState<string>('') 
   const [selectedElectionID, setSelectedElectionID] = useState<string>('')
@@ -86,23 +87,20 @@ export default function CVote() {
 
   const renderCandidates = (position:any, selectedCandidates:any) => {
     const candidateElements = position.candidates.map((candidate:any) => (
-      <label htmlFor={`candidate_${candidate.id}`} key={candidate.id} className="candidate flex flex-col mb-3 bg-white dark:bg-[#313131] shadow-md p-4 rounded-2xl cursor-pointer">
+      <label htmlFor={`candidate_${candidate.id}`} key={candidate.id} className="candidate overflow-hidden relative flex flex-col mb-3 bg-white dark:bg-[#313131] shadow-md p-2 sm:p-4 rounded-2xl cursor-pointer">
         {/* Render candidate information */}
-        <div className="c flex gap-5">
-          <div className="candidate-profile py-2">
-            <img
-              src={candidate.imageUrl}
-              alt={candidate.fullname + " " + "Profile"}
-              className="object-cover border-[4px] w-24 h-24 rounded-full"
-            />
-          </div>
-          <div className="candidate-about flex flex-col flex-grow">
-            <h6 className="text-right dark:bg-[#313131] text-xs">
-              <Tag color="magenta">{candidate.party}</Tag>
+        <div className="c flex-col flex">
+            <h6 className="absolute top-0 right-0 text-xs">
+                <Tag color="magenta" style={{marginRight: 0}}>{candidate.party}</Tag>
             </h6>
-            <div className="name-btn flex flex-grow items-center gap-2 pb-3">
-              <h4 className="pop-medium text-sm md:text-md capitalize dark:text-gray-200">{candidate.fullname}</h4>
-              <div className="vote">
+            <div className="candidate-profile mt-5 sm:mt-0 w-full flex-col sm:flex-row flex items-center">
+              <img
+                src={candidate.imageUrl}
+                alt={candidate.fullname + " " + "Profile"}
+                className="object-cover border-[4px] w-16 h-16 rounded-full"
+              />
+              <h4 className="pop-medium text-sm md:text-md capitalize dark:text-gray-200 text-center sm:text-left sm:pl-5">{candidate.fullname}</h4>
+              <div className="vote sm:pl-10">
                 <input
                   type="radio"
                   id={`candidate_${candidate.id}`}
@@ -111,14 +109,23 @@ export default function CVote() {
                   onChange={(event:any) => handleCandidateSelection(event, position.position)}
                 />
               </div>
-              <div className="platform flex flex-col items-center flex-grow pb-3">
-                <div className="platform-btn flex justify-center">
-                  <button className="px-3 py-1 bg-slate-100 dark:bg-zinc-700 dark:text-gray-300 rounded-md pop-regular text-xs">
+            </div>
+          <div className="candidate-about flex flex-col flex-grow">
+            
+            <div className="name-btn flex flex-col sm:flex-row flex-grow justify-center items-center sm:gap-2">
+              <div className="platform flex flex-col items-center ">
+                <div className="platform-btn flex w-full justify-center">
+                  <button onClick={(e) => {
+                    e.preventDefault()
+                    setIsPlatformVisible(!isPlatformVisible)}} className="px-3 py-1 bg-slate-100 dark:bg-zinc-700 dark:text-gray-300 rounded-md pop-regular text-xs">
                     Platform
                   </button>
                 </div>
-                <p className="text-xs pt-2 dark:text-gray-300 ">
-                  {candidate.platform}
+                <p className="text-xs text-justify indent-5 sm:indent-10 pb-3 sm:pb-0 pt-2 dark:text-gray-300 max-h-20 overflow-y-auto centered px-3 sm:px-14 md:px-20 lg:px-32 ">
+                  {!isPlatformVisible
+                    ? ''
+                    : <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore, eum voluptatibus. Beatae quam quod reprehenderit, doloremque maxime animi repellat facilis., eum voluptatibus. Beatae quam quod reprehenderit, doloremque maxime animi repellat facilis. , eum voluptatibus. Beatae quam quod reprehenderit, doloremque maxime animi repellat facilis.fasdfasdfasdfasdfasdf fasdfas</p>
+                  }
                 </p>
               </div>
             </div>
@@ -325,18 +332,18 @@ export default function CVote() {
               <form onSubmit={handleCastVote}>
                 {positions?.map((position: Position) => (
                   <div key={position.position} className={`position gap-10 p-5 mb-10  odd:bg-blue-100 dark:odd:bg-[#343256] even:bg-red-100 dark:even:bg-[#563232] shadow-2xl rounded-lg`}>
-                    <h3 className="pop-semibold bg-gray-500 dark:bg-gray-600 text-white text-center py-3 rounded-lg mb-2 text-lg">
+                    <h3 className="pop-semibold bg-gray-500 dark:bg-gray-600 text-white text-center py-3 rounded-lg block mb-2 tex-md sm:text-lg">
                       {position.position} 
-                      <span className="text-gray-100 pop-medium text-sm tracking-widest">{ position.requiredWinner === '1' ? "  ( Select " + position.requiredWinner + " candidate )" :  "  ( Select " + position.requiredWinner + " candidates ) "}</span>
+                      <span className="text-gray-100 pop-medium block text-xs md:text-sm tracking-widest">{ position.requiredWinner === '1' ? "  ( Select " + position.requiredWinner + " candidate )" :  "  ( Select " + position.requiredWinner + " candidates ) "}</span>
                     </h3>
                     {renderCandidates(position, selectedCandidates)}
                   </div>
                 ))}
 
-                <div className="btn flex justify-center px-10 py-6">
+                <div className="btn flex justify-center sm:px-10 sm:py-6">
                   {isCastingVote
-                    ? <button disabled={isCastingVote} className="bg-blue-600 text-lg text-white pop-semibold py-3 px-6 rounded-full">Casting Vote...</button>
-                    : <button disabled={isCastingVote} type="submit" className="bg-blue-600 text-lg text-white pop-semibold py-3 px-6 rounded-full">Cast Vote</button>
+                    ? <button disabled={isCastingVote} className="bg-blue-600 text-sm sm:text-lg text-white pop-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-full">Casting Vote...</button>
+                    : <button disabled={isCastingVote} type="submit" className="bg-blue-600 text-sm sm:text-lg text-white pop-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-full">Cast Vote</button>
                   }
                   
                 </div>
@@ -352,20 +359,21 @@ export default function CVote() {
         <div className="result-ballot">
           <h1 className="text-center text-xl dark:text-gray-100 pb-5 pop-bold uppercase tracking-[.4rem]">Result</h1>
           {resultBallot?.map((result: Position, index: any) => (
-            <div key={index} className={`result gap-10 p-5 mb-10  odd:bg-blue-100 dark:odd:bg-[#242526] even:bg-red-100 dark:even:bg-[#3a3b3c] shadow-2xl rounded-lg`}>
-              <h3 className="pop-semibold bg-gray-500 dark:bg-gray-700 text-white text-center py-3 rounded-lg mb-2 text-lg">
+            <div key={index} className={`result gap-10 p-5 mb-10 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg`}>
+              <h3 className="pop-semibold bg-gray-100 dark:bg-gray-700 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-md sm:text-lg">
                 {result.position} 
               </h3>
               <div className="candidates-result flex flex-col gap-3">
                 {result?.candidates?.sort((a: any, b: any) => b.count - a.count).map((candidate:any, index:any) => (
-                  <div key={index} className="candidate bg-white dark:bg-[#313131] py-3 px-6 rounded-xl flex items-center justify-between dark:text-gray-100">
-                    <div className="candidate-profile py-2 flex items-center gap-2 md:gap-6">
+                  <div key={index} className="candidate bg-[#E5E0FF] dark:bg-[#313131]  sm:pr-6 sm:rounded-l-[5rem] py-2 sm:py-0 rounded-xl sm:rounded-br-[3rem] flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row">
+                    <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
+                      <div className="gradientball w-[54px] h-[54px] sm:w-20 sm:h-20 bg-gradient-to-t from-blue-500 to-red-500 rounded-full absolute "></div>
                       <img
                         src={candidate.imageUrl}
                         alt={candidate.fullname + " " + "Profile"}
-                        className="object-cover w-10 h-10 rounded-full"
+                        className="object-cover z-20 w-[50px] h-[50px] sm:w-[74px] sm:h-[74px] mt-[2px]  sm:ml-[3px] sm:mt-0 rounded-full"
                       />
-                      <h3 className="pop-semibold text-sm md:text-md">{candidate.fullname}</h3>
+                      <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-300 md:text-lg">{candidate.fullname}</h3>
                     </div>
                     <div className="candidate-votes flex flex-col items-center">
                       <h4 className="pop-bold text-xl" >{candidate.count}</h4>
