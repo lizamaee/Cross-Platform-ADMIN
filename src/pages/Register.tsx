@@ -102,7 +102,7 @@ export default function Register() {
   };
 
   return (
-    <div className="md:flex md:items-center md:justify-center md:min-h-screen md:p-10 font-medium text-lg">
+    <div className="md:flex md:items-center w-full md:justify-center md:min-h-screen md:p-10 font-medium text-lg">
       <form
         onSubmit={handleSubmit(handleRegister)}
         className=" bg-[#E5E0FF] dark:bg-[#2b2b2b] dark:text-gray-200 md:rounded-3xl overflow-hidden text-[#3C486B] pb-5 md:shadow-2xl md:max-w-md"
@@ -114,7 +114,7 @@ export default function Register() {
             {/* STUDENT ID */}
             <label className="pop-regular opacity-80 text-sm">Student ID (required)</label>
             <input
-              className="bg-[#E5E0FF] px-4 py-3 mb-2 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
+              className="bg-[#E5E0FF] px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
               type="text"
               {...register("student_id")}
               placeholder="ex. 1234567"
@@ -127,17 +127,17 @@ export default function Register() {
 
           <div className="flex flex-col px-5">
             {/* PASSWORD */}
-            <label className="pop-regular opacity-80 text-sm">Password (required)</label>
-            <div className="flex rounded-lg bg-[#E5E0FF] w-full border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a]">
+            <label className="pop-regular opacity-80 mt-3 text-sm">Password (required)</label>
+            <div className="flex rounded-lg relative bg-[#E5E0FF] w-full border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a]">
               <input
-                className="grow pl-4 py-3 text-black text-md pop-medium outline-none  dark:text-white tracking-wider bg-transparent"
+                className="w-5/6 sm:w-full pl-4 py-3 text-black text-md pop-medium outline-none  dark:text-white tracking-wider bg-transparent"
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
                 placeholder="••••••••"
                 required
               />
               <button
-                className="flex justify-center items-center text-sm font-bold w-14"
+                className="flex absolute sm:static z-20 top-4 right-0 justify-center items-center text-sm font-bold w-14"
                 type="button"
                 onClick={handlePasswordToggle}
               >
@@ -146,28 +146,28 @@ export default function Register() {
             </div>
             {errors.password && <span className="text-red-400 text-center text-sm w-[100%]">{errors.password.message}</span>}
             {/* CONFIRM PASSWORD */}
-            <label className="pop-regular opacity-80 text-sm">Confirm Password (required)</label>
-            <div className="flex rounded-lg bg-[#E5E0FF] w-full border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a]">
+            <label className="pop-regular opacity-80 mt-3 text-sm">Confirm Password (required)</label>
+            <div className="sm:flex rounded-lg relative bg-[#E5E0FF] w-full border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a]">
               <input
-                className="grow pl-4 py-3 text-black text-md pop-medium outline-none  dark:text-white tracking-wider bg-transparent"
+                className="w-5/6 sm:w-full pl-4 py-3 text-black text-md pop-medium outline-none  dark:text-white tracking-wider bg-transparent"
                 type={showSamePassword ? "text" : "password"}
                 {...register("confirmPassword")}
                 placeholder="••••••••"
                 required
               />
               <button
-                className="flex justify-center items-center text-sm font-bold w-14"
+                className="flex absolute sm:static z-20 top-4 right-0 justify-center items-center text-sm font-bold w-14"
                 type="button"
                 onClick={handlePasswordToggleSame}
               >
                 {showSamePassword ? <FaEyeSlash size={23}/> : <FaEye size={23}/>}
               </button>
-            </div>
+              </div>
             {errors.confirmPassword && <span className="text-red-400 text-center text-sm">{errors.confirmPassword.message}</span>}
             {/* MOBILE NUMBER */}
-            <label className="pop-regular opacity-80 text-sm">Mobile Number (required)</label>
+            <label className="pop-regular opacity-80 mt-3 text-sm">Mobile Number (required)</label>
             <input
-              className="bg-[#E5E0FF] px-4 py-3 mb-2 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
+              className="bg-[#E5E0FF] px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider"
               type="text"
               {...register("mobile_number")}
               placeholder="ex. 09123456789"
@@ -186,24 +186,25 @@ export default function Register() {
           ) : (
             ""
           )}
-          {isLoading ? (<button
-            className="text-center text-white mt-2 px-4 py-3 rounded-lg w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
-            disabled={isLoading}
-          >
-            Loading...
-          </button>)
-          :
-          (<button
-            className="text-center text-white mt-2 px-4 py-3 rounded-lg w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
-            type="submit"
-            disabled={isLoading}
-          >
-            Register
-          </button>)}
+          {isLoading 
+            ? (<button
+                className="text-center text-white mt-3 px-4 py-3 rounded-lg w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
+                disabled={isLoading}
+              >
+                Loading...
+              </button>)
+            : (<button
+                className="text-center text-white mt-3 px-4 py-3 rounded-lg w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
+                type="submit"
+                disabled={isLoading}
+              >
+                Register
+              </button>
+          )}
 
           <ul className="forgot-register-container flex justify-end w-full dark:text-gray-400">
               <Link to='/login'>
-                <p className="pop-regular hover:text-blue-300 text-sm py-4 underline">Login</p>
+                <p className="pop-semibold pl-5 hover:text-blue-300 text-sm py-4 underline">Login</p>
               </Link>
           </ul>
         </div>

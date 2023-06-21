@@ -18,9 +18,7 @@ type LoginFormData = {
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
-  const { setToken } = useAuthStore((state) => state);
   const navigate = useNavigate();
-  const location = useLocation()
 
   const schema: ZodType<LoginFormData> = z.object({
     student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7),
@@ -108,16 +106,16 @@ export default function Login() {
 
           <div className="flex flex-col px-5">
             <label className="pop-regular opacity-80 text-sm">Password</label>
-            <div className="flex rounded-lg bg-[#E5E0FF] w-full border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a]">
+            <div className="flex rounded-lg relative bg-[#E5E0FF] w-full border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a]">
               <input
-                className="grow pl-4 py-3 text-black text-md pop-medium outline-none  dark:text-white tracking-wider bg-transparent"
+                className="w-5/6 sm:w-full pl-4 py-3 text-black text-md pop-medium outline-none  dark:text-white tracking-wider bg-transparent"
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
                 placeholder="••••••••"
                 required
               />
               <button
-                className="flex justify-center items-center text-sm font-bold w-14"
+                className="flex absolute sm:static z-20 top-4 right-0 justify-center items-center text-sm font-bold w-14"
                 type="button"
                 onClick={handlePasswordToggle}
               >
@@ -146,10 +144,10 @@ export default function Login() {
 
           <ul className="forgot-register-container flex justify-between w-full dark:text-gray-400">
               <NavLink to='/forgot-password'>
-                <p className="pop-regular text-sm py-4 underline">Forgot Password</p>
+                <p className="pop-semibold text-sm py-4 underline">Forgot Password</p>
               </NavLink>
               <NavLink to='/register'>
-                <p className="pop-regular text-sm py-4 underline">Register</p>
+                <p className="pop-semibold text-sm py-4 underline">Register</p>
               </NavLink>
           </ul>
         </div>
