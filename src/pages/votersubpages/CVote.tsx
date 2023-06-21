@@ -233,7 +233,7 @@ export default function CVote() {
 
       {/* SHOW ONGOING ELECTIONS */}
       {ongoingElectionsQuery?.isLoading
-        ? <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-6">
+        ? <div className="loading flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-6">
             <h3 className='pop-semibold'>Loading...</h3>
           </div>
         : <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-3 rounded-lg">
@@ -286,43 +286,48 @@ export default function CVote() {
       {/* SHOW ONGOING ELECTIONS */}
 
       {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
-      {isActiveOrgs && (
-        <div className="active-organization rounded-lg shadow-xl mt-4 bg-white dark:bg-[#313131] p-5">
-          <h2 className="py-4 text-center dark:text-gray-200 pop-semibold">Active Organizations</h2>
-          <div className="all-org grid p-5 gap-10 md:grid-cols-2 lg:grid-cols-3">
-            {activeOrgs?.length === 0
-              ? <h3>No Active Organizations</h3>
-              : activeOrgs?.map((org:any, index: any) => (
-                <div key={index} onClick={() => handleGetBallot(org.ballots[0], org.id)} className="org bg-gray-100 dark:bg-zinc-700 flex flex-col p-4 shadow-md rounded-2xl items-center">
-                  <img src={org.logo_url} alt={org.org_name + " "+ "Logo"} className='object-cover w-24 h-24 rounded-full' />
-                  <h2 className="pop-medium pt-3 dark:text-gray-300 text-sm">{org.org_name}</h2>
-                  {/* DATE DISPLAY */}
-                  <div className="dates flex text-xs gap-3 pt-4 items-center justify-center text-gray-600 dark:text-gray-400 pb-2 pop-regular">
-                    <p className="">
-                      {new Date(org.startDate).toLocaleDateString("en-US", {
-                        timeZone: "Asia/Manila",
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </p>
-                    <span>-</span>
-                    <p className="text-right">
-                      {new Date(org.endDate).toLocaleDateString("en-US", {
-                        timeZone: "Asia/Manila",
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                  {/* DATE DISPLAY */}
-                </div>
-              ))
-            }
+      {ongoingElectionsQuery?.isLoading
+        ? <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-6">
+            <h3 className='pop-semibold'></h3>
           </div>
-        </div>
-      )}
+        : isActiveOrgs && (
+          <div className="active-organization rounded-lg shadow-xl mt-4 bg-white dark:bg-[#313131] p-5">
+            <h2 className="py-4 text-center dark:text-gray-200 pop-semibold">Active Organizations</h2>
+            <div className="all-org grid p-5 gap-10 md:grid-cols-2 lg:grid-cols-3">
+              {activeOrgs?.length === 0
+                ? <h3>No Active Organizations</h3>
+                : activeOrgs?.map((org:any, index: any) => (
+                  <div key={index} onClick={() => handleGetBallot(org.ballots[0], org.id)} className="org bg-gray-100 dark:bg-zinc-700 flex flex-col p-4 shadow-md rounded-2xl items-center">
+                    <img src={org.logo_url} alt={org.org_name + " "+ "Logo"} className='object-cover w-24 h-24 rounded-full' />
+                    <h2 className="pop-medium pt-3 dark:text-gray-300 text-sm">{org.org_name}</h2>
+                    {/* DATE DISPLAY */}
+                    <div className="dates flex text-xs gap-3 pt-4 items-center justify-center text-gray-600 dark:text-gray-400 pb-2 pop-regular">
+                      <p className="">
+                        {new Date(org.startDate).toLocaleDateString("en-US", {
+                          timeZone: "Asia/Manila",
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                      <span>-</span>
+                      <p className="text-right">
+                        {new Date(org.endDate).toLocaleDateString("en-US", {
+                          timeZone: "Asia/Manila",
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </div>
+                    {/* DATE DISPLAY */}
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        )
+      }
       {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
 
 
