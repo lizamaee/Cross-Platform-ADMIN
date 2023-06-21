@@ -6,6 +6,7 @@ import { useState } from "react";
 import VoteModal from "../../components/VoteModal";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Tag, message } from "antd";
+import cict from '../../images/cict.jpg'
 
 type Position = {
   id:string;
@@ -124,7 +125,7 @@ export default function CVote() {
                 <p className="text-xs text-justify indent-5 sm:indent-10 pb-3 sm:pb-0 pt-2 dark:text-gray-300 max-h-20 overflow-y-auto centered px-3 sm:px-14 md:px-20 lg:px-32 ">
                   {!isPlatformVisible
                     ? ''
-                    : <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Inventore, eum voluptatibus. Beatae quam quod reprehenderit, doloremque maxime animi repellat facilis., eum voluptatibus. Beatae quam quod reprehenderit, doloremque maxime animi repellat facilis. , eum voluptatibus. Beatae quam quod reprehenderit, doloremque maxime animi repellat facilis.fasdfasdfasdfasdfasdf fasdfas</p>
+                    : <span>{candidate.platform}</span>
                   }
                 </p>
               </div>
@@ -248,11 +249,11 @@ export default function CVote() {
                   ? <div className="no-ongoingx">
                       <div className="h4 text-gray-400 pop-regular text-sm text-center ">No ongoing Election.</div>
                     </div>
-                  : <div className="elections-cards grid md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  : <div className="elections-cards grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                       { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
                           <div key={index} onClick={() => handleActiveOrganizations(ongoing.id)
                           } className="ongoing cursor-pointer dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
-                            <img src="https://shorturl.at/oqs68" alt="cict logo" className='object-cover w-full h-32' />
+                            <img src={cict} alt="cict logo" className='object-cover w-full h-32' />
                             <h4 className='text-center py-3 pop-semibold dark:text-gray-200 text-lg'>{ongoing.title}</h4>
                             {/* DATE DISPLAY */}
                             <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-5 pop-regular">
