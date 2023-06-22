@@ -13,7 +13,7 @@ export default function Landing() {
   }
   return (
     <div className='landing-container'>
-      <nav className={`lg:hidden absolute top-0 w-full pt-8 pb-5 pr-7 pl-5 bg-[#E5E0FF] drop-shadow-md ${
+      <nav className={`lg:hidden absolute z-30 top-0 w-full pt-8 pb-5 pr-7 pl-5 bg-[#E5E0FF] drop-shadow-md ${
         isNavOpen ? 'translate-y-0' : '-translate-y-full'} transition-all duration-300 ease-in-out`}>
         <div className="close-wrapper flex justify-end">
           <IoClose onClick={handlerOpenNav} size={45} className='text-[#6c63ff]'/>
