@@ -3,11 +3,11 @@ import { RxCross2 } from "react-icons/rx";
 import { RiSettings2Line } from "react-icons/ri";
 import { BiHomeAlt } from "react-icons/bi";
 import { BsCalendarEvent,BsListStars } from "react-icons/bs";
-import { CgMenuLeftAlt } from "react-icons/cg";
-import { MdHowToVote } from "react-icons/md";
+import { MdOutlineHowToVote } from "react-icons/md";
 import { HiOutlineLogout } from "react-icons/hi";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import useLogout from "../hooks/useLogout";
+import { IoMenu } from "react-icons/io5";
 
 export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -28,7 +28,7 @@ export default function Dashboard() {
   return (
     <div className="container md:overflow-hidden h-screen max-w-screen-2xl md:flex">
       <nav
-        className={` sidebar fixed md:static w-4/5 h-screen rounded-r-3xl md:rounded-r-lg bg-[#444A5E] dark:bg-[#303030] text-white shadow-2xl ${
+        className={` sidebar overflow-hidden z-20 fixed md:static w-4/5 h-screen rounded-r-3xl md:rounded-r-lg bg-[#444A5E] dark:bg-[#303030] text-white shadow-2xl ${
           isSidebarOpen ? 'translate-x-0 flex-[6]' : '-translate-x-full'
         } transition-all duration-300 ease-in-out md:w-auto md:translate-x-0 md:flex-[2] lg:flex-1`}
       >
@@ -37,13 +37,18 @@ export default function Dashboard() {
         { isSidebarOpen && (
           <div className="md:hidden">
             <div className="flex items-center justify-between px-5 py-4 shadow-sm">
-              <MdHowToVote size={40} className="text-[#7268EF]"/>
-              <h3 className="text-2xl pop-bold text-[#ffffff]">VS Admin</h3>
+              <div className="title-container sm:ml-10 flex items-center gap-1">
+                <MdOutlineHowToVote className="text-[#6c63ff] h-10 w-10 md:h-16 md:w-16"/>
+                <div className="title-box">
+                  <h2 className='text-xl pop-bold text-[#6c63ff]'>CICT</h2>
+                  <h3 className='text-xs pop-regular'>Voting System</h3>
+                </div>
+              </div>
               <button
                 className="md:hidden"
                 onClick={toggleSidebar}
               >
-                {isSidebarOpen && (<RxCross2 size={28} className="text-[#444A5E] bg-white rounded-full"/>)}
+                {isSidebarOpen && (<RxCross2 size={35} className="text-[#7268EF] shadow-sm rounded-lg bg-gray-600 dark:bg-zinc-700"/>)}
               </button>
             </div>
 
@@ -76,9 +81,14 @@ export default function Dashboard() {
         {/* DESKTOP VIEW */}
         <div className="hidden md:block min-h-screen">
 
-          <div className="flex items-center gap-2 px-5 py-4 shadow-sm">
-            <MdHowToVote size={40} className="text-[#7268EF]"/>
-            <h3 className="text-2xl pop-bold text-[#ffffff]">VS Admin</h3>
+          <div className="flex items-center justify-center gap-2 px-5 py-4 shadow-sm">
+              <div className="title-container flex items-center gap-1">
+                <MdOutlineHowToVote className="text-[#6c63ff] h-10 w-10"/>
+                <div className="title-box">
+                  <h2 className='text-xl pop-bold text-[#6c63ff]'>CICT</h2>
+                  <h3 className='text-xs pop-regular'>Voting System</h3>
+                </div>
+              </div>
           </div>
 
           <ul className="px-3 flex flex-col gap-4 pt-10 pop-medium tracking-wider">
@@ -110,12 +120,12 @@ export default function Dashboard() {
       </nav>
 
       <div className={`main flex-[2] md:flex-[6] lg:flex-[4] p-5 md:overflow-y-auto bg-[#f4f7ff] dark:bg-[#2B2B2B]`}>
-        <div className="wrapper flex items-center md:block">
+        <div className="wrapper absolute flex items-center md:block">
           <button
             className="md:hidden"
             onClick={toggleSidebar}
           >
-            {isSidebarOpen ? (<RxCross2 size={35}/>) : (<CgMenuLeftAlt size={40} className="text-[#7268EF]" />)}
+            <IoMenu size={37} className="text-[#7268EF] shadow-sm rounded-lg bg-white dark:bg-zinc-700" />
           </button>
 
         </div>
