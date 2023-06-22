@@ -1,3 +1,4 @@
+import { IoClose } from "react-icons/io5";
 
 interface VoteModalProps {
     open: boolean;
@@ -10,17 +11,23 @@ export default function VoteModal({ open, onClose, children }: VoteModalProps) {
         // backdrop
         <div
         onClick={onClose}
-        className={`fixed inset-0 flex z-30 justify-center items-center transition-colors ${
-            open ? "visible bg-black/40" : "invisible"
+        className={`fixed inset-0 flex z-30 flex-col justify-center items-center transition-colors ${
+            open ? "visible bg-black/70" : "invisible"
         }`}
-        >
+            >
+            <div onClick={(e:any) => e.stopPropagation()} className="close bg-white py-3 px-5 rounded-t-xl dark:bg-[#313131] flex w-5/6 border-b-[1px] dark:border-gray-600 justify-end">
+                <button onClick={onClose} className="p-1 rounded-lg text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-zinc-700">
+                    <IoClose size={25}/>
+                </button>
+            </div>
             {/* Modal */}
             <div
             onClick={(e:any) => e.stopPropagation()} 
-            className={`bg-white dark:bg-[#313131] h-5/6 w-5/6 rounded-xl overflow-y-auto centered shadow py-6 px-3 md:px-6 transition-all ${open ? 'scale-100 opacity-100': 'scale-125 opacity-0'}`}>
+            className={`bg-white dark:bg-[#313131] h-5/6 w-5/6 rounded-b-lg overflow-y-auto centered shadow py-4 px-3 md:px-6 transition-all ${open ? 'scale-100 opacity-100': 'scale-125 opacity-0'}`}>
+                
                 {children}  
-
             </div>
+
         </div>
     )
 }
