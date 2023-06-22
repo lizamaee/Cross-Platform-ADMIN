@@ -4,7 +4,7 @@ import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
 import {IoMdRemoveCircle} from 'react-icons/io' 
-import { Drawer, Dropdown, MenuProps, Modal, Space, Spin, Tooltip, message } from 'antd';
+import { Drawer, Dropdown, MenuProps, Space, Spin, Tooltip, message } from 'antd';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
@@ -26,11 +26,9 @@ export default function ElectionTab() {
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [isCreating, setIsCreating] = useState<boolean>(false)
   const [name, setName] = useState<string>('')
-  const [status, setStatus] = useState<string>('')
   const [childrenDrawer, setChildrenDrawer] = useState(false);
   const [openMulti, setOpenMulti] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [singleOrganization, setSingleOrganization] = useState<DataType>()
   const axiosPrivate = useAxiosPrivate()
   const navigate = useNavigate()
   const location = useLocation()
@@ -343,26 +341,26 @@ export default function ElectionTab() {
       })
       
   return (
-    <div className='Election bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
+    <div className='Election overflow-hidden bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
       {/* CREATE BUTTON */}
       <div className="top flex justify-between items-center pb-3 pt-10  mx-5">
         <h3 className='text-lg pop-semibold text-gray-950 dark:text-gray-100'>Elections</h3>
-        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 pr-3 pl-1 text-white pop-medium bg-[#2F92F0] hover:text-[#2F92F0] border-2 border-[#2F92F0] hover:bg-transparent focus:outline-none rounded-2xl'>
+        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 sm:pr-3 px-1 text-white pop-medium bg-[#2F92F0] hover:text-[#2F92F0] border-2 border-[#2F92F0] hover:bg-transparent focus:outline-none rounded-2xl'>
           <BsPlus size={25} className='' />
-          <h3 className='text-sm md:text-md'>CREATE</h3>
+          <h3 className='text-sm md:text-md hidden sm:inline'>CREATE</h3>
         </button>
       </div>
       {/* CREATE BUTTON */}
 
       {/* ALL ORGANIZATIONS */}
-      <div className="container w-full mx-auto p-4 overflow-x-auto">
+      <div className="container centered w-full mx-auto p-4 overflow-x-auto">
         {electionsQuery.status === 'error' || electionsQuery.data?.[0]?.error === 'Network Error'
             ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
             : descendingElections?.length === 0 
                 ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Elections</h4>
                 : <div className="grid items-center gap-5">
                   {descendingElections?.map((elec:DataType, index: any) =>(
-                    <div key={index} className="card px-4 shadow-md bg-gray-100 rounded-md dark:bg-[#2a2a2a] flex flex-cols-2">
+                    <div key={index} className="card gap-2 py-2 px-4 shadow-md bg-gray-100 rounded-md dark:bg-[#2a2a2a] flex flex-cols-2">
                       <div className="grow gap-3 flex flex-col md:flex-row md:justify-between md:pr-20 justify-center">
                         <div className="election-title flex justify-center md:justify-start items-center">
                           <h3 className='pop-semibold text-[#303030] dark:text-gray-200 text-center '>{elec.title}</h3>
@@ -390,7 +388,7 @@ export default function ElectionTab() {
                         {/* DATE DISPLAY */}
                       </div>
                       {/* ACTIONS DISPLAY */}
-                      <div className="actions flex flex-col-reverse md:flex-row items-end justify-end gap-3 md:gap-5 py-2">
+                      <div className="actions flex flex-col-reverse md:flex-row items-end justify-center gap-3 md:gap-5 py-2">
                         <Tooltip title='Delete' color='#f87171'>
                           <button
                             onClick={(e) => deleteIt(elec.id, elec.title)}
@@ -593,7 +591,7 @@ export default function ElectionTab() {
 
       {/* DELETE MODAL */}
       <DeleteMe open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
-      <div className="delete-container py-5 px-10 rounded-2xl bg-white dark:bg-[#414141]">
+      <div className="delete-container z-50 py-5 px-10 rounded-2xl bg-white dark:bg-[#414141]">
               <div className="px-10">
                 <div className="icon flex justify-center">
                   <div className="warning_icon p-3 shadow-md bg-[#fff5f6] dark:bg-[#504f4f] rounded-full">
@@ -607,7 +605,7 @@ export default function ElectionTab() {
                 </div>
                 <div className="warn-text tracking-wider text-xs md:text-sm">
                   <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">
-                    Do you want to delete {deletingElectionName}
+                    Do you want to delete <span className='pop-bold'>{deletingElectionName}</span>
                   </p>
                   <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">
                     Are you sure?
