@@ -390,7 +390,7 @@ export default function Home(){
               {!activitiesError && votedActivitiesQuery?.data?.activities?.map((activity: Activity) => (
                   <div key={activity.id} className="activity flex justify-between items-center shadow-sm py-1 text-[#090650] dark:text-gray-400">
                     <img
-                      className="w-6 h-6 rounded-full"
+                      className="object-cover w-6 h-6 rounded-full"
                       src={activity?.user?.profile_picture ?? blank}
                       alt="profile picture"
                     />
@@ -432,7 +432,7 @@ export default function Home(){
             
             <div onClick={() => getCandidates(org.id)} className="single-or cursor-pointer bg-white hover:bg-[#dcdcdc] dark:hover:bg-[#6d6d6d] dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-4 text-xs pop-medium" key={org.id}>
               <div className="org-img-container p-1 flex justify-center">
-                <img className='rounded-full h-[60px]' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
+                <img className='object-cover w-24 h-24 rounded-full' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
               </div>
               <h1 className='text-sm text-center py-3'>{org.org_name}</h1>
               <div className="time-date-container flex justify-between px-2 opacity-60">

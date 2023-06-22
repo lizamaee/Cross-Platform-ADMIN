@@ -1,7 +1,7 @@
 import { useAuthStore } from "../../../hooks/state";
-import { useAdminConfirmOTP, useAdminResetConfirmOTP, useAdminResetPassword, useAdminResetSendOTP, useAdminSendOTP, useChangePassword, useChangePin, useDeleteAdminAccount, useUpdateImage, useUpdateProfile, useUsers } from "../../../hooks/queries/useAdmin";
+import { useAdminConfirmOTP, useAdminResetConfirmOTP, useAdminResetPassword, useAdminResetSendOTP, useAdminSendOTP, useChangePassword, useChangePin, useDeleteAdminAccount, useUpdateImage, useUpdateProfile, useUsers, useVoter } from "../../../hooks/queries/useAdmin";
 import { useEffect, useRef, useState } from "react";
-import { Checkbox, Drawer, Progress, Spin, message } from "antd";
+import { Checkbox, Drawer, Progress, Skeleton, Spin, message } from "antd";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ZodType, z } from "zod";
@@ -55,6 +55,11 @@ export default function AccountTab() {
     //USER HOOKS
     //GET ALL
     const usersQuery = useUsers()
+
+    const voterQuery = useVoter(student_id)
+
+    
+    const profile_picture = voterQuery?.data?.voter?.profile_picture
 
     //FILTER THE USER
     const adminInfo = usersQuery?.data?.filter((admin:any) => admin.student_id === student_id)
@@ -351,10 +356,14 @@ export default function AccountTab() {
         <div className="profile-container ">
             <div className="img-holder flex  my-5 gap-3 md:gap-10">
                 <div className="img flex flex-col justify-center items-center">
-                    <img 
-                        src={profile ?? blank} alt={`${fullname} Image`} 
-                        className='object-cover rounded-full border-[6px] shadow-md border-white dark:border-zinc-700 w-36 h-36'
-                    />
+                    
+                    {voterQuery?.isLoading
+                        ?  <Skeleton.Avatar size={144} active />
+                        : <img 
+                            src={profile_picture ?? blank} alt={`${fullname} Image`} 
+                            className='object-cover rounded-full border-[6px] shadow-md border-white dark:border-zinc-700 w-36 h-36'
+                        />
+                    }
                     <span className="w-full">
                         {/* PROGRESS BAR UI */}
                             {uploadProgress > 0 && (
