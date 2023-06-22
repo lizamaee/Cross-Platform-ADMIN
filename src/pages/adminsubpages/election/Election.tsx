@@ -44,14 +44,14 @@ export default function Election() {
       {/* ELECTION */}
         <NavBar pageName='Election'/>
       {/* ELECTION */}
-      <div className="election-page py-5">
+      <div className="election-page z-0 relative py-5">
         {/* PHASE I */}
-        <div className="phase1 flex lg:gap-10 text-gray-700 dark:text-gray-400 pop-semibold text-xs md:text-sm lg:text:md bg-white dark:bg-[#303030] rounded-t-lg ">
+        <div className="phase1 sticky top-0 z-10 overflow-x-auto centered flex lg:gap-10 text-gray-700 dark:text-gray-400 pop-semibold text-xs md:text-sm lg:text:md bg-white dark:bg-[#303030] rounded-t-lg ">
           <nav className='flex gap-5'>
-            <button onClick={handleElectionTab} className={`election outline-none tracking-wide ml-3 py-3 ${electionTab ? `text-[#7a6ff0] dark:text-white border-b-2 border-[#7a6ff0]` : ``}`}>Election</button>
-            <button onClick={handleOrganizationTab} className={`organization outline-none tracking-wide py-3 ${organizationTab ? `text-[#7a6ff0] dark:text-white border-b-2 border-[#7a6ff0]` : ``}`}>Organization</button>
-            <button onClick={handlePositionTab} className={`posion outline-none tracking-wide py-3 ${positionTab ? `text-[#7a6ff0] dark:text-white border-b-2 border-[#7a6ff0]` : ``}`}>Position</button>
-            <button onClick={handleCandidateTab} className={`candidate outline-none tracking-wide py-3 ${candidateTab ? `text-[#7a6ff0] dark:text-white border-b-2 border-[#7a6ff0]` : ``}`}>Candidate</button>
+            <button onClick={handleElectionTab} className={`election outline-none tracking-wide ml-3 py-5 ${electionTab ? `text-[#7a6ff0] dark:text-white border-b-2 border-[#7a6ff0]` : ``}`}>Election</button>
+            <button onClick={handleOrganizationTab} className={`organization outline-none tracking-wide py-5 ${organizationTab ? `text-[#7a6ff0] dark:text-white border-b-2 border-[#7a6ff0]` : ``}`}>Organization</button>
+            <button onClick={handlePositionTab} className={`posion outline-none tracking-wide py-5 ${positionTab ? `text-[#7a6ff0] dark:text-white border-b-2 border-[#7a6ff0]` : ``}`}>Position</button>
+            <button onClick={handleCandidateTab} className={`candidate outline-none tracking-wide py-5 ${candidateTab ? `text-[#7a6ff0] dark:text-white border-b-2 border-[#7a6ff0]` : ``}`}>Candidate</button>
           </nav>
         </div>
         <div className="tab-ouput">
