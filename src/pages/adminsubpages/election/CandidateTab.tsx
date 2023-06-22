@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import {BsPlus} from 'react-icons/bs'
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
 import {FaCamera} from 'react-icons/fa' 
 import { Drawer, Modal, Progress, Spin, Tag, Tooltip, message } from 'antd';
@@ -10,6 +8,8 @@ import { useDropzone } from 'react-dropzone';
 import React from 'react';
 import axios from 'axios';
 import { useCandidates, useCreateCandidate, useDeleteCandidate, useUpdateCandidate } from '../../../hooks/queries/useCandidate';
+import DeleteMe from '../../../components/DeleteMe';
+import { TiWarning } from 'react-icons/ti';
 
 interface DataType {
   seatId: null;
@@ -34,7 +34,7 @@ export default function CandidateTab() {
   //CREATE SINGLE
   const { mutate: createCandidate} = useCreateCandidate()
   //DELETE SINGLE
-  const { mutate: deleteCandidate} = useDeleteCandidate()
+  const { mutate: deleteCandidate, isLoading: isDeletingCandidate} = useDeleteCandidate()
 
   //SORT CANDIDATE ARRAY IN DESCENDING ORDER
   const descendingCandidates = candidatesQuery?.data?.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -89,27 +89,21 @@ export default function CandidateTab() {
     </div>
   ));
 
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [deletingCandidateName, setDeletingCandidateName] = useState<string>('')
+  const [deletingCandidateID, setDeletingCandidateID] = useState<string>('')
    
   //ASYNCRONOUS DELETE CANDIDATE FUNCTION
-  async function handleDeleteOrganization(id: string) {
-    deleteCandidate(id)
+  async function handleDeleteCandidate() {
+    deleteCandidate(deletingCandidateID)
+    setOpenDeleteModal(false)
   }
 
   //DELETE CANDIDATE CONFIRMATION MODAL
   const deleteIt = (id: string, name: string) => {
-    Modal.confirm({
-      title: 'Do you want to delete this Organization?',
-      content: `Deleting organization: ${name}`,
-      className: 'text-gray-700',
-      onOk() {
-        return new Promise((resolve, reject) => {
-          handleDeleteOrganization(id)
-            .then(resolve)
-            .catch(reject);
-        }).catch(() => console.log('Oops, an error occurred!'));
-      },
-      onCancel() {},
-    });
+    setDeletingCandidateName(name)
+    setDeletingCandidateID(id)
+    setOpenDeleteModal(true)
   }
 
   //AVOID MEMORY LEAK DURING IMAGE UPLOAD @ DROPZONE
@@ -298,13 +292,13 @@ export default function CandidateTab() {
   }
 
   return (
-    <div className=' bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
+    <div className=' bg-white overflow-hidden dark:bg-[#303030] rounded-b-lg shadow-md'>
       {/* CREATE BUTTON */}
       <div className="top flex justify-between items-center pt-10  mx-5">
         <h3 className='text-lg pop-semibold text-gray-950 dark:text-gray-100'>Candidates</h3>
-        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 pr-3 pl-1 text-white pop-medium bg-[#a75de1] hover:text-[#a75de1] border-2 border-[#a75de1] hover:bg-transparent focus:outline-none rounded-2xl'>
+        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 sm:pr-3 px-1 text-white pop-medium bg-[#a75de1] hover:text-[#a75de1] border-2 border-[#a75de1] hover:bg-transparent focus:outline-none rounded-2xl'>
           <BsPlus size={25} className='' />
-          <h3 className='text-sm md:text-md'>CREATE</h3>
+          <h3 className='text-sm md:text-md hidden sm:inline'>CREATE</h3>
         </button>
       </div>
       {/* CREATE BUTTON */}
@@ -338,7 +332,7 @@ export default function CandidateTab() {
                 ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Candidates</h4>
                 : <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
                 {descendingCandidates?.map((can:DataType, index: any) =>(
-                  <div key={index} className="card p-3 hover:-translate-y-2 ease-in-out duration-300  shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
+                  <div key={index} className="card overflow-hidden p-3 hover:-translate-y-2 hover:z-0 ease-in-out duration-300  shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
                     <div className="upper grid grid-cols-2">
                       {/* IMAGE DISPLAY */}
                       <div className="img-container shrink-0 flex items-center justify-center py-1">
@@ -355,7 +349,7 @@ export default function CandidateTab() {
                       </Tooltip>   
                     </div>
                       {/* ACTIONS DISPLAY */}
-                      <div className="actions flex justify-between px-2">
+                      <div className="actions flex gap-1 justify-between px-2">
                         <Tooltip title='Delete' color='#f87171'>
                           <button
                             onClick={(e) => deleteIt(can.id, can.fullname)}
@@ -490,6 +484,57 @@ export default function CandidateTab() {
           </div>
       </Drawer>
       {/* UPDATE CANDIDATE MULTI-PARENT DRAWER */}
+
+      {/* DELETE MODAL */}
+      <DeleteMe open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
+      <div className="delete-container py-5 px-10 rounded-2xl bg-white dark:bg-[#414141]">
+              <div className="px-10">
+                <div className="icon flex justify-center">
+                  <div className="warning_icon p-3 shadow-md bg-[#fff5f6] dark:bg-[#504f4f] rounded-full">
+                    <TiWarning size={30} className="text-[#ff3f56]" />
+                  </div>
+                </div>
+                <div className="warn flex justify-center pt-5 pb-3">
+                  <h2 className="md:text-xl text-lg md:tracking-wider pop-bold text-[#334049] dark:text-gray-200">
+                    Delete Candidate
+                  </h2>
+                </div>
+                <div className="warn-text tracking-wider text-xs md:text-sm">
+                  <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">
+                    Do you want to delete <span className='pop-bold'>{deletingCandidateName}</span>
+                  </p>
+                  <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">
+                    Are you sure?
+                  </p>
+                </div>
+              </div>
+              <div className="choice-btn text-[#334049] dark:text-gray-200 pt-5 flex flex-col-reverse gap-3 md:flex-row  justify-evenly ">
+                <button
+                  onClick={() => setOpenDeleteModal(false)}
+                  className="bg-[#f5f5f7] dark:bg-zinc-600 px-6 py-3 rounded-full"
+                >
+                  No, Keep it
+                </button>
+                {isDeletingCandidate ? (
+                  <button
+                    disabled={isDeletingCandidate}
+                    className="bg-[#ff3f56] text-white px-6 py-2 rounded-full"
+                  >
+                    Deleting...
+                  </button>
+                ) : (
+                  <button
+                    disabled={isDeletingCandidate}
+                    onClick={handleDeleteCandidate}
+                    className="bg-[#ff3f56] text-white px-6 py-2 rounded-full"
+                  >
+                    Yes, Delete!
+                  </button>
+                )}
+              </div>
+            </div>
+      </DeleteMe>
+      {/* DELETE MODAL */}
       
     {/* ALL CANDIDATE */}
     </div>

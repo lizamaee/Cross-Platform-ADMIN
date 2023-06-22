@@ -9,6 +9,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { DownOutlined } from '@ant-design/icons';
 import { useCreatePosition, useDeletePosition, usePositions, useUpdatePosition } from '../../../hooks/queries/usePosition';
 import { useQueryClient } from '@tanstack/react-query';
+import DeleteMe from '../../../components/DeleteMe';
+import { TiWarning } from 'react-icons/ti';
 
 interface DataType {
   id: string;
@@ -31,7 +33,7 @@ export default function PositionTab() {
   //CREATE SINGLE
   const { mutate: createPosition} = useCreatePosition()
   //DELETE SINGLE
-  const { mutate: deletePosition} = useDeletePosition()
+  const { mutate: deletePosition, isLoading: isDeletingPosition} = useDeletePosition()
 
   //SORT POSITION ARRAY IN DESCENDING ORDER
   const descendingPositions = positionsQuery.data?.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -52,27 +54,22 @@ export default function PositionTab() {
       return [{error: error.message }];
     }
   }
+
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [deletingPositionName, setDeletingPositionName] = useState<string>('')
+  const [deletingPositionID, setDeletingPositionID] = useState<string>('')
    
   //ASYNCRONOUS DELETE POSITION FUNCTION
-  async function handleDeletePosition(id: string) {
-    deletePosition(id)
+  async function handleDeletePosition() {
+    deletePosition(deletingPositionID)
+    setOpenDeleteModal(false)
   }
 
   //DELETE POSITION CONFIRMATION MODAL
   const deleteIt = (id: string, name: string) => {
-    Modal.confirm({
-      title: 'Do you want to delete this Position?',
-      content: `Deleting position: ${name}`,
-      className: 'text-gray-700',
-      onOk() {
-        return new Promise((resolve, reject) => {
-          handleDeletePosition(id)
-            .then(resolve)
-            .catch(reject);
-        }).catch(() => console.log('Oops, an error occurred!'));
-      },
-      onCancel() {},
-    });
+    setDeletingPositionName(name)
+    setDeletingPositionID(id)
+    setOpenDeleteModal(true)
   }
 
   //OPEN CREATE DRAWER STATE
@@ -322,13 +319,13 @@ export default function PositionTab() {
 
 
   return (
-    <div className=' bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
+    <div className=' bg-white overflow-hidden dark:bg-[#303030] rounded-b-lg shadow-md'>
       {/* CREATE BUTTON */}
       <div className="top flex justify-between items-center pt-10  mx-5">
         <h3 className='text-lg pop-semibold text-gray-950 dark:text-gray-100'>Positions</h3>
-        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 pr-3 pl-1 text-white pop-medium bg-[#E27429] hover:text-[#E27429] border-2 border-[#E27429] hover:bg-transparent focus:outline-none rounded-2xl'>
+        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 sm:pr-3 px-1 text-white pop-medium bg-[#E27429] hover:text-[#E27429] border-2 border-[#E27429] hover:bg-transparent focus:outline-none rounded-2xl'>
           <BsPlus size={25} className='' />
-          <h3 className='text-sm md:text-md'>CREATE</h3>
+          <h3 className='text-sm md:text-md hidden sm:inline'>CREATE</h3>
         </button>
       </div>
       {/* CREATE BUTTON */}
@@ -472,6 +469,57 @@ export default function PositionTab() {
         {/* UPDATE POSITION MULTI-CHILD DRAWER */}
       </Drawer>
       {/* UPDATE POSITION MULTI-PARENT DRAWER */}
+
+      {/* DELETE MODAL */}
+      <DeleteMe open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
+      <div className="delete-container py-5 px-10 rounded-2xl bg-white dark:bg-[#414141]">
+              <div className="px-10">
+                <div className="icon flex justify-center">
+                  <div className="warning_icon p-3 shadow-md bg-[#fff5f6] dark:bg-[#504f4f] rounded-full">
+                    <TiWarning size={30} className="text-[#ff3f56]" />
+                  </div>
+                </div>
+                <div className="warn flex justify-center pt-5 pb-3">
+                  <h2 className="md:text-xl text-lg md:tracking-wider pop-bold text-[#334049] dark:text-gray-200">
+                    Delete Position
+                  </h2>
+                </div>
+                <div className="warn-text tracking-wider text-xs md:text-sm">
+                  <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">
+                    Do you want to delete <span className='pop-bold'>{deletingPositionName}</span>
+                  </p>
+                  <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">
+                    Are you sure?
+                  </p>
+                </div>
+              </div>
+              <div className="choice-btn text-[#334049] dark:text-gray-200 pt-5 flex flex-col-reverse gap-3 md:flex-row  justify-evenly ">
+                <button
+                  onClick={() => setOpenDeleteModal(false)}
+                  className="bg-[#f5f5f7] dark:bg-zinc-600 px-6 py-3 rounded-full"
+                >
+                  No, Keep it
+                </button>
+                {isDeletingPosition ? (
+                  <button
+                    disabled={isDeletingPosition}
+                    className="bg-[#ff3f56] text-white px-6 py-2 rounded-full"
+                  >
+                    Deleting...
+                  </button>
+                ) : (
+                  <button
+                    disabled={isDeletingPosition}
+                    onClick={handleDeletePosition}
+                    className="bg-[#ff3f56] text-white px-6 py-2 rounded-full"
+                  >
+                    Yes, Delete!
+                  </button>
+                )}
+              </div>
+            </div>
+      </DeleteMe>
+      {/* DELETE MODAL */}
       
     {/* ALL POSITIONS */}
     </div>
