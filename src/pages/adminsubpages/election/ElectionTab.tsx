@@ -10,6 +10,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 import { DownOutlined } from '@ant-design/icons';
 import { useCreateElection, useDeleteElection, useElections, useUpdateElection } from '../../../hooks/queries/useElection';
+import DeleteMe from '../../../components/DeleteMe';
+import { TiWarning } from 'react-icons/ti';
 
 interface DataType {
   id: string;
@@ -27,6 +29,7 @@ export default function ElectionTab() {
   const [status, setStatus] = useState<string>('')
   const [childrenDrawer, setChildrenDrawer] = useState(false);
   const [openMulti, setOpenMulti] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [singleOrganization, setSingleOrganization] = useState<DataType>()
   const axiosPrivate = useAxiosPrivate()
   const navigate = useNavigate()
@@ -38,7 +41,7 @@ export default function ElectionTab() {
   //CREATE SINGLE
   const { mutate: createElection} = useCreateElection()
   //DELETE SINGLE
-  const { mutate: deleteElection} = useDeleteElection()
+  const { mutate: deleteElection, isLoading: isDeletingElection} = useDeleteElection()
   
   //SORT ELECTION ARRAY IN DESCENDING ORDER
   const descendingElections = electionsQuery?.data?.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -64,27 +67,20 @@ export default function ElectionTab() {
     }
   }
   
+  const [deletingElectionName, setDeletingElectionName] = useState<string>('')
+  const [deletingElectionID, setDeletingElectionID] = useState<string>('')
 
   //ASYNCRONOUS DELETE ELECTION FUNCTION
-  async function handleDeleteElection(id: string) {
-    deleteElection(id)
+  async function handleDeleteElection() {
+    deleteElection(deletingElectionID)
+    setOpenDeleteModal(false)
   }
 
   //DELETE ELECTION CONFIRMATION MODAL
   const deleteIt = (id: string, name: string) => {
-    Modal.confirm({
-      title: 'Do you want to delete this Election?',
-      content: `Deleting election: ${name}`,
-      className: 'text-gray-700',
-      onOk() {
-        return new Promise((resolve, reject) => {
-          handleDeleteElection(id)
-            .then(resolve)
-            .catch(reject);
-        }).catch(() => console.log('Oops, an error occurred!'));
-      },
-      onCancel() {},
-    });
+    setDeletingElectionName(name)
+    setDeletingElectionID(id)
+    setOpenDeleteModal(true)
   }
 
   //OPEN CREATE DRAWER STATE
@@ -594,6 +590,57 @@ export default function ElectionTab() {
         {/* UPDATE ELECTION MULTI-CHILD DRAWER */}
       </Drawer>
       {/* UPDATE ELECTION MULTI-PARENT DRAWER */}
+
+      {/* DELETE MODAL */}
+      <DeleteMe open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
+      <div className="delete-container py-5 px-10 rounded-2xl bg-white dark:bg-[#414141]">
+              <div className="px-10">
+                <div className="icon flex justify-center">
+                  <div className="warning_icon p-3 shadow-md bg-[#fff5f6] dark:bg-[#504f4f] rounded-full">
+                    <TiWarning size={30} className="text-[#ff3f56]" />
+                  </div>
+                </div>
+                <div className="warn flex justify-center pt-5 pb-3">
+                  <h2 className="md:text-xl text-lg md:tracking-wider pop-bold text-[#334049] dark:text-gray-200">
+                    Delete Election
+                  </h2>
+                </div>
+                <div className="warn-text tracking-wider text-xs md:text-sm">
+                  <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">
+                    Do you want to delete {deletingElectionName}
+                  </p>
+                  <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">
+                    Are you sure?
+                  </p>
+                </div>
+              </div>
+              <div className="choice-btn text-[#334049] dark:text-gray-200 pt-5 flex flex-col-reverse gap-3 md:flex-row  justify-evenly ">
+                <button
+                  onClick={() => setOpenDeleteModal(false)}
+                  className="bg-[#f5f5f7] dark:bg-zinc-600 px-6 py-3 rounded-full"
+                >
+                  No, Keep it
+                </button>
+                {isDeletingElection ? (
+                  <button
+                    disabled={isDeletingElection}
+                    className="bg-[#ff3f56] text-white px-6 py-2 rounded-full"
+                  >
+                    Deleting...
+                  </button>
+                ) : (
+                  <button
+                    disabled={isDeletingElection}
+                    onClick={handleDeleteElection}
+                    className="bg-[#ff3f56] text-white px-6 py-2 rounded-full"
+                  >
+                    Yes, Delete!
+                  </button>
+                )}
+              </div>
+            </div>
+      </DeleteMe>
+      {/* DELETE MODAL */}
       
       {/* ALL ORGANIZATIONS */}
     </div>
