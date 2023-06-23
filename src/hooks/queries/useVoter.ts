@@ -240,10 +240,10 @@ export const useOngoingElections = () =>{
                   className: 'custom-class pop-medium',
                   duration: 2.5,
                 });
-              } else if(error.response.data?.message){
+              } else if(error.response.data?.error){
                 message.open({
                   type: 'error',
-                  content: `${error.response.data.message}`,
+                  content: `${error.response.data.error}`,
                   className: 'custom-class pop-medium',
                   duration: 2.5,
                 });

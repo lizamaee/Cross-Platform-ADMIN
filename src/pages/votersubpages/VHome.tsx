@@ -40,27 +40,27 @@ export default function VHome() {
       {/* NOTIFICATION HEADER */}
 
       {/* WELCOME AND PROFILE CARD */}
-      <div className="cards grid grid-cols-10 gap-5">
-        <div className="welcome relative bg-[#585de5a3] shadow-md p-5 rounded-xl col-span-10 md:col-span-7">
+      <div className="cards sm:grid grid-cols-10 gap-5">
+        <div className="welcome overflow-hidden sm:overflow-visible relative bg-[#585de5a3] shadow-md p-5 rounded-xl col-span-10 md:col-span-7">
           <div className="welcome-info flex flex-col justify-center h-full">
             <h2 className="md:text-2xl pop-bold text-white tracking-widest">Welcome!</h2>
-            <p className='pr-20 md:pr-32 text-white pop-regular pt-1 text-sm'>Greetings dear student, your votes shape the future. Engage, express, and make a difference through our student voting system.</p>
+            <p className='text-xs break-all sm:pr-20 md:pr-32 text-white pop-regular pt-1 sm:text-sm'>Greetings dear student, your votes shape the future. Engage, express, and make a difference through our student voting system.</p>
             <div className="btn-vote-now flex justify-center pt-1 md:pt-4">
-              <NavLink to="/voter/cast-vote" className='bg-[#ffc739] transition duration-300 ease-in-out hover:bg-yellow-500 text-white pop-semibold rounded-full py-2 px-4 text-sm md:text-md'>Participate Now</NavLink>
+              <NavLink to="/voter/cast-vote" className='bg-[#ffc739] transition duration-300 ease-in-out hover:bg-yellow-500 text-white pop-semibold rounded-full mt-2 p-1 sm:py-2 sm:px-4 text-center text-xs sm:text-sm md:text-md'>Participate Now</NavLink>
             </div>
           </div>
-          <div className="welcome-animation lg:translate-x-6 lg:-translate-y-10 md:block absolute top-0 right-0 w-[100px] h-[100px] lg:w-[200px] lg:h-[200px]"  >
+          <div className="welcome-animation lg:translate-x-6 lg:-translate-y-10 md:block absolute top-0 right-0 w-[50px] h-[50px] sm:w-[100px] sm:h-[100px] lg:w-[200px] lg:h-[200px]"  >
             <Lottie animationData={welcome} loop={true} />
           </div>
         </div>
 
         {/* PROFILE */}
-        <div className="profile shadow-md hidden md:flex flex-col col-span-3 p-5 bg-white dark:bg-[#313131] rounded-xl">
+        <div className="profile shadow-md shadow-zinc-400 dark:shadow-zinc-700 hidden md:flex flex-col col-span-3 p-5 bg-white dark:bg-[#313131] rounded-xl">
           <h4 className='text-[#1c295d] dark:text-gray-400 pop-medium'>Profile</h4>
           <div className="prof flex flex-col justify-center items-center">
             {voterQuery?.isLoading
               ?  <Skeleton.Avatar size={80} active />
-              : <img src={profile_picture ?? blankImg} alt={`${firstname ?? "John Doe"} Profile Picture`} className='w-20 h-20 border-[6px] shadow-md border-gray-100 dark:border-zinc-700 object-cover rounded-full' />
+              : <img src={profile_picture ?? blankImg} alt={`${firstname ?? "John Doe"} Profile Picture`} className='w-20 h-20 border-[6px] shadow-md border-[#E5D1FA] dark:border-zinc-700 object-cover rounded-full' />
             }
             
             {voterQuery?.isLoading
@@ -84,14 +84,14 @@ export default function VHome() {
         : firstname === null || surname === null || profile_picture === null
           ? <StarterVoter firstname={firstname} profile={profile_picture} />
           : <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-5 rounded-lg">
-              <div className="ongoing flex justify-between p-5">
+              <div className="ongoing flex justify-between pt-5 px-5">
                 <h4 className='pop-medium dark:text-gray-300 text-md md:text-lg'>Todays Elections</h4>
               </div>
 
               <div className="elections p-5">
-                {ongoingElectionsQuery?.data === undefined
+                {ongoingElectionsQuery?.data?.length === 0 
                   ? <div className="no-ongoingx">
-                      <div className="h4 text-gray-400 pop-regular text-sm text-center ">No ongoing Election.</div>
+                      <div className="h4 text-gray-500 pop-regular text-sm text-center ">No election for today.</div>
                     </div>
                   : <div className="elections-cards grid md:grid-cols-3 lg:grid-cols-4 gap-5">
                       { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
