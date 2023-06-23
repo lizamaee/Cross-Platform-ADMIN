@@ -50,8 +50,8 @@ export const useCreateElection = () => {
     const axiosPrivate = useAxiosPrivate()
 
     return useMutation({
-        mutationFn: async (newEelectionData: {title: string, startDate: string, endDate: string}) =>{
-            const response = await axiosPrivate.post('/election', newEelectionData)
+        mutationFn: async (newElectionData: {title: string, banner: string, startDate: string, endDate: string}) =>{
+            const response = await axiosPrivate.post('/election', newElectionData)
             return response.data
         },
         onSuccess: async () => {
@@ -152,9 +152,10 @@ export const useUpdateElection = () => {
   const queryClient = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
   return useMutation({
-      mutationFn:async (newData: {id:string, title: string, startDate: string, endDate: string}) => {
+      mutationFn:async (newData: {id:string, title: string, banner: string, startDate: string, endDate: string}) => {
           const response = await axiosPrivate.patch(`/election/single/${newData.id}`, {
             title: newData.title,
+            banner: newData.banner,
             start_date: newData.startDate,
             end_date: newData.endDate,
           } )
