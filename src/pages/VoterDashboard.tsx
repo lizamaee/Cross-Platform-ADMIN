@@ -39,7 +39,7 @@ export default function VoterDashboard() {
   return (
     <div className="container md:overflow-hidden h-screen max-w-screen-2xl md:flex">
       <nav
-        className={` sidebar fixed md:static w-4/5 h-screen rounded-r-3xl md:rounded-r-lg bg-white dark:bg-[#303030] text-[#414141] shadow-md  ${
+        className={` sidebar fixed md:static w-4/5 h-screen rounded-r-3xl md:rounded-r-lg bg-white dark:bg-[#303030] text-[#414141] shadow-slate-700 shadow-xl  ${
           isSidebarOpen ? 'translate-x-0 flex-[6]' : '-translate-x-full'
         } transition-all duration-200 ease-in-out md:w-auto md:translate-x-0 md:flex-[2] lg:flex-1`}
       >
@@ -59,7 +59,7 @@ export default function VoterDashboard() {
               
               {voterQuery?.isLoading
                 ? <Skeleton.Avatar size={128} active />
-                : <img src={profile_picture} alt="profile" className="w-32 h-32 border-[6px] shadow-md border-white dark:border-zinc-700 object-cover rounded-full"/>
+                : <img src={profile_picture} alt="profile" className="w-32 h-32 border-[6px] shadow-md border-[#E5D1FA] dark:border-zinc-700 object-cover rounded-full"/>
               }
               {voterQuery?.isLoading
                 ? <span className='pt-2'>
