@@ -15,6 +15,14 @@ type Position = {
   candidates: [];
 }
 
+type Candidate = {
+  id: string;
+  fullname: string;
+  platform: string;
+  party: string;
+  imageUrl: string;
+}
+
 export default function CVote() {
   const [activeOrgs, setActiveOrgs] = useState([])
   const [isActiveOrgs, setIsActiveOrgs] = useState<boolean>(false)
@@ -39,31 +47,36 @@ export default function CVote() {
   //Vote Modal state
   const [openModal, setOpenModal] = useState<boolean>(false)
 
-  const [selectedCandidates, setSelectedCandidates] = useState({});
-
   const [positions, setPositions] = useState<Position[]>([]);
   
-  const handleCandidateSelection = (event: React.ChangeEvent<HTMLInputElement>, positionName: string) => {
+
+  //const [selectedCandidates, setSelectedCandidates] = useState<any>({});
+  const [selectedCandidates, setSelectedCandidates] = useState<{ [positionId: string]: string[] }>({});
+
+
+  const handleCandidateSelection = (event: React.ChangeEvent<HTMLInputElement>, positionName: string, positionid: string) => {
     const selectedCandidateId = event.target.value;
-    const position = positions.find((pos) => pos.position === positionName);
-  
+    const position = positions.find((pos) => pos.id === positionid);
+
     if (!position) {
       console.error(`Position '${positionName}' not found.`);
       return;
     }
-  
-    setSelectedCandidates((prevSelectedCandidates:any) => {
-      const prevSelectedCandidatesForPosition = prevSelectedCandidates[positionName] || [];
+
+    setSelectedCandidates((prevSelectedCandidates: any) => {
+      const prevSelectedCandidatesForPosition = prevSelectedCandidates[positionid] || [];
       const isSelected = prevSelectedCandidatesForPosition.includes(selectedCandidateId);
       let updatedSelectedCandidatesForPosition;
-  
+
       if (isSelected) {
         // Deselect the candidate
-        updatedSelectedCandidatesForPosition = prevSelectedCandidatesForPosition.filter((id:any) => id !== selectedCandidateId);
+        updatedSelectedCandidatesForPosition = prevSelectedCandidatesForPosition.filter(
+          (id: string) => id !== selectedCandidateId
+        );
       } else {
         // Check if the selection limit has been reached
         const selectionLimitReached = prevSelectedCandidatesForPosition.length >= position.requiredWinner;
-  
+
         if (selectionLimitReached) {
           // You can display an error message or take appropriate action here
           message.open({
@@ -74,20 +87,20 @@ export default function CVote() {
           });
           return prevSelectedCandidates;
         }
-  
+
         // Select the candidate
         updatedSelectedCandidatesForPosition = [...prevSelectedCandidatesForPosition, selectedCandidateId];
       }
-  
+
       return {
         ...prevSelectedCandidates,
-        [positionName]: updatedSelectedCandidatesForPosition,
+        [positionid]: updatedSelectedCandidatesForPosition,
       };
     });
   };
 
   const renderCandidates = (position:any, selectedCandidates:any) => {
-    const candidateElements = position.candidates.map((candidate:any) => (
+    const candidateElements = position.candidates.map((candidate:Candidate) => (
       <label htmlFor={`candidate_${candidate.id}`} key={candidate.id} className="candidate overflow-hidden relative flex flex-col mb-3 bg-white dark:bg-[#313131] shadow-md p-2 sm:p-4 rounded-2xl cursor-pointer">
         {/* Render candidate information */}
         <div className="c flex-col flex">
@@ -106,8 +119,8 @@ export default function CVote() {
                   type="radio"
                   id={`candidate_${candidate.id}`}
                   value={candidate.id}
-                  checked={selectedCandidates[position.position]?.includes(candidate.id)}
-                  onChange={(event:any) => handleCandidateSelection(event, position.position)}
+                  checked={selectedCandidates[position.id]?.includes(candidate.id) || false}
+                  onChange={(event:any) => handleCandidateSelection(event, position.position, position.id)}
                 />
               </div>
             </div>
@@ -163,12 +176,6 @@ export default function CVote() {
         // setBallotID(ballots.id);
         setOpenModal(true);
       }else{
-        // message.open({
-        //   type: 'warning',
-        //   content: "You already voted there :)",
-        //   className: 'custom-class pop-medium',
-        //   duration: 2.5,
-        // });
         const response = await axiosPrivate.get(`/seat/get-all-positions/${ballots.id}`);
         const data = response.data;
         setResultBallot(data)
@@ -196,7 +203,10 @@ export default function CVote() {
 
     if (hasVotedForAllPositions) {
       // Proceed with submitting the votes
-      castVote({student_id, organization_id: selectedOrganizationID, candidate_ids: idArray})
+      castVote({
+        student_id, 
+        organization_id: selectedOrganizationID, 
+        candidate_ids: idArray})
 
       if(!isCastingVote){
         setOpenModal(false)
@@ -253,7 +263,7 @@ export default function CVote() {
                       { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
                           <div key={index} onClick={() => handleActiveOrganizations(ongoing.id)
                           } className="ongoing cursor-pointer dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
-                            <img src={cict} alt="cict logo" className='object-cover w-full h-32' />
+                            <img src={ongoing.banner ?? cict} alt="election banner" className='object-cover w-full h-32' />
                             <h4 className='text-center py-3 pop-semibold dark:text-gray-200 text-lg'>{ongoing.title}</h4>
                             {/* DATE DISPLAY */}
                             <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-5 pop-regular">
