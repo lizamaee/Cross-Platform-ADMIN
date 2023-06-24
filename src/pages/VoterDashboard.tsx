@@ -96,7 +96,7 @@ export default function VoterDashboard() {
               </NavLink>
             </ul>
             
-            <div className="logout-container px-3 bottom-0 mt-16">
+            <div className="logout-container px-3 bottom-0 mt-8">
             <button onClick={handleLogout} className="logout w-full text-md hover:bg-[#C1D0F5] rounded-md flex justify-between items-center pop-semibold p-5">
               <h3 className="text-gray-700 tracking-wide dark:text-white ">Logout</h3>
               <HiOutlineLogout size={25} className="text-gray-400 voter-icon"/>
@@ -143,7 +143,7 @@ export default function VoterDashboard() {
             </NavLink>
           </ul>
           
-          <div className="logout-container px-3 bottom-0 mt-8">
+          <div className="logout-container px-3 bottom-0 mt-16">
             <button onClick={handleLogout} className="logout w-full text-md  rounded-md flex justify-between items-center pop-semibold p-5">
               <h3 className="text-gray-700 tracking-wide dark:text-white">Logout</h3>
               <HiOutlineLogout size={25} className="text-gray-400 voter-icon"/>
