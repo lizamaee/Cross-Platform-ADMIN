@@ -259,10 +259,10 @@ export default function CVote() {
                   ? <div className="no-ongoingx">
                       <div className="h4 text-gray-400 pop-regular text-sm text-center ">No ongoing Election.</div>
                     </div>
-                  : <div className="elections-cards grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  : <div className="elections-cards grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                       { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
                           <div key={index} onClick={() => handleActiveOrganizations(ongoing.id)
-                          } className="ongoing cursor-pointer dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
+                          } className="ongoing cursor-pointer border-[1px] border-gray-200 dark:border-gray-600 dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
                             <img src={ongoing.banner ?? cict} alt="election banner" className='object-cover w-full h-32' />
                             <h4 className='text-center py-3 pop-semibold dark:text-gray-200 text-lg'>{ongoing.title}</h4>
                             {/* DATE DISPLAY */}
@@ -301,15 +301,18 @@ export default function CVote() {
             <h3 className='pop-semibold'></h3>
           </div>
         : isActiveOrgs && (
-          <div className="active-organization rounded-lg shadow-xl mt-4 bg-white dark:bg-[#313131] p-5">
-            <h2 className="py-4 text-center dark:text-gray-200 pop-semibold">Active Organizations</h2>
-            <div className="all-org grid p-5 gap-10 md:grid-cols-2 lg:grid-cols-3">
+          <>
+          <div className="flex">
+              <h4 className="pt-4 pb-2 text-center text-xs sm:text-md md:text-lg dark:text-gray-200 pop-semibold">Active Organizations</h4>
+            </div>
+          <div className="active-organization rounded-lg shadow-xl bg-white dark:bg-[#313131] p-5">
+            <div className="all-org grid sm:p-5 sm:gap-10 md:grid-cols-2 lg:grid-cols-3">
               {activeOrgs?.length === 0
                 ? <h3>No Active Organizations</h3>
                 : activeOrgs?.map((org:any, index: any) => (
-                  <div key={index} onClick={() => handleGetBallot(org.ballots[0], org.id)} className="org bg-gray-100 dark:bg-zinc-700 flex flex-col p-4 shadow-md rounded-2xl items-center">
-                    <img src={org.logo_url} alt={org.org_name + " "+ "Logo"} className='object-cover w-24 h-24 rounded-full' />
-                    <h2 className="pop-medium pt-3 dark:text-gray-300 text-sm">{org.org_name}</h2>
+                  <div key={index} onClick={() => handleGetBallot(org.ballots[0], org.id)} className="org border-[1px] border-gray-200 dark:border-gray-600 overflow-hidden py-2 bg-gray-100 dark:bg-zinc-700 flex flex-col shadow-md rounded-2xl items-center">
+                    <img src={org.logo_url} alt={org.org_name + " "+ "Logo"} className='object-cover w-16 h-16  sm:w-24 sm:h-24 rounded-full' />
+                    <h2 className="pop-medium text-center pt-3 dark:text-gray-300 text-sm">{org.org_name}</h2>
                     {/* DATE DISPLAY */}
                     <div className="dates flex text-xs gap-3 pt-4 items-center justify-center text-gray-600 dark:text-gray-400 pb-2 pop-regular">
                       <p className="">
@@ -336,6 +339,7 @@ export default function CVote() {
               }
             </div>
           </div>
+          </>
         )
       }
       {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
