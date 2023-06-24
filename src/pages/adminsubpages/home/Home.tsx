@@ -186,7 +186,7 @@ export default function Home(){
   //Activate Election to Ongoing
   const activateElection = (id: string) => {
     try {
-      axiosPrivate.patch(`${import.meta.env.VITE_API_URL}election/status/to-ongoing/${id}`, {},)
+      axiosPrivate.patch(`${import.meta.env.VITE_API_URL}/election/status/to-ongoing/${id}`, {},)
         .then(response => {
           //console.log(response.data);
           // handle success
