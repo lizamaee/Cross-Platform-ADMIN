@@ -46,58 +46,72 @@ export default function VoterDashboard() {
 
         {/* MOBILE AND TABLET VIEW */}
         { isSidebarOpen && (
-          <div className="md:hidden rounded-r-lg">
-            <span className="flex justify-end w-full pr-5 pt-5">
-              <button
-                  className="md:hidden p-2"
-                  onClick={toggleSidebar}
-                >
-                  {isSidebarOpen && (<RxCross2 size={30} className="text-[#444A5E] dark:text-gray-400 font-bold shadow-sm rounded-full"/>)}
-              </button>
-            </span>
-            <div className="flex flex-col items-center">
-              
-              {voterQuery?.isLoading
-                ? <Skeleton.Avatar size={128} active />
-                : <img src={profile_picture} alt="profile" className="w-32 h-32 border-[6px] shadow-md border-[#E5D1FA] dark:border-zinc-700 object-cover rounded-full"/>
-              }
-              {voterQuery?.isLoading
-                ? <span className='pt-2'>
-                    <Skeleton.Input active />
-                  </span>
-                : <h3 className="text-md pop-semibold py-2 text-[#414141] dark:text-gray-100 capitalize">{firstname === null ? "John Doe" : firstname + " " + surname}</h3>
-              }
+          <div className="md:hidden max-h-screen gap-4 overflow-hidden flex flex-col rounded-r-lg">
+            <div className="profile">
+              <span className="flex justify-end w-full pr-5 pt-5">
+                <button
+                    className="md:hidden p-2"
+                    onClick={toggleSidebar}
+                  >
+                    {isSidebarOpen && (<RxCross2 size={30} className="text-[#444A5E] dark:text-gray-400 font-bold shadow-sm rounded-full"/>)}
+                </button>
+              </span>
+              <div className="flex flex-col items-center">
+                
+                {voterQuery?.isLoading
+                  ? <Skeleton.Avatar size={128} active />
+                  : <img src={profile_picture} alt="profile" className="w-32 h-32 border-[6px] shadow-md border-[#E5D1FA] dark:border-zinc-700 object-cover rounded-full"/>
+                }
+                {voterQuery?.isLoading
+                  ? <span className='pt-2'>
+                      <Skeleton.Input active />
+                    </span>
+                  : <h3 className="text-md pop-semibold py-2 text-[#414141] dark:text-gray-100 capitalize">{firstname === null ? "John Doe" : firstname + " " + surname}</h3>
+                }
+              </div>
             </div>
 
-            <ul className="px-3 flex flex-col gap-2 pt-5 pop-medium tracking-wider">
-              <NavLink onClick={() => toggleSidebar()} to="/voter/dashboard" className="flex items-center gap-3 text-gray-700 tracking-wide dark:text-white  px-5 py-3 rounded-md">
-                <HiHome size={25} className="text-gray-400 voter-icon" />
+            <ul className="px-3 flex flex-col gap-2 pt-3 pop-medium tracking-wider">
+              <NavLink onClick={() => toggleSidebar()} to="/voter/dashboard" className="flex items-center text-sm gap-3 dark:hover:bg-zinc-700 hover:bg-[#C1D0F5] text-gray-700 tracking-wide dark:text-white  px-2 py-2 rounded-md">
+                <div className="icon w-6 h-6">
+                  <HiHome className="text-gray-400 w-full h-full voter-icon" />
+                </div>
                 <h2 className="pop-medium">Home</h2>
               </NavLink>
-              <NavLink onClick={() => toggleSidebar()} to="/voter/cast-vote" className="flex items-center gap-3 text-gray-700 tracking-wide dark:text-white  px-5 py-3 rounded-md">
-                <FaVoteYea size={25} className="text-gray-400 voter-icon"/>
+              <NavLink onClick={() => toggleSidebar()} to="/voter/cast-vote" className="flex items-center text-sm gap-3 dark:hover:bg-zinc-700 hover:bg-[#C1D0F5] text-gray-700 tracking-wide dark:text-white  px-2 py-2 rounded-md">
+                <div className="icon w-6 h-6">
+                  <FaVoteYea className="text-gray-400 w-full h-full voter-icon"/>
+                </div>
                 <h2 className="pop-medium">Cast Vote</h2>
               </NavLink>
-              <NavLink onClick={() => toggleSidebar()} to="/voter/election-history" className="flex items-center gap-3 text-gray-700 tracking-wide dark:text-white px-5 py-3 rounded-md">
-                <RiHistoryLine size={25} className="text-gray-400 voter-icon"/>
+              <NavLink onClick={() => toggleSidebar()} to="/voter/election-history" className="flex items-center text-sm gap-3 dark:hover:bg-zinc-700 hover:bg-[#C1D0F5] text-gray-700 tracking-wide dark:text-white px-2 py-2 rounded-md">
+                <div className="icon w-6 h-6">
+                  <RiHistoryLine className="text-gray-400 w-full h-full voter-icon"/>
+                </div>
                 <h2 className="pop-medium">Election History</h2>
               </NavLink>
-              <NavLink onClick={() => toggleSidebar()} to="/voter/developers" className="flex items-center gap-3 text-gray-700 tracking-wide dark:text-white  px-5 py-3 rounded-md">
-                <HiUserGroup size={25} className="text-gray-400 voter-icon"/>
+              <NavLink onClick={() => toggleSidebar()} to="/voter/developers" className="flex items-center text-sm gap-3 dark:hover:bg-zinc-700 hover:bg-[#C1D0F5] text-gray-700 tracking-wide dark:text-white  px-2 py-2 rounded-md">
+                <div className="icon w-6 h-6">
+                  <HiUserGroup className="text-gray-400 w-full h-full voter-icon"/>
+                </div>
                 <h2 className="pop-medium">Developers</h2>
               </NavLink>
-              <NavLink onClick={() => toggleSidebar()} to="/voter/privacy-policy" className="flex items-center gap-3 text-gray-700 tracking-wide dark:text-white  px-5 py-3 rounded-md">
-                <BsShieldLockFill size={23} className="text-gray-400 voter-icon"/>
+              <NavLink onClick={() => toggleSidebar()} to="/voter/privacy-policy" className="flex items-center text-sm gap-3 dark:hover:bg-zinc-700 hover:bg-[#C1D0F5] text-gray-700 tracking-wide dark:text-white  px-2 py-2 rounded-md">
+                <div className="icon w-6 h-6">
+                  <BsShieldLockFill className="text-gray-400 w-full h-full voter-icon"/>
+                </div>
                 <h2 className="pop-medium">Privacy Policy</h2>
               </NavLink>
-              <NavLink onClick={() => toggleSidebar()} to="/voter/settings" className="flex items-center gap-3 text-gray-700 tracking-wide dark:text-white px-5 py-3 rounded-md">
-                <RiSettings2Fill size={25} className="text-gray-400 voter-icon"/>
+              <NavLink onClick={() => toggleSidebar()} to="/voter/settings" className="flex items-center text-sm gap-3 dark:hover:bg-zinc-700 hover:bg-[#C1D0F5] text-gray-700 tracking-wide dark:text-white px-2 py-2 rounded-md">
+                <div className="icon w-6 h-6">
+                  <RiSettings2Fill className="text-gray-400 w-full h-full voter-icon"/>
+                </div>
                 <h2 className="pop-medium">Settings</h2>
               </NavLink>
             </ul>
             
             <div className="logout-container px-3 bottom-0 mt-8">
-            <button onClick={handleLogout} className="logout w-full text-md hover:bg-[#C1D0F5] rounded-md flex justify-between items-center pop-semibold p-5">
+            <button onClick={handleLogout} className="logout w-full text-md dark:hover:bg-zinc-700 hover:bg-[#C1D0F5] rounded-md flex justify-between items-center pop-semibold p-5">
               <h3 className="text-gray-700 tracking-wide dark:text-white ">Logout</h3>
               <HiOutlineLogout size={25} className="text-gray-400 voter-icon"/>
             </button>
