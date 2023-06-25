@@ -23,8 +23,6 @@ export default function FPassword() {
 
   const navigate = useNavigate()
 
-
-
   const [tries, setTries] = useState(1);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [mistakes, setMistakes] = useState(1);
@@ -48,13 +46,6 @@ export default function FPassword() {
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
-
-
-
-
-
-
-
 
   const schema: ZodType<NumberFormData> = z.object({
     mobile_number: z.string().regex(/^09\d{9}$/, {message: "Mobile number must be a valid PH Mobile Number",
@@ -140,17 +131,17 @@ export default function FPassword() {
   }
 
   return (
-    <div className='flex flex-col items-center pt-10 px-10'>
+    <div className='flex w-full flex-col items-center pt-14 sm:px-10'>
       <Link to="/login" className='absolute top-8 left-8 md:top-10 md:left-16'>
         <TbSquareRoundedArrowLeft className='opacity-80 h-9 w-9 md:h-12 md:w-12 text-[#4C7CE5]'/>
       </Link>
-      <div className="label-for-number flex items-center flex-col md:w-[70%] py-5">
-        <Recoverpass className='h-40 drop-shadow-xl'/>
+      <div className="label-for-number flex items-center flex-col md:w-[70%] pt-10">
+        <Recoverpass className='h-32 sm:h-40 drop-shadow-xl'/>
       </div>
       <form className='flex flex-col md:px-36 md:w-[80%] lg:w-[60%] px-5' >
-        <h2 className='text-[#4C7CE5] text-lg md:text-xl pb-10 md:pb-18 text-center pop-bold'>Provide the details below to begin the process</h2>
+        <h2 className='text-[#4C7CE5] text-sm sm:text-lg md:text-xl pb-10 md:pb-18 text-center pop-bold'>Provide the details below to begin the process</h2>
         <div className="label-for-change-number items-center flex py-1">
-                  <label className="pop-medium text-gray-600 flex-1 opacity-80 text-sm md:text-md">Mobile Number</label>
+                  <label className="pop-medium text-gray-600 flex-1 opacity-80 text-xs md:text-md">Mobile Number</label>
                   <Popover
                     content={<div>
                       <p>A 5-Minute Pause after 5 requests</p>
@@ -165,15 +156,17 @@ export default function FPassword() {
                   </Popover>
                 </div>
         
-        <input
-          className="bg-[#E5E0FF]  px-4 py-3 mb-2 rounded-lg text-black dark:text-gray-300 text-md md:text-lg pop-medium outline-none border-2  border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] tracking-wider"
-          type="text"
-          {...register("mobile_number")}
-          placeholder="ex. 09123456789"
-          maxLength={11}
-          minLength={11}
-          required
-        />
+        <div className="input flex">
+          <input
+            className="bg-[#E5E0FF] text-sm sm:text-md w-full  px-4 py-3 mb-2 rounded-lg text-black dark:text-gray-300 text-md md:text-lg pop-medium outline-none border-2  border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] tracking-wider"
+            type="text"
+            {...register("mobile_number")}
+            placeholder="ex. 09123456789"
+            maxLength={11}
+            minLength={11}
+            required
+          />
+        </div>
         {errors.mobile_number && <span className="text-red-400 text-center text-sm">{errors.mobile_number.message}</span>}
         {timeRemaining > 0 && (
             <div className='text-sm text-center text-red-500 pt-5'>
@@ -185,14 +178,14 @@ export default function FPassword() {
               <button onClick={handleSubmit(handleNext)}
                 type="submit"
                 disabled={isProcessing || timeRemaining > 0}
-                className="py-3 flex-1 px-20 mt-10 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
+                className="py-3 flex-1 overflow-hidden sm:px-20 mt-10 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
               >
                 Next
               </button>
             ) : (
               <button
                 disabled={isProcessing || timeRemaining > 0}
-                className="py-3 flex-1 px-20 mt-10 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
+                className="py-3 flex-1 overflow-hidden sm:px-20 mt-10 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"
               >
                 Loading...
               </button>
