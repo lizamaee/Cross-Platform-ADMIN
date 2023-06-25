@@ -193,24 +193,41 @@ export default function CVote() {
   //CAST VOTE FUNCTION
   const handleCastVote = (e:any) => {
     e.preventDefault()
-    
-    const idArray = Object.values(selectedCandidates).flatMap(ids => ids)
+    const vote  ={vote: Object.entries(selectedCandidates).map(([position, voted_ids]) => ({ position, voted_ids })) }
 
      // Check if the user has voted for all positions
     const hasVotedForAllPositions = positions?.every((position) =>
-      selectedCandidates.hasOwnProperty(position.position)
+      selectedCandidates.hasOwnProperty(position.id)
     );
 
-    if (hasVotedForAllPositions) {
-      // Proceed with submitting the votes
-      castVote({
-        student_id, 
-        organization_id: selectedOrganizationID, 
-        candidate_ids: idArray})
+    const selected = Object.entries(selectedCandidates).map(([position, voted_ids]) => ({ position, voted_ids }));
 
-      if(!isCastingVote){
-        setOpenModal(false)
-      } 
+    const hasSelectedEveryRequiredWinner = positions?.every((pos) =>
+      selected.some((can) => can.position === pos.id && can.voted_ids.length === Number(pos.requiredWinner))
+    )
+
+    
+
+    if (hasVotedForAllPositions) {
+      //Proceed with submitting the votes
+      if(!hasSelectedEveryRequiredWinner){
+        message.open({
+          type: 'warning',
+          content: 'Please select required winners for each position.',
+          className: 'custom-class pop-medium',
+          duration: 3,
+        });
+      }else{
+        castVote({
+          student_id, 
+          organization_id: selectedOrganizationID, 
+          vote})
+  
+        if(!isCastingVote){
+          setOpenModal(false)
+        } 
+      }
+      
     } else {
       // Display an error message or take appropriate action
       message.open({
