@@ -363,13 +363,12 @@ export default function CVote() {
 
 
       {/* CAST VOTE MODAL */}
-      <VoteModal open={openModal} onClose={() => setOpenModal(false)} >
+      <VoteModal title="Ballot" open={openModal} onClose={() => setOpenModal(false)} >
             <div className="Ballot p-5">
-              <h1 className="text-center text-xl dark:text-gray-100 pb-5 pop-bold uppercase tracking-[.4rem]">Ballot</h1>
               <form onSubmit={handleCastVote}>
                 {positions?.map((position: Position) => (
                   <div key={position.position} className={`position gap-10 p-5 mb-10  odd:bg-blue-100 dark:odd:bg-[#343256] even:bg-red-100 dark:even:bg-[#563232] shadow-2xl rounded-lg`}>
-                    <h3 className="pop-semibold bg-gray-500 dark:bg-gray-600 text-white text-center py-3 rounded-lg block mb-2 tex-md sm:text-lg">
+                    <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-sm sm:text-lg">
                       {position.position} 
                       <span className="text-gray-100 pop-medium block text-xs md:text-sm tracking-widest">{ position.requiredWinner === '1' ? "  ( Select " + position.requiredWinner + " candidate )" :  "  ( Select " + position.requiredWinner + " candidates ) "}</span>
                     </h3>
@@ -392,12 +391,11 @@ export default function CVote() {
 
 
       {/* RESULT BALLOT MODAL */}
-      <VoteModal open={openModalResult} onClose={() => setOpenModalResult(false)}>
+      <VoteModal title="Result" open={openModalResult} onClose={() => setOpenModalResult(false)}>
         <div className="result-ballot">
-          <h1 className="text-center text-xl dark:text-gray-100 pb-5 pop-bold uppercase tracking-[.4rem]">Result</h1>
           {resultBallot?.map((result: Position, index: any) => (
             <div key={index} className={`result gap-10 p-5 mb-10 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg`}>
-              <h3 className="pop-semibold bg-gray-100 dark:bg-gray-700 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-md sm:text-lg">
+              <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-sm sm:text-lg">
                 {result.position} 
               </h3>
               <div className="candidates-result flex flex-col gap-3">
