@@ -227,7 +227,7 @@ export default function FVerification() {
   };
 
   return (
-    <div>
+    <div className='h-full w-full px-3'>
       <div className="head flex flex-col items-center pt-20">
         <img className='w-36 md:w-40' src={otpImage} alt="OTP Image illustration" />
         
@@ -235,13 +235,15 @@ export default function FVerification() {
       
       <div className="otp-wrapper flex flex-col items-center px-10">
         <div className="otp">
-          <h2 className='text-[#4C7CE5] text-lg md:text-2xl pb-5 text-center pop-bold'>OTP Verification</h2>
-          <div className='text-gray-900 text-center dark:text-gray-500 pop-semibold pb-10 md:pb-18'>
+          <div className="title w-screen">
+            <h2 className='text-[#4C7CE5] text-md sm:text-lg md:text-2xl pb-5 text-center pop-bold'>OTP Verification</h2>
+          </div>
+          <div className='text-gray-900 text-center text-sm sm:text-lg dark:text-gray-500 pop-semibold pb-10 md:pb-18'>
             Enter OTP sent to
             <span className='dark:text-gray-400 px-3'>{`#${tempMobileNumber}`}</span>
           </div>
-          <div className="subheading-input flex justify-between items-center">
-            <h3 className='text-[#3F3D56] dark:text-gray-400 pop-light text-sm py-3'>Enter 6 digits code</h3>
+          <div className="subheading-input flex gap-5 pl-3 sm:pl-40 items-center">
+            <h3 className='text-[#3F3D56] dark:text-gray-400 pop-light text-xs sm:text-sm py-3'>Enter 6 digits code</h3>
             
             <Popover
               content={<div>
@@ -256,19 +258,21 @@ export default function FVerification() {
               </span>
             </Popover>
           </div>
-          <OtpInput
-            value={otp}
-            onChange={setOtp}
-            numInputs={6}
-            renderInput={(props) => 
-              <input {...props}
-              />}
-            containerStyle={"gap-3 md:gap-5 flex grow"}
-            inputStyle={"box-content p-3 md:p-4 rounded-lg text-xl md:text-3xl dark:text-gray-400 pop-bold bg-[#D2CEE6] dark:bg-[#232323] shadow-md"}
-            inputType='tel'
-          />
-          <div className="resend-wrapper text-sm flex justify-between pop-semibold  text-[#4C7CE5]">
-            <button onClick={showModal} className='opacity-80 focus:outline-none'>Change number</button>
+          <div className="opt overflow-x-auto pl-3 py-4  w-screen centered">
+            <OtpInput
+              value={otp}
+              onChange={setOtp}
+              numInputs={6}
+              renderInput={(props) => 
+                <input {...props}
+                />}
+              containerStyle={"gap-2 md:gap-5 flex sm:justify-center grow"}
+              inputStyle={"box-content p-3 sm:p-4 rounded-lg text-sm sm:text-xl md:text-3xl dark:text-gray-400 pop-bold bg-[#D2CEE6] dark:bg-[#232323] shadow-md"}
+              inputType='tel'
+            />
+          </div>
+          <div className="resend-wrapper px-3 sm:px-40 md:px-46 text-xs sm:text-sm flex justify-between pop-semibold  text-[#4C7CE5]">
+            <button onClick={showModal} className='opacity-80 focus:outline-none '>Change number</button>
             <Modal
               className=''
               title={<h2 className='pop-semibold text-[#4C7CE5]'>Change Mobile Number</h2>}
@@ -322,12 +326,12 @@ export default function FVerification() {
               : <button className='py-5' disabled={isResending}>Resending code...</button>
             }
           </div>
-          <div className="verify-wrapper flex justify-center">
+          {/* <div className="verify-wrapper w-full px-2 flex justify-center">
             {!isVerifying
               ? <button onClick={handlerVerify} className='py-3 px-20 w-full mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
               : <button className='py-3 px-20 w-full mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
             }
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
