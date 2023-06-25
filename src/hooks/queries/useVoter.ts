@@ -269,8 +269,8 @@ export const useCastVote= () => {
   const axiosPrivate = useAxiosPrivate()
 
   return useMutation({
-      mutationFn: async (newStudentId: {student_id: string, organization_id: string, candidate_ids: {}}) =>{
-          const response = await axiosPrivate.post('/cast-connection', newStudentId)
+      mutationFn: async (castVoteData: {student_id: string, organization_id: string, vote: {}}) =>{
+          const response = await axiosPrivate.post('/cast-connection', castVoteData)
           return response.data
       },
       onSuccess: async () => {
