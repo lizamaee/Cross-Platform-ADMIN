@@ -326,12 +326,12 @@ export default function FVerification() {
               : <button className='py-5' disabled={isResending}>Resending code...</button>
             }
           </div>
-          {/* <div className="verify-wrapper w-full px-2 flex justify-center">
+          <div className="verify-wrapper w-full px-2 flex justify-center">
             {!isVerifying
-              ? <button onClick={handlerVerify} className='py-3 px-20 w-full mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
-              : <button className='py-3 px-20 w-full mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
+              ? <button onClick={handlerVerify} className='py-3 sm:px-20 w-full sm:w-2/6 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
+              : <button className='py-3 sm:px-20 w-full sm:w-2/6 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
             }
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
