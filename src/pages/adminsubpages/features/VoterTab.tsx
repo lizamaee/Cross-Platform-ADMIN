@@ -140,33 +140,33 @@ export default function VoterTab() {
                 {/* ACTIONS */}
                 <h3 className="pt-5 pop-semibold text-gray-900 dark:text-gray-300">Actions</h3>
                 <div className="actions pop-medium flex flex-col md:flex-row gap-2 md:gap-5 border-b-2 py-4 border-dashed dark:border-gray-500">
-                    <button onClick={showDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Recover Voters Account</button>
-                    <button onClick={showDeleteDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Delete Voters Account</button>
+                    <button onClick={showDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500 text-xs sm:text-sm">Recover Voters Account</button>
+                    <button onClick={showDeleteDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500 text-xs sm:text-sm">Delete Voters Account</button>
                 </div>
                 {/* ACTIONS */}
 
                 {/* SEARCH VOTERS */}
                 <div className="search-container py-5">
                     <div className="search-bar flex justify-end">
-                        <input type="search" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search using ID" className="border-2 border-gray-400 bg-transparent py-1 px-3 rounded-md focus:border-indigo-400 outline-none pop-regular dark:text-gray-300 w-full md:w-fit" />
+                        <input type="search" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search using ID" className="border-2 border-gray-400 bg-transparent py-1 px-3 rounded-md text-xs sm:text-sm focus:border-indigo-400 outline-none pop-regular dark:text-gray-300 w-full md:w-fit" />
                     </div>
-                    <h4 className="text-center pop-semibold uppercase py-3 dark:text-gray-200">Voters</h4>
+                    <h4 className="text-center pop-semibold uppercase py-3 dark:text-gray-200 text-xs sm:text-lg">Voters</h4>
                     <div className="search-result centered px-2 md:px-3 max-h-72 overflow-y-auto dark:text-gray-200 border-y-2 dark:border-zinc-600">
                         {searchQuery && (
                             <table className="w-full pop-regular text-sm">
                                 <thead>
                                     <tr className="text-center pop-semibold py-5">
-                                        <td className="py-4">Fullname</td>
-                                        <td className="py-4">Student ID</td>
-                                        <td className="py-4">Mobile Number</td>
+                                        <td className="py-4 text-xs sm:text-sm">Fullname</td>
+                                        <td className="py-4 text-xs sm:text-sm">Student ID</td>
+                                        <td className="py-4 text-xs sm:text-sm">Mobile Number</td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 {byId.map((user:any, index:any) => (
                                     <tr key={index} className="odd:bg-gray-100 dark:odd:bg-zinc-700 text-center opacity-80">
-                                        <td className="rounded-sm py-2">{user.fullname}</td>
-                                        <td className="rounded-sm py-2">{user.student_id}</td>
-                                        <td className="rounded-sm py-2">{user.mobile_number}</td>
+                                        <td className="rounded-sm text-xs sm:text-sm py-2">{user.firstname + " " + user.surname}</td>
+                                        <td className="rounded-sm text-xs sm:text-sm py-2">{user.student_id}</td>
+                                        <td className="rounded-sm text-xs sm:text-sm py-2">{user.mobile_number}</td>
                                     </tr>
                                 )
                                 )}
