@@ -224,15 +224,15 @@ export default function MVerification() {
   };
 
   return (
-    <div>
+    <div className='w-full px-3'>
       <div className="head flex flex-col items-center pt-20">
         <img className='w-36 md:w-40' src={otpImage} alt="OTP Image illustration" />
         
       </div>
       
-      <div className="otp-wrapper flex flex-col items-center px-10">
-        <div className="otp">
-          <h2 className='text-[#4C7CE5] text-lg md:text-2xl pb-10 md:pb-20 text-center pop-bold'>Have you recieved a verification code?</h2>
+      <div className="otp-wrapper  w-full flex flex-col items-center sm:px-10">
+        <div className="otp w-full sm:w-5/6 lg:w-4/6">
+          <h2 className='text-[#4C7CE5] text-md w-full sm:text-lg md:text-2xl pb-10 md:pb-20 text-center pop-bold'>Have you recieved a verification code?</h2>
           <div className="subheading-input flex justify-between items-center">
             <h3 className='text-[#3F3D56] dark:text-gray-400 pop-light text-sm py-3'>Enter 6 digits code</h3>
             
@@ -249,22 +249,25 @@ export default function MVerification() {
               </span>
             </Popover>
           </div>
-          <OtpInput
+          <div className="otp code centered py-2 overflow-x-auto w-full">
+            <OtpInput
             value={otp}
             onChange={setOtp}
             numInputs={6}
             renderInput={(props) => 
               <input {...props}
               />}
-            containerStyle={"gap-3 md:gap-5 flex grow"}
-            inputStyle={"box-content p-3 md:p-4 rounded-lg text-xl md:text-3xl dark:text-gray-400 pop-bold bg-[#D2CEE6] dark:bg-[#232323] shadow-md"}
+            containerStyle={"gap-2 md:gap-5 flex grow"}
+            inputStyle={"box-content p-2 sm:p-3 md:p-4 rounded-lg text-xl md:text-3xl dark:text-gray-400 pop-bold bg-[#D2CEE6] dark:bg-[#232323] shadow-md"}
             inputType='tel'
           />
+          </div>
+          
           <div className="resend-wrapper text-sm flex justify-between pop-semibold  text-[#4C7CE5]">
-            <button onClick={showModal} className='opacity-80 focus:outline-none'>Change number</button>
+            <button onClick={showModal} className='opacity-80 focus:outline-none text-xs sm:text-sm'>Change number</button>
             <Modal
               className=''
-              title={<h2 className='pop-semibold text-[#4C7CE5]'>Change Mobile Number</h2>}
+              title={<h2 className='pop-semibold text-sm sm:text-lg text-[#4C7CE5]'>Change Mobile Number</h2>}
               open={openModal}
               confirmLoading={confirmLoading}
               onCancel={handleCancel}
@@ -303,22 +306,22 @@ export default function MVerification() {
                 {errors.mobile_number && <span className="md:w-[70%] text-red-400 text-center text-xs md:text-sm">{errors.mobile_number.message}</span>}
 
                 {!confirmLoading
-                    ? <button onClick={handleSubmit(handleChangeNumber)} disabled={countdown > 0 || confirmLoading} className={`md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5] ${countdown > 0 ? 'cursor-not-allowed': ''}`}>Confirm</button>
-                    : <button className='md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]' disabled={countdown > 0 || confirmLoading}>Confirming...</button>
+                    ? <button onClick={handleSubmit(handleChangeNumber)} disabled={countdown > 0 || confirmLoading} className={`md:w-[70%] py-3 sm:px-20 mt-5 pop-bold text-white rounded-lg sm:text-lg bg-[#4C7CE5] ${countdown > 0 ? 'cursor-not-allowed': ''}`}>Confirm</button>
+                    : <button className='md:w-[70%] py-3 sm:px-20 mt-5 pop-bold text-white rounded-lg sm:text-lg bg-[#4C7CE5]' disabled={countdown > 0 || confirmLoading}>Confirming...</button>
                 }
               </form>
             </Modal>
             {!isResending 
               ? countdown > 0 
-                  ? <button disabled={isCoundownDone || isResending} className={`py-5 ${countdown > 0 ? 'opacity-50' : ''}`} >Resend code({countdown})</button>
-                  : <button className='py-5' onClick={handleResend}>Resend code</button>
-              : <button className={`py-5 ${isResending ? 'opacity-50' : ''}`}>Resending code...</button>
+                  ? <button disabled={isCoundownDone || isResending} className={`py-5 text-xs sm:text-sm ${countdown > 0 ? 'opacity-50' : ''}`} >Resend code({countdown})</button>
+                  : <button className='py-5 text-xs sm:text-sm' onClick={handleResend}>Resend code</button>
+              : <button className={`py-5 text-xs sm:text-sm  ${isResending ? 'opacity-50' : ''}`}>Resending code...</button>
             }
           </div>
           <div className="verify-wrapper flex justify-center">
             {!isVerifying
-              ? <button onClick={handlerVerify} className='w-full py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
-              : <button className='w-full py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
+              ? <button onClick={handlerVerify} className='w-full py-3 sm:px-20 mt-5 pop-bold text-white rounded-lg sm:text-lg bg-[#4C7CE5]'>Verify</button>
+              : <button className='w-full py-3 sm:px-20 mt-5 pop-bold text-white rounded-lg sm:text-lg bg-[#4C7CE5]'>Verifying...</button>
             }
           </div>
         </div>
