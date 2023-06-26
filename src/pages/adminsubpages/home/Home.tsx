@@ -363,17 +363,17 @@ export default function Home(){
           </div>
         </div>
         <div className="activities">
-          <div className="activity-wrapper py-3 px-5 bg-white dark:bg-[#333333] min-h-full drop-shadow-md rounded-2xl">
-            <h3 className="pb-2 pop-semibold text-sm text-[#090650] dark:text-gray-200">
+          <div className="activity-wrapper py-3 px-2 sm:px-5 bg-white dark:bg-[#333333] min-h-full drop-shadow-md rounded-2xl">
+            <h3 className="pb-2 pop-semibold text-center sm:text-left text-sm text-[#090650] dark:text-gray-200">
               Current Election Turnout
             </h3>
 
-            <div className="card p-10 bg-[#090650] dark:bg-[#4a4a4a] rounded-xl text-center text-white">
-              <h2 className="text-2xl pop-bold">
-                <span className="text-[#00ffdf] dark:text-[#49ecd6]">{String(votedActivitiesQuery?.data?.count ?? "0")}</span>
+            <div className="card py-2 sm:p-10 bg-[#090650] dark:bg-[#4a4a4a] rounded-xl text-center text-white">
+              <h2 className="pop-bold text-sm sm:text-2xl">
+                <span className="text-[#00ffdf]  dark:text-[#49ecd6]">{String(votedActivitiesQuery?.data?.count ?? "0")}</span>
                 <span className="pop-regular px-4">out of</span>{votersQuery?.data?.length}
               </h2>
-              <p className="opacity-50">the votes used</p>
+              <p className="opacity-50 text-sm sm:text-2xl">the votes used</p>
             </div>
 
             {/* Activities */}
@@ -381,7 +381,7 @@ export default function Home(){
               Latest voting activity
             </h3>
 
-            <div className="voting-activity overflow-y-auto max-h-60 px-2">
+            <div className="voting-activity overflow-y-auto max-h-60 sm:px-2">
 
               { activitiesError && (
 
@@ -395,7 +395,7 @@ export default function Home(){
                       alt="profile picture"
                     />
                     <div className="name-date">
-                      <h2 className="pop-semibold lg:text-xs">{activity?.user?.surname ?? "Doe"}</h2>
+                      <h2 className="pop-semibold text-xs">{activity?.user?.surname ?? "Doe"}</h2>
                       <p className="opacity-50 pop-regular text-xs">
                         {formatStamp(activity.createdAt)}
                       </p>
@@ -410,8 +410,8 @@ export default function Home(){
       {/* PHASE II */}
 
       {/* PHASE III */}
-      <div className="election-wrapper rounded-md bg-white dark:bg-[#333333]">
-        <div className="eletion-tab flex justify-evenly dark:text-gray-100 gap-4 mt-5">
+      <div className="election-wrapper mt-5 rounded-md bg-white dark:bg-[#333333]">
+        <div className="eletion-tab overflow-x-hidden flex justify-evenly dark:text-gray-100 sm:gap-4 ">
           <button onClick={handleUpcomingTab} className={`text-center text-xs md:text-lg pop-bold shadow-sm py-5 w-full ${ upcomingTab ? `bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white rounded-md ` : `` }`}>
             Upcoming Elections
           </button>
@@ -420,17 +420,19 @@ export default function Home(){
           </button>
         </div>
         {/* Elections Table */}
-        { upcomingTab && <ElectionTable election={upcomingElections} error={upcomingsError} handleElection={activateElection} action='activate' actionStyle='hover:bg-sky-800 border-2 border-blue-400 hover:text-white'/> }
-        { ongoingTab && <ElectionTable election={ongoingElections} error={ongoingsError} handleElection={getOrganizations} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
+        <div className="tables overflow-x-auto centered">
+          { upcomingTab && <ElectionTable election={upcomingElections} error={upcomingsError} handleElection={activateElection} action='activate' actionStyle='hover:bg-sky-800 border-2 border-blue-400 hover:text-white'/> }
+          { ongoingTab && <ElectionTable election={ongoingElections} error={ongoingsError} handleElection={getOrganizations} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
+        </div>
       
 
         {renderOrganizations && <h2 className='text-sm pop-bold py-4 mt-2 text-sky-950 dark:text-gray-200 w-full text-center'>Active Organizations Election</h2>}
 
-        <div className="election-per-organizations px-5 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="election-per-organizations px-2 sm:px-5 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
         
         {!renderOrganizations ? "" : (electionOrgs?.map((org) => (
             
-            <div onClick={() => getCandidates(org.id)} className="single-or cursor-pointer bg-white hover:bg-[#dcdcdc] dark:hover:bg-[#6d6d6d] dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-4 text-xs pop-medium" key={org.id}>
+            <div onClick={() => getCandidates(org.id)} className="single-org cursor-pointer bg-white hover:bg-[#dcdcdc] dark:hover:bg-[#6d6d6d] dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-2 sm:p-4 text-xs pop-medium" key={org.id}>
               <div className="org-img-container p-1 flex justify-center">
                 <img className='object-cover w-24 h-24 rounded-full' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
               </div>
