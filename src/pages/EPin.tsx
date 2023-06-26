@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import OtpInput from 'react-otp-input';
 import {ReactComponent as Passcode} from '../assets/passcode.svg'
 import { useAuthStore } from '../hooks/state';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { message, Popover} from 'antd';
 import {TbInfoSquareRoundedFilled} from 'react-icons/tb'
 import { loginFinaly } from '../api/auth';
@@ -14,7 +14,6 @@ export default function EPin() {
   const navigate = useNavigate()
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [open, setOpen] = useState(false);
-  const location = useLocation()
   const targetRef = useRef(null)
 
   const [tries, setTries] = useState(1);
@@ -111,16 +110,16 @@ export default function EPin() {
 
 
   return (
-    <div>
+    <div className='w-full'>
       <div className="head flex flex-col items-center">
         <Passcode className='w-36 md:w-40 drop-shadow-lg' />
       </div>
       
-      <div className="otp-wrapper flex flex-col items-center px-10">
-        <div className="otp">
-          <h2 className='text-[#4C7CE5] text-lg md:text-2xl pb-10 md:pb-20 text-center pop-bold'>Enter Your PIN code</h2>
+      <div className="otp-wrapper w-full flex flex-col items-center sm:px-10">
+        <div className="otp w-full px-5 sm:w-3/6">
+          <h2 className='text-[#4C7CE5] text-sm sm:text-lg md:text-2xl pb-10 md:pb-20 text-center pop-bold'>Enter Your PIN code</h2>
           <div className="subheading-input flex justify-between items-center">
-            <h3 className='text-[#3F3D56] dark:text-gray-400 pop-light text-sm py-3'>Chances: {life}</h3>
+            <h3 className='text-[#3F3D56] dark:text-gray-400 pop-light text-xs sm:text-sm py-3'>Chances: {life}</h3>
             
             <Popover
               content={<div>
@@ -135,28 +134,30 @@ export default function EPin() {
               </span>
             </Popover>
           </div>
-          <OtpInput
-            value={pin_code}
-            onChange={setPin_code}
-            numInputs={4}
-            renderInput={(props) => 
-              <input {...props}
-              />}
-            containerStyle={"gap-3 md:gap-5 flex grow"}
-            inputStyle={"box-content p-3 md:p-4 rounded-lg text-xl md:text-3xl dark:text-gray-400 pop-bold bg-[#D2CEE6] dark:bg-[#232323] shadow-md"}
-            inputType='tel'
-          />
+          <div className="otp-codes centered w-full py-3 overflow-x-auto">
+            <OtpInput
+              value={pin_code}
+              onChange={setPin_code}
+              numInputs={4}
+              renderInput={(props) => 
+                <input {...props}
+                />}
+              containerStyle={"gap-3 md:gap-5 flex grow"}
+              inputStyle={"box-content p-3 md:p-4 rounded-lg text-xl md:text-3xl dark:text-gray-400 pop-bold bg-[#D2CEE6] dark:bg-[#232323] shadow-md"}
+              inputType='tel'
+            />
+          </div>
 
-            {timeRemaining > 0 && (
-            <div className='text-sm text-center text-red-400 pt-5'>
-                Please wait {formatTime(timeRemaining)} before trying again.
-            </div>
-            )}
+          {timeRemaining > 0 && (
+          <div className='text-xs sm:text-sm text-center text-red-400 pt-5'>
+              Please wait {formatTime(timeRemaining)} before trying again.
+          </div>
+          )}
 
           <div className="login-wrapper flex justify-center">
             {!isLoggingIn
-              ? <button disabled={timeRemaining > 0 || isLoggingIn} onClick={handleLogIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} w-full py-3 px-20 mt-14 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Login</button>
-              : <button disabled={timeRemaining > 0 || isLoggingIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} w-full py-3 px-20 mt-14 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Logging in...</button>
+              ? <button disabled={timeRemaining > 0 || isLoggingIn} onClick={handleLogIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} w-full py-3 sm:px-20 mt-14 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Login</button>
+              : <button disabled={timeRemaining > 0 || isLoggingIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} w-full py-3 sm:px-20 mt-14 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Logging in...</button>
             }
           </div>
         </div>
