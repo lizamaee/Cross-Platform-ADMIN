@@ -280,28 +280,29 @@ export default function AdminTab() {
                 {/* ACTIONS */}
                 <h3 className="pt-5 pop-semibold text-gray-900 dark:text-gray-300">Actions</h3>
                 <div className="actions pop-medium flex flex-col md:flex-row gap-2 md:gap-5 border-b-2 py-4 border-dashed dark:border-gray-500">
-                    <button onClick={showPromoteDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Promote to Admin</button>
-                    <button onClick={openMultiDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500">Upload Student ID</button>
+                    <button onClick={showPromoteDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500 text-xs sm:text-sm">Promote to Admin</button>
+                    <button onClick={openMultiDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500 text-xs sm:text-sm">Upload Student ID</button>
                 </div>
                 {/* ACTIONS */}
                 {/* ADMINS */}
-                <div className="admins overflow-y-auto dark:text-gray-200 pt-7">
+                <h4 className="text-center pop-semibold uppercase pt-7 dark:text-gray-200 text-xs sm:text-lg">Admins</h4>
+                <div className="admins overflow-y-auto centered dark:text-gray-200 ">
                     <table className="w-full pop-regular text-sm">
                         <thead>
                             <tr className="text-center pop-semibold py-5">
-                                <td className="py-4">Fullname</td>
-                                <td className="py-4">Mobile Number</td>
-                                <td className="py-4">Role</td>
-                                <td className="py-4">Action</td>
+                                <td className="py-4 text-xs sm:text-sm">Firstname</td>
+                                <td className="py-4 text-xs sm:text-sm">Mobile Number</td>
+                                <td className="py-4 text-xs sm:text-sm">Role</td>
+                                <td className="py-4 text-xs sm:text-sm">Action</td>
                             </tr>
                         </thead>
                         <tbody>
                             {adminFilter.map((admin:any, index:any) => (
                                 <tr key={index} className="odd:bg-gray-100 dark:odd:bg-zinc-700 text-center">
-                                    <td className="rounded-sm py-2 opacity-80">{admin.fullname}</td>
-                                    <td className="rounded-sm py-2 opacity-80">{admin.mobile_number}</td>
-                                    <td className="rounded-sm py-2 opacity-80">{admin.role}</td>
-                                    <td className="rounded-sm py-2">
+                                    <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.firstname ?? "John"}</td>
+                                    <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.mobile_number}</td>
+                                    <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.role}</td>
+                                    <td className="rounded-sm text-xs sm:text-sm py-2">
                                         <button onClick={() => demoteIt(admin.student_id, admin.fullname)} className='bg-yellow-400 dark:bg-yellow-500 opacity-100 text-xs md:text-sm py-1 px-2 rounded-lg hover:bg-yellow-500'>Demote</button>
                                     </td>
                                 </tr>
