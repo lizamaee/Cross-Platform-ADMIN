@@ -2,7 +2,7 @@ import { Button, Drawer, Modal, Skeleton, Spin, message } from 'antd'
 import { FaUserShield } from 'react-icons/fa'
 import { useChangeRole, useUploadId, useUploadIds, useUsers } from '../../../hooks/queries/useAdmin'
 import { useState } from 'react'
-import { ZodType, set, z } from 'zod'
+import { ZodType, z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as XLSX from 'xlsx';
@@ -21,7 +21,6 @@ type XlsxFormData = {
 }
 
 export default function AdminTab() {
-
     const axiosPrivate = useAxiosPrivate()
 
     //USER HOOKS
@@ -59,7 +58,12 @@ export default function AdminTab() {
         promoteAccount({
             student_id: data.student_id,
             new_role: 'admin'
-        })
+        },
+        {
+            onSettled: () => {
+                promoteReset()}
+        }
+        )
     }
     
     const [childrenDrawer, setChildrenDrawer] = useState(false);
@@ -211,7 +215,15 @@ export default function AdminTab() {
     
     //UPLOAD SINGLE ID FUNCTION
     const handleUploadSingleId = (data:PromoteFormData) => {
-        uploadSingleID({student_id: data.student_id})
+        uploadSingleID(
+            {
+                student_id: data.student_id
+            },
+            {
+                onSettled: () => {
+                    singleReset()}
+            }
+            )
     }
 
     //UPLOAD MULTIPLE STUDENT ID
@@ -228,7 +240,15 @@ export default function AdminTab() {
     //MULTIPLE ID QUERY HOOKS
     const {mutate:uploadMultipleID, isLoading: isMultiLoading} = useUploadIds()
     const handleUploadMultipleId = (data: PromoteFormData) => {
-        uploadMultipleID({student_ids: data.student_id})
+        uploadMultipleID(
+            {
+                student_ids: data.student_id
+            },
+            {
+                onSettled: () => {
+                    multipleReset()}
+            }
+            )
     }
 
     //DEMOTE MODAL STATE   
@@ -448,7 +468,9 @@ export default function AdminTab() {
                         </div>
                         
                         <div className="btn flex items-center justify-center py-5">
-                            <button onClick={handleSubmitXlsx(handleFileSubmit)} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white rounded-full">UPLOAD</button>
+                            {isUploading 
+                                ? <button disabled={isUploading} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white rounded-full">UPLOADING...</button>
+                                : <button onClick={handleSubmitXlsx(handleFileSubmit)} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white rounded-full">UPLOAD</button>}
                         </div>
                         
                     </form>
