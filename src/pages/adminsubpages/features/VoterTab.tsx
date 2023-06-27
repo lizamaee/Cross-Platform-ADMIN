@@ -68,7 +68,13 @@ export default function VoterTab() {
             new_password: data.newPassword, 
             mobile_number: data.newMobileNumber,
             pin_code: data.pin_code
-        })
+        },
+        {
+            onSettled: () => {
+                reset();
+              },
+        }
+        )
     }
 
     //RECOVER ACCOUNT FORM SCHEMA
@@ -111,7 +117,10 @@ export default function VoterTab() {
     const {mutate: deleteAccount, isLoading: isDeleting} = useDeleteAccount()
     //DELETE ACCOUNT FUNCTION
     const handleDelete = (data: DeleteFormData) => {
-        deleteAccount(data.student_id)
+        deleteAccount(data.student_id,
+            {
+                onSettled: () => deleteReset()
+            })
     }
 
     return (
@@ -164,7 +173,7 @@ export default function VoterTab() {
                                 <tbody>
                                 {byId.map((user:any, index:any) => (
                                     <tr key={index} className="odd:bg-gray-100 dark:odd:bg-zinc-700 text-center opacity-80">
-                                        <td className="rounded-sm text-xs sm:text-sm py-2">{user.firstname + " " + user.surname}</td>
+                                        <td className="rounded-sm text-xs sm:text-sm py-2">{`${user.firstname ?? "John"} ${user.surname ?? "Doe"}`}</td>
                                         <td className="rounded-sm text-xs sm:text-sm py-2">{user.student_id}</td>
                                         <td className="rounded-sm text-xs sm:text-sm py-2">{user.mobile_number}</td>
                                     </tr>
