@@ -2,12 +2,14 @@ import { Button, Drawer, Modal, Skeleton, Spin, message } from 'antd'
 import { FaUserShield } from 'react-icons/fa'
 import { useChangeRole, useUploadId, useUploadIds, useUsers } from '../../../hooks/queries/useAdmin'
 import { useState } from 'react'
-import { ZodType, z } from 'zod'
+import { ZodType, set, z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as XLSX from 'xlsx';
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 import { MdCloudUpload } from 'react-icons/md'
+import DeleteMe from '../../../components/DeleteMe'
+import { TiWarning } from 'react-icons/ti'
 
 type PromoteFormData = {
     student_id: string;
@@ -28,34 +30,6 @@ export default function AdminTab() {
 
     //FILTER ALL ADMIN
     const adminFilter = usersQuery?.data?.filter((user:any) => user.role === 'admin')
-
-    //DEMOTION HOOKS
-    const {mutate:demoteAdmin} = useChangeRole()
-
-    //DEMOTE FUNCTION
-    const handleDemote = async (id:string) => {
-        demoteAdmin({
-            student_id: id,
-            new_role: 'user'
-        })
-    }
-
-    //DEMOTE ADMIN CONFIRMATION MODAL
-    const demoteIt = (id: string, name: string) => {
-        Modal.confirm({
-        title: 'Do you want to demote this Admin?',
-        content: `Demoting admin: ${name}`,
-        className: 'text-gray-700',
-        onOk() {
-            return new Promise((resolve, reject) => {
-            handleDemote(id)
-                .then(resolve)
-                .catch(reject);
-            }).catch(() => console.log('Oops, an error occurred!'));
-        },
-        onCancel() {},
-        });
-    }
 
     //OPEN PROMOTE DRAWER STATE
     const [openPromote, setOpenPromote] = useState(false)
@@ -257,6 +231,33 @@ export default function AdminTab() {
         uploadMultipleID({student_ids: data.student_id})
     }
 
+    //DEMOTE MODAL STATE   
+    const [openDemoteModal, setOpenDemoteModal] = useState<boolean>(false)
+    const [adminNameToDemote, setAdminNameToDemote] = useState<string>('')
+    const [adminIdToDemote, setAdminIdToDemote] = useState<string>('')
+
+    //DEMOTION HOOKS
+    const {mutate:demoteAdmin, isLoading: isDemotingAdmin} = useChangeRole()
+
+    //DEMOTE FUNCTION
+    const handleDemoteAdmin = async () => {
+        demoteAdmin({
+            student_id: adminIdToDemote,
+            new_role: 'user'
+        },
+        {
+            onSettled: () => setOpenDemoteModal(false)
+        }
+        )
+    }
+
+    //DEMOTE ADMIN CONFIRMATION MODAL
+    const demoteIt = (id: string, name: string) => {
+        setOpenDemoteModal(true)
+        setAdminNameToDemote(name ?? "Doe")
+        setAdminIdToDemote(id)
+    }
+
     return (
         <div className='py-5 px-3 bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
             <div className="adminTab-container">
@@ -303,7 +304,7 @@ export default function AdminTab() {
                                     <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.mobile_number}</td>
                                     <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.role}</td>
                                     <td className="rounded-sm text-xs sm:text-sm py-2">
-                                        <button onClick={() => demoteIt(admin.student_id, admin.fullname)} className='bg-yellow-400 dark:bg-yellow-500 opacity-100 text-xs md:text-sm py-1 px-2 rounded-lg hover:bg-yellow-500'>Demote</button>
+                                        <button onClick={() => demoteIt(admin.student_id, admin.surname)} className='bg-yellow-400 dark:bg-yellow-500 opacity-100 text-xs md:text-sm py-1 px-2 rounded-lg hover:bg-yellow-500'>Demote</button>
                                     </td>
                                 </tr>
                             ))}
@@ -500,6 +501,57 @@ export default function AdminTab() {
                 {/* UPLOAD XLSX ID MULTI-CHILD DRAWER */}
             </Drawer>
             {/* UPLOAD XLSX ID MULTI-PARENT DRAWER */}
+
+            {/* DEMOTE MODAL */}
+            <DeleteMe open={openDemoteModal} onClose={() => setOpenDemoteModal(false)}>
+            <div className="demote-container py-5 px-10 rounded-2xl bg-white dark:bg-[#414141]">
+                    <div className="px-10">
+                        <div className="icon flex justify-center">
+                        <div className="warning_icon p-3 shadow-md bg-[#fff5f6] dark:bg-[#504f4f] rounded-full">
+                            <TiWarning size={30} className="text-[#ffd23f]" />
+                        </div>
+                        </div>
+                        <div className="warn flex justify-center pt-5 pb-3">
+                        <h2 className="md:text-xl text-lg md:tracking-wider pop-bold text-[#334049] dark:text-gray-200">
+                            Demote Admin
+                        </h2>
+                        </div>
+                        <div className="warn-text tracking-wider text-xs md:text-sm">
+                        <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">
+                            Do you want to demote:  <span className='pop-bold'>{adminNameToDemote}</span>
+                        </p>
+                        <p className="pop-regular text-[#334049] dark:text-gray-300 text-center">
+                            Are you sure?
+                        </p>
+                        </div>
+                    </div>
+                    <div className="choice-btn pop-light text-[#334049] dark:text-gray-200 pt-5 flex flex-col-reverse gap-3 md:flex-row  justify-evenly ">
+                        <button
+                        onClick={() => setOpenDemoteModal(false)}
+                        className="bg-[#f5f5f7] dark:bg-zinc-600 px-6 py-3 rounded-full"
+                        >
+                        No, Don't
+                        </button>
+                        {isDemotingAdmin ? (
+                        <button
+                            disabled={isDemotingAdmin}
+                            className="bg-[#ffd23f] text-white px-6 py-2 rounded-full"
+                        >
+                            Demoting...
+                        </button>
+                        ) : (
+                        <button
+                            disabled={isDemotingAdmin}
+                            onClick={handleDemoteAdmin}
+                            className="bg-[#ffd23f] text-white px-6 py-2 rounded-full"
+                        >
+                            Yes, Demote!
+                        </button>
+                        )}
+                    </div>
+                    </div>
+            </DeleteMe>
+            {/* DEMOTE MODAL */}
         </div>
     )
 }
