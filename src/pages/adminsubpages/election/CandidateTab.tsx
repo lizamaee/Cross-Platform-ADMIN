@@ -95,8 +95,10 @@ export default function CandidateTab() {
    
   //ASYNCRONOUS DELETE CANDIDATE FUNCTION
   async function handleDeleteCandidate() {
-    deleteCandidate(deletingCandidateID)
-    setOpenDeleteModal(false)
+    deleteCandidate(deletingCandidateID,
+      {
+        onSettled: () => setOpenDeleteModal(false)
+      })
   }
 
   //DELETE CANDIDATE CONFIRMATION MODAL
@@ -135,9 +137,16 @@ export default function CandidateTab() {
       party,
       imageUrl,
     }
-    createCandidate(uploadCanData)
-    setIsCreating(false)
-    onClose()
+    createCandidate(uploadCanData,
+      {
+        onSettled: () => {
+          setImage([])
+          setFullName('')
+          setParty('')
+          setPlatform('')
+          setIsCreating(false)
+        }
+      })
   }
 
   //UPLOAD SELECTED IMAGE TO CLOUDINARY

@@ -61,8 +61,11 @@ export default function PositionTab() {
    
   //ASYNCRONOUS DELETE POSITION FUNCTION
   async function handleDeletePosition() {
-    deletePosition(deletingPositionID)
-    setOpenDeleteModal(false)
+    deletePosition(deletingPositionID,
+      {
+        onSettled: () => setOpenDeleteModal(false)
+    })
+    
   }
 
   //DELETE POSITION CONFIRMATION MODAL
@@ -91,10 +94,13 @@ export default function PositionTab() {
       console.log("Too many required Winner");
     }
     
-    createPosition({position, requiredWinner: winner})  
-    setIsCreating(false)
-    onClose()
-      
+    createPosition({position, requiredWinner: winner},
+      {
+        onSettled: () => {
+          setIsCreating(false)
+          setPosition('')
+        }
+      })
   }
 
   //DRAWER STATES

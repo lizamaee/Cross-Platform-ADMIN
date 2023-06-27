@@ -125,8 +125,12 @@ export default function ElectionTab() {
 
   //ASYNCRONOUS DELETE ELECTION FUNCTION
   async function handleDeleteElection() {
-    deleteElection(deletingElectionID)
-    setOpenDeleteModal(false)
+    deleteElection(
+      deletingElectionID,
+      {
+        onSettled: () => setOpenDeleteModal(false)
+      })
+    
   }
 
   //DELETE ELECTION CONFIRMATION MODAL
@@ -161,9 +165,16 @@ export default function ElectionTab() {
       endDate: moment(endDate).utc().format('YYYY-MM-DD')
     }
     //mutate the election data
-    createElection(uploadElecData)
-    setIsCreating(false)
-    onClose()
+    createElection(uploadElecData,
+      {
+        onSettled: () => {
+          setIsCreating(false)
+          setName('')
+          setImage([])
+          setStartDate(null)
+          setEndDate(null)
+        }
+      })
   }
 
   //ONCLICK FUNCTION OF REFERENCED CHANGE IMAGE BUTTON

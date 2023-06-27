@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
 import {FaCamera} from 'react-icons/fa' 
 import {IoMdRemoveCircle} from 'react-icons/io' 
-import { Drawer, Dropdown, MenuProps, Modal, Progress, Space, Spin, Tooltip, message } from 'antd';
+import { Drawer, Dropdown, MenuProps, Progress, Space, Spin, Tooltip, message } from 'antd';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useDropzone } from 'react-dropzone';
@@ -123,8 +123,11 @@ export default function OrganizationTab() {
    
   //ASYNCRONOUS DELETE ORGANIZATION FUNCTION
   async function handleDeleteOrganization() {
-    deleteOrganization(deletingOrgID)
-    setOpenDeleteModal(false)
+    deleteOrganization(deletingOrgID,
+      {
+        onSettled: () => setOpenDeleteModal(false)
+    })
+    
   }
 
   //DELETE ORGANIZATION CONFIRMATION MODAL
@@ -163,9 +166,16 @@ export default function OrganizationTab() {
       startDate: moment(startDate).utc().format('YYYY-MM-DD').toString(),
       endDate: moment(endDate).utc().format('YYYY-MM-DD').toString()
     }
-    createOrganization(uploadOrgData)
-    setIsCreating(false)
-    onClose()
+    createOrganization(uploadOrgData,
+      {
+        onSettled: () => {
+            setName('')
+            setStartDate(null)
+            setEndDate(null)
+            setImage([])
+            setIsCreating(false)
+        }
+      })
   }
 
   //UPLOAD SELECTED IMAGE TO CLOUDINARY
