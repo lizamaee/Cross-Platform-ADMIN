@@ -215,8 +215,11 @@ export default function VSettings() {
       changeMobileNumber({
         student_id,
         new_mobile_number: `+63${philFormat}`,
+      },
+      {
+        onSettled: () => setChangeNumber(`+63${philFormat}`)
       });
-      setChangeNumber(`+63${philFormat}`);
+      
     }
   };
 
@@ -240,7 +243,6 @@ export default function VSettings() {
   const {
     mutate: confirmMobileNumber,
     isLoading: isConfirmingOtp,
-    status: otpStatus,
   } = useVoterConfirmOTP();
   const handleConfirmOtp = (data: OtpFormData) => {
     confirmMobileNumber({
@@ -347,6 +349,9 @@ export default function VSettings() {
       student_id,
       current_password: data.current_password,
       new_password: data.new_password,
+    },
+    {
+      onSettled: () => setIsPassOpen(false)
     });
   };
 
@@ -370,8 +375,11 @@ export default function VSettings() {
   //RESET SEND OTP FUNCTION
   const handleResetSendOTP = () => {
     const philFormat = number.slice(1);
-    resetSendOTP({ mobile_number: `+63${philFormat}` });
-    resetOtpReset();
+    resetSendOTP({ mobile_number: `+63${philFormat}` },
+    {
+      onSettled: () => resetOtpReset()
+    });
+    
   };
 
   //OPEN DRAWER FUNCTION
@@ -444,8 +452,11 @@ export default function VSettings() {
 
   //RESET PASSWORD FUNCTION
   const handleResetPassword = (data: ResetPasswordFormData) => {
-    resetPassword({ mobile_number: number, new_password: data.new_password });
-    closeResetPasswordDrawer();
+    resetPassword({ mobile_number: number, new_password: data.new_password },
+      {
+        onSettled: () => closeResetPasswordDrawer()
+      });
+    
   };
 
   //DELETE ACCOUNT
@@ -456,7 +467,10 @@ export default function VSettings() {
     useDeleteVoterAccount();
 
   const handleDeleteAccount = () => {
-    deleteAccount(student_id);
+    deleteAccount(student_id,
+      {
+        onSettled: () => setIsDeleteModalOpen(false)
+      });
   };
 
   return (
