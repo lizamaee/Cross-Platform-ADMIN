@@ -227,22 +227,22 @@ export default function FVerification() {
   };
 
   return (
-    <div className='h-full w-full px-3'>
+    <div className='h-full w-full sm:px-3'>
       <div className="head flex flex-col items-center pt-20">
         <img className='w-36 md:w-40' src={otpImage} alt="OTP Image illustration" />
         
       </div>
       
-      <div className="otp-wrapper flex flex-col items-center px-10">
-        <div className="otp">
-          <div className="title w-screen">
-            <h2 className='text-[#4C7CE5] text-md sm:text-lg md:text-2xl pb-5 text-center pop-bold'>OTP Verification</h2>
+      <div className="otp-wrapper w-full flex flex-col items-center">
+        <div className="otp w-5/6 sm:w-4/6 lg:w-3/6">
+          <div className="title w-full">
+            <h2 className='text-[#4C7CE5] text-sm sm:text-lg md:text-2xl pb-5 text-center pop-bold'>OTP Verification</h2>
           </div>
-          <div className='text-gray-900 text-center text-sm sm:text-lg dark:text-gray-500 pop-semibold pb-10 md:pb-18'>
+          <div className='text-gray-900 break-words text-center text-sm sm:text-lg dark:text-gray-500 pop-semibold pb-10 md:pb-18'>
             Enter OTP sent to
-            <span className='dark:text-gray-400 px-3'>{`#${tempMobileNumber}`}</span>
+            <span className='dark:text-gray-400 text-xs sm:text-sm px-3'>{`#${tempMobileNumber}`}</span>
           </div>
-          <div className="subheading-input flex gap-5 pl-3 sm:pl-40 items-center">
+          <div className="subheading-input flex gap-5 items-center">
             <h3 className='text-[#3F3D56] dark:text-gray-400 pop-light text-xs sm:text-sm py-3'>Enter 6 digits code</h3>
             
             <Popover
@@ -258,7 +258,7 @@ export default function FVerification() {
               </span>
             </Popover>
           </div>
-          <div className="opt overflow-x-auto pl-3 py-4  w-screen centered">
+          <div className="otp overflow-x-auto w-full py-4 centered">
             <OtpInput
               value={otp}
               onChange={setOtp}
@@ -266,12 +266,12 @@ export default function FVerification() {
               renderInput={(props) => 
                 <input {...props}
                 />}
-              containerStyle={"gap-2 md:gap-5 flex sm:justify-center grow"}
+              containerStyle={"gap-2 flex justify-evenly grow"}
               inputStyle={"box-content p-3 sm:p-4 rounded-lg text-sm sm:text-xl md:text-3xl dark:text-gray-400 pop-bold bg-[#D2CEE6] dark:bg-[#232323] shadow-md"}
               inputType='tel'
             />
           </div>
-          <div className="resend-wrapper px-3 sm:px-40 md:px-46 text-xs sm:text-sm flex justify-between pop-semibold  text-[#4C7CE5]">
+          <div className="resend-wrapper text-xs sm:text-sm flex justify-between pop-semibold  text-[#4C7CE5]">
             <button onClick={showModal} className='opacity-80 focus:outline-none '>Change number</button>
             <Modal
               className=''
@@ -314,8 +314,8 @@ export default function FVerification() {
                 {errors.mobile_number && <span className="md:w-[70%] text-red-400 text-center text-xs md:text-sm">{errors.mobile_number.message}</span>}
 
                 {!confirmLoading
-                    ? <button onClick={handleSubmit(handleChangeNumber)} disabled={countdown > 0} className={`md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5] ${countdown > 0 ? 'cursor-not-allowed': ''}`}>Confirm</button>
-                    : <button disabled={confirmLoading} className='md:w-[70%] py-3 px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Confirming...</button>
+                    ? <button onClick={handleSubmit(handleChangeNumber)} disabled={countdown > 0} className={`md:w-[70%] py-3 mt-5 pop-bold text-white rounded-lg text-sm sm:text-lg bg-[#4C7CE5] ${countdown > 0 ? 'cursor-not-allowed': ''}`}>Confirm</button>
+                    : <button disabled={confirmLoading} className='md:w-[70%] py-3  mt-5 pop-bold text-white rounded-lg text-sm sm:text-lg bg-[#4C7CE5]'>Confirming...</button>
                 }
               </form>
             </Modal>
@@ -326,10 +326,10 @@ export default function FVerification() {
               : <button className='py-5' disabled={isResending}>Resending code...</button>
             }
           </div>
-          <div className="verify-wrapper w-full px-2 flex justify-center">
+          <div className="verify-wrapper w-full flex justify-center">
             {!isVerifying
-              ? <button onClick={handlerVerify} className='py-3 sm:px-20 w-full sm:w-2/6 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verify</button>
-              : <button className='py-3 sm:px-20 w-full sm:w-2/6 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]'>Verifying...</button>
+              ? <button onClick={handlerVerify} className='py-2 sm:py-3 sm:px-20 w-full mt-5 pop-bold text-white rounded-lg text-sm md:text-lg bg-[#4C7CE5]'>Verify</button>
+              : <button className='py-2 sm:py-3 sm:px-20 w-full mt-5 pop-bold text-white rounded-lg text-sm md:text-lg bg-[#4C7CE5]'>Verifying...</button>
             }
           </div>
         </div>

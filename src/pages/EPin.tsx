@@ -142,7 +142,7 @@ export default function EPin() {
               renderInput={(props) => 
                 <input {...props}
                 />}
-              containerStyle={"gap-3 md:gap-5 flex grow"}
+              containerStyle={"gap-3 md:gap-5 justify-evenly flex grow"}
               inputStyle={"box-content p-3 md:p-4 rounded-lg text-xl md:text-3xl dark:text-gray-400 pop-bold bg-[#D2CEE6] dark:bg-[#232323] shadow-md"}
               inputType='tel'
             />
