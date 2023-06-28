@@ -705,6 +705,58 @@ export const useDeleteAdminAccount = () => {
   })
 }
 
+
+//QUERY FOR ACTIVATING SINGLE ELECTION
+export const useActivateElection = () => {
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn:async (id:string) => {
+          const response = await axiosPrivate.patch(`/election/status/to-ongoing/${id}`)
+          return response.data
+      },
+      onSuccess: async () => {
+        message.open({
+            key: 'successCreation',
+            type: 'success',
+            content: 'Activated!',
+            duration: 2,
+        })
+        await queryClient.invalidateQueries({
+          queryKey: ['elections'],
+          exact: true
+      })
+    },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.message){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.message}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            }
+      }
+  })
+}
+
 //QUERY FOR GETTING SINGLE VOTER
 export const useVoter = (student_id:string) =>{
   const axiosPrivate = useAxiosPrivate()
