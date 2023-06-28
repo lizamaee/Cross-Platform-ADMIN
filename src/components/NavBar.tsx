@@ -1,6 +1,9 @@
 import { useAuthStore } from "../hooks/state"
 import { CgInfo } from "react-icons/cg";
 import {BsFillSunFill,BsMoonFill, BsPersonCircle} from 'react-icons/bs'
+import { Link } from "react-router-dom";
+import { Tooltip } from "antd";
+import { useRef } from "react";
 
 interface navProp {
     pageName: string;
@@ -22,11 +25,20 @@ export default function NavBar({ pageName}: navProp) {
         </span>
 
         <span>
-          < CgInfo className='text-[#a3aed0]' size={20} />
+          <Tooltip
+            placement="bottom"
+            title="This system is developed by Menard M. Pajares for CICT department of Taguig City University."
+          >
+            <span style={{ display: 'inline-block' }}>
+              <CgInfo className="text-[#a3aed0]" size={20} />
+            </span>
+          </Tooltip>
         </span>
 
         <span>
-          < BsPersonCircle className='text-[#a3aed0]'  size={20} />
+          <Link to='/admin/settings'>
+            < BsPersonCircle className='text-[#a3aed0]'  size={20} />
+          </Link>
         </span>
       </div>
     </div>
