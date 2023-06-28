@@ -13,7 +13,7 @@ import { Skeleton } from 'antd'
 import {useQuery} from '@tanstack/react-query'
 import { useElections } from "../../../hooks/queries/useElection";
 import { useOrganizations } from "../../../hooks/queries/useOrganization";
-import { useUsers } from "../../../hooks/queries/useAdmin";
+import { useActivateElection, useUsers } from "../../../hooks/queries/useAdmin";
 import blank from '../../../images/blank.jpg'
 
 
@@ -183,22 +183,11 @@ export default function Home(){
     
   }; 
 
+  const {mutate:activateElectionNow} = useActivateElection()
+
   //Activate Election to Ongoing
   const activateElection = (id: string) => {
-    try {
-      axiosPrivate.patch(`${import.meta.env.VITE_API_URL}/election/status/to-ongoing/${id}`, {},)
-        .then(response => {
-          //console.log(response.data);
-          // handle success
-        })
-        .catch(error => {
-          console.error(error);
-          // handle error
-        });
-    } catch (error) {
-      console.error(error);
-      // handle error
-    }
+      activateElectionNow(id)
   }
 
   //Get All organization of passed election id
@@ -412,17 +401,17 @@ export default function Home(){
       {/* PHASE III */}
       <div className="election-wrapper mt-5 rounded-md bg-white dark:bg-[#333333]">
         <div className="eletion-tab overflow-x-hidden flex justify-evenly dark:text-gray-100 sm:gap-4 ">
-          <button onClick={handleUpcomingTab} className={`text-center text-xs md:text-lg pop-bold shadow-sm py-5 w-full ${ upcomingTab ? `bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white rounded-md ` : `` }`}>
+          <button onClick={handleUpcomingTab} className={`text-center text-xs md:text-lg pop-bold shadow-sm py-3 w-full ${ upcomingTab ? `bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white rounded-md ` : `` }`}>
             Upcoming Elections
           </button>
-          <button onClick={handleOngoingTab} className={`text-center text-xs md:text-lg pop-bold shadow-sm py-5 w-full ${ ongoingTab ? `bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white rounded-md ` : `` }`}>
+          <button onClick={handleOngoingTab} className={`text-center text-xs md:text-lg pop-bold shadow-sm py-3 w-full ${ ongoingTab ? `bg-gradient-to-r from-[#7268EF] to-[#9D93F6] text-white rounded-md ` : `` }`}>
             Ongoing Elections
           </button>
         </div>
         {/* Elections Table */}
-        <div className="tables overflow-x-auto centered">
-          { upcomingTab && <ElectionTable election={upcomingElections} error={upcomingsError} handleElection={activateElection} action='activate' actionStyle='hover:bg-sky-800 border-2 border-blue-400 hover:text-white'/> }
-          { ongoingTab && <ElectionTable election={ongoingElections} error={ongoingsError} handleElection={getOrganizations} action='view' actionStyle='hover:bg-emerald-800 border-2 border-green-400 hover:text-white'/> }
+        <div className="tables overflow-x-auto py-5 sm:px-7 centered">
+          { upcomingTab && <ElectionTable election={upcomingElections} error={upcomingsError} handleElection={activateElection} action='activate' actionStyle='text-gray-100 bg-sky-800 hover:bg-sky-700 rounded-lg'/> }
+          { ongoingTab && <ElectionTable election={ongoingElections} error={ongoingsError} handleElection={getOrganizations} action='view' actionStyle='text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg'/> }
         </div>
       
 
