@@ -195,10 +195,13 @@ export const useUpdateProfile = () => {
   const queryClient = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
   return useMutation({
-      mutationFn:async (newData: {student_id:string, fullname: string, new_student_id: string}) => {
+      mutationFn:async (newData: {student_id:string, firstname: string, surname: string, age: string, year_level: string, new_student_id: string}) => {
           const response = await axiosPrivate.patch(`/admin-profile`, {
             student_id: newData.student_id,
-            fullname: newData.fullname,
+            firstname: newData.firstname,
+            surname: newData.surname,
+            age: newData.age,
+            year_level: newData.year_level,
             new_student_id: newData.new_student_id
           } )
           return response.data
@@ -265,7 +268,7 @@ export const useUpdateImage = () => {
               duration: 2,
           })
           await queryClient.invalidateQueries({
-              queryKey: ['users'],
+              queryKey: ['voter'],
               exact: true
           })
       },
@@ -415,7 +418,7 @@ export const useChangePin = () => {
               duration: 2,
           })
           await queryClient.invalidateQueries({
-              queryKey: ['users'],
+              queryKey: ['voter'],
               exact: true
           })
       },
