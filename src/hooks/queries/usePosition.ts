@@ -48,7 +48,7 @@ export const useCreatePosition = () => {
     const axiosPrivate = useAxiosPrivate()
 
     return useMutation({
-        mutationFn: async (newPositionData: {position: string, requiredWinner: string}) =>{
+        mutationFn: async (newPositionData: {position: string, requiredWinner: string, position_order: string}) =>{
             const response = await axiosPrivate.post('/seat', newPositionData)
             return response.data
         },
@@ -150,10 +150,11 @@ export const useUpdatePosition = () => {
   const queryClient = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
   return useMutation({
-      mutationFn:async (newData: {id:string, position: string, requiredWinner: string}) => {
+      mutationFn:async (newData: {id:string, position: string, requiredWinner: string, position_order: string}) => {
           const response = await axiosPrivate.patch(`seat/update/${newData.id}`, {
             position: newData.position,
             requiredWinner: newData.requiredWinner,
+            position_order: newData.position_order,
           } )
           return response.data
       },

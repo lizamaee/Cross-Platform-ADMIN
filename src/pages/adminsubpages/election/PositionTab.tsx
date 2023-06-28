@@ -4,7 +4,7 @@ import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
 import {IoMdRemoveCircle} from 'react-icons/io' 
-import { Drawer, Dropdown, MenuProps, Modal, Space, Spin, Tooltip, message } from 'antd';
+import { Drawer, Dropdown, MenuProps, Space, Spin, Tooltip, message } from 'antd';
 import "react-datepicker/dist/react-datepicker.css";
 import { DownOutlined } from '@ant-design/icons';
 import { useCreatePosition, useDeletePosition, usePositions, useUpdatePosition } from '../../../hooks/queries/usePosition';
@@ -18,9 +18,9 @@ interface DataType {
 }
 
 export default function PositionTab() {
-  const [isCreating, setIsCreating] = useState<boolean>(false)
   const [position, setPosition] = useState<string>('')
   const [winner, setWinner] = useState<string>('1')
+  const [order, setOrder] = useState<string>('1')
   const [childrenDrawer, setChildrenDrawer] = useState(false);
   const [openMulti, setOpenMulti] = useState(false);
   const axiosPrivate = useAxiosPrivate()
@@ -31,7 +31,7 @@ export default function PositionTab() {
   //GET ALL
   const positionsQuery = usePositions()
   //CREATE SINGLE
-  const { mutate: createPosition} = useCreatePosition()
+  const { mutate: createPosition, isLoading: isCreating} = useCreatePosition()
   //DELETE SINGLE
   const { mutate: deletePosition, isLoading: isDeletingPosition} = useDeletePosition()
 
@@ -85,29 +85,45 @@ export default function PositionTab() {
   //CLOSE CREATE DRAWER FUNCTION
   const onClose = () => {
     setPosition('')
+    setWinner('1')
+    setOrder('1')
     setOpen(false)
   }
 
   //CREATE POSITION FUNCTION
   const handleCreate = async (e:any) => {
     if(winner.length > 1){
-      console.log("Too many required Winner");
+      return message.open({
+        key: 'errorCreation',
+        type: 'error',
+        content: 'too much winner',
+        duration: 3,
+    })
+    }else if(order.length > 2){
+      return message.open({
+        key: 'errorCreation',
+        type: 'error',
+        content: 'too much order',
+        duration: 3,
+    })
     }
     
-    createPosition({position, requiredWinner: winner},
+    createPosition({position, requiredWinner: winner, position_order: order},
       {
         onSettled: () => {
-          setIsCreating(false)
           setPosition('')
+          setWinner('1')
+          setOrder('1')
         }
       })
   }
 
   //DRAWER STATES
-  const [isUpdating, setIsUpdating] = useState<boolean>(false)
+  //const [isUpdating, setIsUpdating] = useState<boolean>(false)
   const [modifyId, setModifyId] = useState<string>('')
   const [modifyPosition, setModifyPosition] = useState<string>('')
   const [modifyWinner, setModifyWinner] = useState<string>('1')
+  const [modifyOrder, setModifyOrder] = useState<string>('1')
   const [availableCandidates, setAvailableCandidates] = useState([])
   const [currentCandidates, setCurrentCandidates] = useState([])
   const [isDisconnectiong, setIsDisConnecting] = useState<boolean>(false)
@@ -120,6 +136,7 @@ export default function PositionTab() {
     setModifyId(single[0].id)
     setModifyPosition(single[0].position)
     setModifyWinner(single[0].requiredWinner)
+    setModifyOrder(single[0].position_order ?? '1')
   }
   
   //CLOSE MODIFY MULTI-PARENT DRAWER FUNCTION
@@ -215,11 +232,11 @@ export default function PositionTab() {
 
 
   //MUTATION HOOK OF UPDATE POSITION 
-  const {mutate: updatePosition} = useUpdatePosition()
+  const {mutate: updatePosition, isLoading: isUpdating} = useUpdatePosition()
   //UPDATE A POSITION FUNCTION
   const handleUpdatePosition = async (e:any) => {
     e.preventDefault()
-    setIsUpdating(true)
+    //setIsUpdating(true)
     if(modifyWinner.length > 1){
       return message.open({
         type: 'error',
@@ -227,10 +244,16 @@ export default function PositionTab() {
         className: 'custom-class pop-medium',
         duration: 2.5,
       });
+    }else if(modifyOrder.length > 2){
+      return message.open({
+        type: 'error',
+        content: 'Too much position Order',
+        className: 'custom-class pop-medium',
+        duration: 2.5,
+      });
     }
     
-    if(modifyPosition === '' || modifyWinner === '' || modifyWinner === '0') {
-      setIsUpdating(false)
+    if(modifyPosition === '' || modifyWinner === '' || modifyWinner === '0' || modifyOrder === '' || modifyOrder === '0') {
       return message.open({
         type: 'error',
         content: 'Please fill the fields',
@@ -242,16 +265,16 @@ export default function PositionTab() {
     const updatePosData = {
       id: modifyId,
       position: modifyPosition,
-      requiredWinner: modifyWinner
+      requiredWinner: modifyWinner,
+      position_order: modifyOrder,
     }
 
-    updatePosition(updatePosData)
-    setIsCreating(false)
-    onCloseMultiDrawer()
-    setIsUpdating(false)
-    setModifyId('')
-    setModifyWinner('1')
-    setModifyPosition('')
+    updatePosition(updatePosData,
+      {
+        onSuccess: () => {
+          setOpenMulti(false)
+        }
+      })
   }
 
   //CONNECT SINGLE CANDIDATE FROM SPECIFIC POSITION
@@ -383,9 +406,15 @@ export default function PositionTab() {
             
             <label className='pb-1 pt-5 opacity-80'>Position Name</label>
             <input value={position} onChange={(e) => setPosition(e.target.value)} type="text" className='py-1 px-3 text-lg outline-none focus:border-indigo-400 rounded-md border-solid border-2' />
-            <div className=" py-5 flex flex-col">
-              <label className='pb-1 pt-5 opacity-80'>Required Winner</label>
-              <input value={winner} onChange={(e) => setWinner(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={9} />
+            <div className=" py-5 flex justify-between">
+              <div className="winner flex flex-col">
+                <label className='pb-1 pt-5 opacity-80'>Required Winner</label>
+                <input value={winner} onChange={(e) => setWinner(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={99} minLength={1} maxLength={1}/>
+              </div>
+              <div className="order flex flex-col">
+                <label className='pb-1 pt-5 opacity-80'>Order</label>
+                <input value={order} onChange={(e) => setOrder(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={20} minLength={1} maxLength={2} />
+              </div>
             </div>
             
           </div>
@@ -394,10 +423,10 @@ export default function PositionTab() {
         {position.length > 1 && (
           <div className="btn-container flex items-center justify-center pt-3">
             {!isCreating 
-              ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={handleCreate}>
+              ? <button disabled={isCreating} className='flex items-center bg-orange-600 hover:bg-orange-700 rounded-lg py-2 px-7 text-white' onClick={handleCreate}>
                   <p className='pop-medium'>Create</p>   
                 </button>
-              : <button className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+              : <button disabled={isCreating} className='flex pop-medium items-center bg-orange-600 hover:bg-orange-700 rounded-lg py-2 px-3 text-white'>
                   Creating...
                   <Spin className='pl-1'/> 
                 </button>
@@ -417,18 +446,26 @@ export default function PositionTab() {
             
           <label className='pb-1 opacity-80 pt-10'>Position Name</label>
           <input value={modifyPosition} onChange={(e) => setModifyPosition(e.target.value)} type="text" className='py-1 px-3 text-lg focus:outline-indigo-400 rounded-md border-solid border-2 w-full' />
-          <div className=" py-5 flex flex-col">
-            <label className='pb-1 pt-5 opacity-80'>Required Winner</label>
-            <input value={modifyWinner} onChange={(e) => setModifyWinner(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={9} />
+          <div className=" py-5 flex justify-between">
+            <div className="winner flex flex-col">
+              <label className='pb-1 pt-5 opacity-80'>Required Winner</label>
+              <input value={modifyWinner} onChange={(e) => setModifyWinner(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={9} />
+            </div>
+            
+            <div className="order flex flex-col">
+              <label className='pb-1 pt-5 opacity-80'>Order</label>
+              <input value={modifyOrder} onChange={(e) => setModifyOrder(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={20} minLength={1} maxLength={2} />
+            </div>
+            
           </div>
 
           {/* UPDATE BUTTON */}
             <div className="cnt flex items-center justify-center p-5">
               {!isUpdating 
-                ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={handleUpdatePosition}>
+                ? <button disabled={isUpdating} className='flex text-white items-center bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-7' onClick={handleUpdatePosition}>
                     <p className='pop-medium'>Update</p>   
                   </button>
-                : <button disabled={isUpdating} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                : <button disabled={isUpdating} className='flex pop-medium text-white items-center bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-3'>
                     Updating...
                     <Spin className='pl-1'/> 
                   </button>
