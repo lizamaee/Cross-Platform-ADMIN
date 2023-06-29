@@ -172,13 +172,17 @@ export default function CVote() {
       if(isVoted?.data?.length === 0){
         const response = await axiosPrivate.get(`/seat/get-all-positions/${ballots.id}`);
         const data = response.data;
-        setPositions(data)
+        const sortPositionsByOrder = data?.sort((a: any, b: any) => a.position_order - b.position_order)
+
+        setPositions(sortPositionsByOrder)
         // setBallotID(ballots.id);
         setOpenModal(true);
       }else{
         const response = await axiosPrivate.get(`/seat/get-all-positions/${ballots.id}`);
         const data = response.data;
-        setResultBallot(data)
+        const sortPositionsByOrder = data?.sort((a: any, b: any) => a.position_order - b.position_order)
+
+        setResultBallot(sortPositionsByOrder)
         setOpenModalResult(true);
       }
     } catch (error) {

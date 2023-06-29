@@ -413,7 +413,7 @@ export default function PositionTab() {
               </div>
               <div className="order flex flex-col">
                 <label className='pb-1 pt-5 opacity-80'>Order</label>
-                <input value={order} onChange={(e) => setOrder(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={20} minLength={1} maxLength={2} />
+                <input value={order} defaultValue={"1"} onChange={(e) => setOrder(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={20} minLength={1} maxLength={2} />
               </div>
             </div>
             
@@ -454,7 +454,7 @@ export default function PositionTab() {
             
             <div className="order flex flex-col">
               <label className='pb-1 pt-5 opacity-80'>Order</label>
-              <input value={modifyOrder} onChange={(e) => setModifyOrder(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={20} minLength={1} maxLength={2} />
+              <input value={modifyOrder} defaultValue={"1"} onChange={(e) => setModifyOrder(e.target.value)} type="number" className='pop-medium text-lg text-center w-20 p-2 flex-grow-0 rounded-lg border-2 outline-none focus:border-indigo-400' min={1} max={20} minLength={1} maxLength={2} />
             </div>
             
           </div>
