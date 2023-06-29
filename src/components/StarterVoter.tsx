@@ -161,14 +161,14 @@ export default function ({profile,firstname}:StarterProp) {
                     {errorInfo.surname && <span className="text-red-400 text-center text-sm">{errorInfo.surname.message}</span>}
                 </div>
             </div>
-            <div className="grid grid-cols-2 md:gap-32 pop-regular ">
-                <div className="age">
+            <div className="grid sm:grid-cols-2 md:gap-32 pop-regular ">
+                <div className="age w-full">
                     <label className='pb-1 opacity-80 mt-8 block text-sm dark:text-gray-300'>Age</label>
                     <input {...infoRegister("age")} maxLength={2} minLength={1} type="text" className='bg-transparent py-4 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-16 text-center' />
                 </div>
-                <div className="year_level pop-regular">
+                <div className="year_level pop-regular w-full">
                     <label className='pb-1 opacity-80 mt-8 block text-sm dark:text-gray-300'>Year Level</label>
-                    <select {...infoRegister('year_level')} className=" bg-transparent dark:text-gray-100 rounded-lg focus:border-indigo-400 outline-none dark:border-zinc-700 border-2 py-4 px-4 ">
+                    <select {...infoRegister('year_level')} className="w-5/6 sm:w-full bg-transparent dark:text-gray-100 rounded-lg focus:border-indigo-400 outline-none dark:border-zinc-700 border-2 py-4 px-4 ">
                         <option className="bg-transparent rounded dark:bg-[#313131] dark:text-gray-300" value="">Select year level</option>
                         <option className="bg-transparent dark:bg-[#313131] dark:text-gray-300" value="1st Year">1st Year</option>
                         <option className="bg-transparent dark:bg-[#313131] dark:text-gray-300" value="2nd Year">2nd Year</option>
@@ -190,10 +190,10 @@ export default function ({profile,firstname}:StarterProp) {
             {/* SAVE BUTTON */}
             <div className="save-btn flex justify-end py-5">
                 {!isSaving 
-                ? <button type="submit" className='flex items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white py-2 px-7 rounded-full'>
+                ? <button type="submit" className='flex items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg hover:text-white py-2 px-5'>
                     <p className='pop-medium'>Save</p>   
                 </button>
-                : <button disabled={isSaving} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                : <button disabled={isSaving} className='flex pop-medium items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg py-2 px-3'>
                     Saving...
                     <Spin className='pl-1'/> 
                 </button>
