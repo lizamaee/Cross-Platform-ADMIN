@@ -632,7 +632,7 @@ export default function VSettings() {
                 : <select
                     {...profileRegister("year_level")}
                     defaultValue={year_level ?? "1st Year"}
-                    className=" bg-transparent dark:text-gray-100 rounded-lg focus:border-indigo-400 outline-none dark:border-zinc-700 border-2 py-4 px-4 "
+                    className="w-4/6 md:w-full bg-transparent dark:text-gray-100 rounded-lg focus:border-indigo-400 outline-none dark:border-zinc-700 border-2 py-4 px-4 "
                   >
                     <option
                       className="bg-transparent rounded dark:bg-[#313131] dark:text-gray-300"
@@ -693,14 +693,14 @@ export default function VSettings() {
                 {!isSaving ? (
                   <button
                     type="submit"
-                    className="flex items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white py-2 px-7 rounded-full"
+                    className="flex items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg py-2 px-5 sm:px-7"
                   >
                     <p className="pop-medium">Save</p>
                   </button>
                 ) : (
                   <button
                     disabled={isSaving}
-                    className="flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full"
+                    className="flex pop-medium items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg py-2 px-3"
                   >
                     Saving...
                     <Spin className="pl-1" />
@@ -712,7 +712,7 @@ export default function VSettings() {
         </form>
 
         {/* SECURITY */}
-        <div className="security py-4">
+        <div className="security py-3 sm:py-4">
           <h2 className="text-xl py-5 pop-bold">Security</h2>
 
           <p className="text-sm opacity-75 pop-light">Mobile Number</p>
@@ -720,11 +720,11 @@ export default function VSettings() {
             
             {voterQuery?.isLoading
               ? <div className="w-32 h-6 bg-gray-300 rounded-md dark:bg-gray-600 animate-pulse"></div>
-              : <h4 className="pop-regular">{number}</h4>
+              : <h4 className="pop-regular">{number?.slice(0,2).toString() + "*******"}</h4>
             }
             <button
               onClick={showNumberDrawer}
-              className="pop-regular text-sm underline text-blue-500"
+              className="pop-regular text-xs sm:text-sm underline text-blue-500"
             >
               Change
             </button>
@@ -735,7 +735,7 @@ export default function VSettings() {
             <h4 className="">••••</h4>
             <button
               onClick={showPinDrawer}
-              className="pop-regular text-sm underline text-blue-500"
+              className="pop-regular text-xs sm:text-sm underline text-blue-500"
             >
               Change
             </button>
@@ -922,14 +922,14 @@ export default function VSettings() {
                 <button
                   disabled={isSendingOtp}
                   type="submit"
-                  className="flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full"
+                  className="flex items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg py-2 px-7"
                 >
                   <p className="pop-medium">Send OTP</p>
                 </button>
               ) : (
                 <button
                   disabled={isSendingOtp}
-                  className="flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full"
+                  className="flex pop-medium items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg py-2 px-3"
                 >
                   Sending OTP...
                   <Spin className="pl-1" />
@@ -1037,14 +1037,14 @@ export default function VSettings() {
                 <button
                   disabled={isPinChanging}
                   type="submit"
-                  className="flex items-center border-2 border-[#1677ff] hover:bg-[#1677ff] hover:text-white text-[#1677ff] py-2 px-4 rounded-full"
+                  className="flex items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg py-2 px-4"
                 >
                   <p className="pop-medium">Change</p>
                 </button>
               ) : (
                 <button
                   disabled={isPinChanging}
-                  className="flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full"
+                  className="flex pop-medium items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg py-2 px-3"
                 >
                   Changing...
                   <Spin className="pl-1" />
@@ -1070,14 +1070,14 @@ export default function VSettings() {
                 onClick={handleResetSendOTP}
                 disabled={isResetSendingOTP}
                 type="submit"
-                className="flex items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white  py-1 px-3 rounded-xl"
+                className="flex items-center  text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg hover:text-white  py-1 px-3"
               >
                 <p className="pop-medium">Resend</p>
               </button>
             ) : (
               <button
                 disabled={isResetSendingOTP}
-                className="flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white py-1 px-3 rounded-xl"
+                className="flex pop-medium items-center  text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg hover:text-white py-1 px-3"
               >
                 Sending...
                 <Spin className="pl-1" />
@@ -1113,14 +1113,14 @@ export default function VSettings() {
                     <button
                       disabled={isResetOTPConfirming}
                       type="submit"
-                      className="flex items-center border-2 border-blue-400 text-blue-400 px-2 rounded-xl"
+                      className="flex items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg px-2"
                     >
                       <p className="pop-medium">Confirm</p>
                     </button>
                   ) : (
                     <button
                       disabled={isResetOTPConfirming}
-                      className="flex pop-medium items-center border-2 border-blue-400 text-blue-400 py-2 px-3 rounded-full"
+                      className="flex pop-medium items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg py-2 px-3"
                     >
                       Confirming...
                       <Spin className="pl-1" />
