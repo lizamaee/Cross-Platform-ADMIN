@@ -129,12 +129,12 @@ export default function VoterTab() {
                 {/* VOTERS */}
                 <div className="all-voters h-32 md:drop-shadow-md grid md:grid-cols-2 md:gap-2 px-3 place-items-center bg-[#ff9062] rounded-xl text-white text-center md:text-left">
                     <div className="icon-container text-center">
-                    {usersQuery.isLoading ? (
+                    {usersQuery?.isLoading ? (
                         <Skeleton.Avatar active shape='circle' size='large' />
                     ) : (
                         <div>
                         <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
-                            {adminFilter.length}
+                            {adminFilter?.length}
                         </h1>
                         </div>
                     )}
