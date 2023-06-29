@@ -748,3 +748,41 @@ export const useDeleteVoterAccount = () => {
       }
   })
 }
+
+//QUERY FOR GETTING A SINGLE BALLOT RESULT
+export const useSingleBallotResult = () => {
+  const axiosPrivate = useAxiosPrivate()
+  return useMutation({
+      mutationFn:async (id:string) => {
+          const response = await axiosPrivate.get(`/seat/get-all-positions/${id}`)
+          return response.data
+      },
+      onError: (error:any) => {
+          if (error.message === 'Network Error') {
+              message.open({
+                type: 'error',
+                content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data?.message){
+              message.open({
+                type: 'error',
+                content: `${error.response.data.message}`,
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            }else {
+              // Handle other errors
+              error.response.data.errors?.map((err:any) => {
+                message.open({
+                  type: 'error',
+                  content: `${err.msg}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                })
+              })
+            }
+      }
+  })
+}

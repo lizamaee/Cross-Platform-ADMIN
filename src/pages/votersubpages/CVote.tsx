@@ -1,7 +1,7 @@
 import { BsFillChatSquareDotsFill, BsFillSunFill, BsMoonFill } from "react-icons/bs";
 import { FiBell } from "react-icons/fi";
 import { useAuthStore } from "../../hooks/state";
-import { useCastVote, useOngoingElections } from "../../hooks/queries/useVoter";
+import { useCastVote, useOngoingElections, useSingleBallotResult } from "../../hooks/queries/useVoter";
 import { useState } from "react";
 import VoteModal from "../../components/VoteModal";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -155,11 +155,9 @@ export default function CVote() {
     return candidateElements;
   };
   
-
-  const [resultBallot, setResultBallot] = useState<Position[]>([])
-  
   const [openModalResult, setOpenModalResult] = useState<boolean>(false)
 
+  const {mutate:getSingleResultBallot, isLoading: isResultBallotLoading, data:resultBallotData} = useSingleBallotResult()
 
   const handleGetBallot = async (ballots: any, orgId:string) => {
     try {
@@ -178,12 +176,8 @@ export default function CVote() {
         // setBallotID(ballots.id);
         setOpenModal(true);
       }else{
-        const response = await axiosPrivate.get(`/seat/get-all-positions/${ballots.id}`);
-        const data = response.data;
-        const sortPositionsByOrder = data?.sort((a: any, b: any) => a.position_order - b.position_order)
-
-        setResultBallot(sortPositionsByOrder)
-        setOpenModalResult(true);
+        setOpenModalResult(true)
+        getSingleResultBallot(ballots.id)
       }
     } catch (error) {
       // Handle error here
@@ -331,7 +325,7 @@ export default function CVote() {
               {activeOrgs?.length === 0
                 ? <h3>No Active Organizations</h3>
                 : activeOrgs?.map((org:any, index: any) => (
-                  <div key={index} onClick={() => handleGetBallot(org.ballots[0], org.id)} className="org border-[1px] border-gray-200 dark:border-gray-600 overflow-hidden py-2 bg-gray-100 dark:bg-zinc-700 flex flex-col shadow-md rounded-2xl items-center">
+                  <div key={index} onClick={() => handleGetBallot(org.ballots[0], org.id)} className="org cursor-pointer hover:bg-gray-200 border-[1px] border-gray-200 dark:border-gray-600 overflow-hidden py-2 bg-gray-100 dark:bg-zinc-700 dark:hover:bg-zinc-600 flex flex-col shadow-md rounded-2xl items-center">
                     <img src={org.logo_url} alt={org.org_name + " "+ "Logo"} className='object-cover w-16 h-16  sm:w-24 sm:h-24 rounded-full' />
                     <h2 className="pop-medium text-center pt-3 dark:text-gray-300 text-sm">{org.org_name}</h2>
                     {/* DATE DISPLAY */}
@@ -397,7 +391,26 @@ export default function CVote() {
       {/* RESULT BALLOT MODAL */}
       <VoteModal title="Result" open={openModalResult} onClose={() => setOpenModalResult(false)}>
         <div className="result-ballot">
-          {resultBallot?.map((result: Position, index: any) => (
+          {isResultBallotLoading 
+            ? <div className={`result gap-10 p-5 mb-10 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg animate-pulse`}>
+                <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 rounded-lg mb-2 h-10"></h3>
+                <div className="candidates-result flex flex-col gap-3">
+                    <div className="candidate bg-[#E5E0FF] dark:bg-[#313131]  sm:pr-6 sm:rounded-l-[5rem] rounded-xl sm:rounded-br-[3rem] flex items-center justify-between flex-col sm:flex-row">
+                      <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
+                        <div className="gradientball w-[54px] h-[54px] sm:w-20 sm:h-20 bg-gradient-to-t from-blue-500 to-red-500 rounded-full absolute "></div>
+                        <div
+                          className="object-cover z-20 w-[50px] h-[50px] sm:w-[74px] sm:h-[74px] mt-[2px]  sm:ml-[3px] sm:mt-0 rounded-full"
+                        />
+                        <h3 className=""></h3>
+                      </div>
+                      <div className="candidate-votes flex flex-col items-center">
+                        <h4 className=""></h4>
+                        <h5 className=""></h5>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            : resultBallotData?.sort((a: any, b: any) => a.position_order - b.position_order).map((result: Position, index: any) => (
             <div key={index} className={`result gap-10 p-5 mb-10 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg`}>
               <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-sm sm:text-lg">
                 {result.position} 
@@ -426,7 +439,6 @@ export default function CVote() {
         </div>
       </VoteModal>
       {/* RESULT BALLOT MODAL */}
-
 
     </div>
   )
