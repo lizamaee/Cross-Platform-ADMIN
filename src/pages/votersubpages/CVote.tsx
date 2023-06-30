@@ -297,11 +297,11 @@ export default function CVote() {
 
   return (
     <div>
-      <h1 className="text-[#1c295d] dark:text-gray-300 text-xl pt-1 md:pt-5 text-center pop-bold">
+      <h1 className="text-[#1c295d] dark:text-gray-300 text-xl pt-1 md:pt-3 text-center pop-bold">
         Cast Vote
       </h1>
       {/* NOTIFICATION HEADER */}
-      <div className="notification pt-3 flex justify-end">
+      <div className="notification flex justify-end">
         <div className="icons flex items-center bg-white dark:bg-[#313131] shadow-md py-1 px-2 rounded-full justify-center gap-5">
           <div
             className="bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1"
