@@ -246,10 +246,10 @@ export default function VoterTab() {
                 {/* RECOVER BUTTON */}
                 <div className="btn-container flex items-center justify-center pt-3">
                     {!isRecovering
-                    ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={handleSubmit(handleRecover)}>
+                    ? <button className='flex items-center text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7' onClick={handleSubmit(handleRecover)}>
                         <p className='pop-medium'>Recover</p>   
                         </button>
-                    : <button disabled={isRecovering} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                    : <button disabled={isRecovering} className='flex pop-medium items-center  text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7'>
                         Recovering...
                         <Spin className='pl-1'/> 
                         </button>
@@ -277,10 +277,10 @@ export default function VoterTab() {
                 {/* DELETE BUTTON */}
                 <div className="btn-container flex items-center justify-center pt-3">
                     {!isDeleting
-                    ? <button className='flex items-center border-2 border-red-400 text-red-400 py-2 px-7 rounded-full' onClick={handleSubmitDelete(handleDelete)}>
+                    ? <button className='flex items-center pop-medium text-gray-100 bg-red-600 hover:bg-red-500 rounded-lg py-2 px-5 sm:px-7' onClick={handleSubmitDelete(handleDelete)}>
                         <p className='pop-medium'>Delete</p>   
                         </button>
-                    : <button disabled={isDeleting} className='flex pop-medium items-center border-2 border-red-400 text-red-400 py-2 px-3 rounded-full'>
+                    : <button disabled={isDeleting} className='flex pop-medium items-center text-gray-100 bg-red-600 hover:bg-red-500 rounded-lg py-2 px-5 sm:px-7'>
                         Deleting...
                         <Spin className='pl-1'/> 
                         </button>
