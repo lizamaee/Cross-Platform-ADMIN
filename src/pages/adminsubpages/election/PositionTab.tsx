@@ -375,7 +375,7 @@ export default function PositionTab() {
                       <Tooltip title='Delete' color='#f87171'>
                         <button
                           onClick={(e) => deleteIt(pos.id, pos.position)}
-                          className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-red-400  focus:outline-none`}
+                          className={`pop-medium text-center align-middle p-2 rounded-lg text-white bg-red-500  focus:outline-none`}
                         >
                           <RiDeleteBin5Fill />
                         </button>
@@ -386,7 +386,7 @@ export default function PositionTab() {
                           onClick={()=> {
                             openMultiDrawer(pos.id)
                           }}
-                          className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-blue-400  focus:outline-none`}
+                          className={`pop-medium text-center align-middle p-2 rounded-lg text-white bg-blue-500  focus:outline-none`}
                           >
                           <RiEditBoxFill />
                         </button>

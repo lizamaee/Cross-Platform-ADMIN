@@ -494,7 +494,7 @@ export default function OrganizationTab() {
                   <div key={index} className="card p-2 shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
                     {/* IMAGE DISPLAY */}
                     <div className="img-container w-full rounded-lg overflow-hidden">
-                      <img className='object-cover h-40 w-full' src={org.logo_url} alt="" />
+                      <img className='object-cover h-32 w-full' src={org.logo_url} alt="" />
                     </div>
                     {/* IMAGE DISPLAY */}
                     <h3 className='pop-semibold text-[#303030] dark:text-gray-200 text-center pt-3 pb-1'>{org.org_name}</h3>
@@ -523,7 +523,7 @@ export default function OrganizationTab() {
                       <Tooltip title='Delete' color='#f87171'>
                         <button
                           onClick={(e) => deleteIt(org.id, org.org_name)}
-                          className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-red-400 shadow-sm shadow-red-400 focus:outline-none`}
+                          className={`pop-medium text-center align-middle p-2 rounded-lg text-white bg-red-500 shadow-sm shadow-red-500 focus:outline-none`}
                         >
                           <RiDeleteBin5Fill />
                         </button>
@@ -534,7 +534,7 @@ export default function OrganizationTab() {
                           onClick={()=> {
                             openMultiDrawer(org.id)
                           }}
-                          className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-blue-400 shadow-sm shadow-blue-400 focus:outline-none`}
+                          className={`pop-medium text-center align-middle p-2 rounded-lg text-white bg-blue-500 shadow-sm shadow-blue-500 focus:outline-none`}
                           >
                           <RiEditBoxFill />
                         </button>

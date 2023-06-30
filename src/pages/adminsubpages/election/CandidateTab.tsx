@@ -362,7 +362,7 @@ export default function CandidateTab() {
                         <Tooltip title='Delete' color='#f87171'>
                           <button
                             onClick={(e) => deleteIt(can.id, can.fullname)}
-                            className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-red-400  focus:outline-none`}
+                            className={`pop-medium text-center align-middle p-2 rounded-lg text-white bg-red-500  focus:outline-none`}
                           >
                             <RiDeleteBin5Fill />
                           </button>
@@ -373,7 +373,7 @@ export default function CandidateTab() {
                             onClick={()=> {
                               openMultiDrawer(can.id)
                             }}
-                            className={`pop-medium text-center align-middle p-2 rounded-xl text-white bg-blue-400  focus:outline-none`}
+                            className={`pop-medium text-center align-middle p-2 rounded-lg text-white bg-blue-500  focus:outline-none`}
                             >
                             <RiEditBoxFill />
                           </button>

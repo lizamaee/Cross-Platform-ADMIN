@@ -528,7 +528,7 @@ export default function ElectionTab() {
                         <Tooltip title='Delete' color='#f87171'>
                           <button
                             onClick={(e) => deleteIt(elec.id, elec.title)}
-                            className={`pop-medium text-center align-middle p-1 md:p-2 rounded-lg md:rounded-xl text-white bg-red-400 shadow-sm shadow-red-400 focus:outline-none`}
+                            className={`pop-medium text-center align-middle p-1 md:p-2 rounded-lg text-white bg-red-500 shadow-sm shadow-red-500 focus:outline-none`}
                             >
                             <RiDeleteBin5Fill />
                           </button>
@@ -539,7 +539,7 @@ export default function ElectionTab() {
                             onClick={()=> {
                               openMultiDrawer(elec.id,elec.title)
                             }}
-                            className={`pop-medium text-center align-middle p-1 md:p-2 rounded-lg md:rounded-xl text-white bg-blue-400 shadow-sm shadow-blue-400 focus:outline-none`}
+                            className={`pop-medium text-center align-middle p-1 md:p-2 rounded-lg text-white bg-blue-500 shadow-sm shadow-blue-500 focus:outline-none`}
                             >
                             <RiEditBoxFill />
                           </button>
