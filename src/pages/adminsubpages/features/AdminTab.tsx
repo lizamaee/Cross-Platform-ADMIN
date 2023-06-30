@@ -350,10 +350,10 @@ export default function AdminTab() {
                     {/* PROMOTE BUTTON */}
                     <div className="btn-container flex items-center justify-center pt-7">
                         {!isPromoting
-                        ? <button type='submit' className='flex items-center border-2 border-blue-400 text-blue-400 py-2 px-7 rounded-full'>
+                        ? <button type='submit' className='flex items-center  text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7'>
                                 <p className='pop-medium'>Promote</p>   
                             </button>
-                        : <button disabled={isPromoting} className='flex pop-medium items-center border-2 border-blue-400 text-blue-400 py-2 px-3 rounded-full'>
+                        : <button disabled={isPromoting} className='flex pop-medium items-center  text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7'>
                             Promoting...
                                 <Spin className='pl-1'/> 
                             </button>
@@ -390,7 +390,7 @@ export default function AdminTab() {
                             <div className="cnt flex items-center h-12 w-10  justify-center">
                                 {isSingleLoading
                                     ? <Spin size='large' className=' pt-3 pb-1'/>
-                                    : <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] h-12 px-2 rou rounded-full box-border  hover:bg-[#1677ff] hover:text-white' onClick=   {handleSubmitSingle(handleUploadSingleId)}>
+                                    : <button className='flex items-center border-2 border-blue-800 text-blue-800 h-12 px-2 rou rounded-full box-border  hover:bg-blue-800 hover:text-white' onClick=   {handleSubmitSingle(handleUploadSingleId)}>
                                         <MdCloudUpload size={30}/> 
                                     </button>
                                 }
@@ -414,8 +414,8 @@ export default function AdminTab() {
                         {/* UPLOAD MULTIPLE BUTTON */}
                         <div className="btn flex items-center justify-center pt-5">
                             {isMultiLoading 
-                                ? <button disabled={isMultiLoading} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white rounded-full">Uploading...</button>
-                                : <button type='submit' disabled={isMultiLoading} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white rounded-full">Upload</button>
+                                ? <button disabled={isMultiLoading} className="pop-medium items-center text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7">Uploading...</button>
+                                : <button type='submit' disabled={isMultiLoading} className="pop-medium items-center text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7rounded-full">Upload</button>
                             }
                         </div>
                         {/* UPLOAD MULTIPLE BUTTON */}
@@ -431,7 +431,7 @@ export default function AdminTab() {
                 >
                 <div className="wrapp px-1 rounded-xl py-2 pop-regular mt-16 shadow-sm">
                     {/* UPLOAD ID VIA XLXS */}
-                    <button onClick={previewExcel} className="bg-gray-100 py-1 px-2 rounded-full border-blue-200 border-2">Preview</button>
+                    <button onClick={previewExcel} className=" text-gray-100 bg-blue-600 hover:bg-blue-500 rounded-lg py-1 px-3">Preview</button>
                     <form className="py-8 w-full">
                         <input type="file" className="block w-full text-sm text-slate-500
                         file:mr-4 file:py-2 file:px-4
@@ -469,8 +469,8 @@ export default function AdminTab() {
                         
                         <div className="btn flex items-center justify-center py-5">
                             {isUploading 
-                                ? <button disabled={isUploading} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white rounded-full">UPLOADING...</button>
-                                : <button onClick={handleSubmitXlsx(handleFileSubmit)} className=" py-2 px-3 pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white rounded-full">UPLOAD</button>}
+                                ? <button disabled={isUploading} className="pop-medium items-center  text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7">UPLOADING...</button>
+                                : <button onClick={handleSubmitXlsx(handleFileSubmit)} className="pop-medium items-center  text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7">UPLOAD</button>}
                         </div>
                         
                     </form>
