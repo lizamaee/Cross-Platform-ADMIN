@@ -716,10 +716,10 @@ export default function OrganizationTab() {
             {/* UPDATE BUTTON */}
               <div className="cnt flex items-center justify-center p-5">
                 {!isUpdating 
-                  ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={handleUpdateOrganization}>
+                  ? <button className='flex items-center text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7' onClick={handleUpdateOrganization}>
                       <p className='pop-medium'>Update</p>   
                     </button>
-                  : <button disabled={isUpdating} className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+                  : <button disabled={isUpdating} className='flex pop-medium items-center  text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7'>
                       Updating...
                       <Spin className='pl-1'/> 
                     </button>
