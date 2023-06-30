@@ -48,7 +48,7 @@ export default function VHome() {
             <h2 className="md:text-2xl pop-bold text-white tracking-widest">Welcome!</h2>
             <p className='text-xs break-all sm:pr-20 md:pr-32 text-white pop-regular pt-1 sm:text-sm'>Greetings dear student, your votes shape the future. Engage, express, and make a difference through our student voting system.</p>
             <div className="btn-vote-now flex justify-center pt-1 md:pt-4">
-              <Link to="/voter/cast-vote" className='bg-[#ffc739] transition duration-300 ease-in-out hover:bg-yellow-500 text-white pop-semibold rounded-full mt-2 p-1 sm:py-2 sm:px-4 text-center text-xs sm:text-sm md:text-md'>Participate Now</Link>
+              <Link to="/voter/cast-vote" className='bg-[#ffc739] transition duration-300 ease-in-out hover:bg-yellow-300 text-white pop-semibold rounded-lg shadow-md mt-2 p-1 sm:py-2 sm:px-4 text-center text-xs sm:text-sm md:text-md'>Participate Now</Link>
             </div>
           </div>
           <div className="welcome-animation lg:translate-x-6 lg:-translate-y-10 md:block absolute top-0 right-0 w-[50px] h-[50px] sm:w-[100px] sm:h-[100px] lg:w-[200px] lg:h-[200px]"  >
@@ -69,7 +69,7 @@ export default function VHome() {
               ? <span className='pt-3'>
                   <Skeleton.Input active />
                 </span>
-              : <h2 className='text-[#1c295d] dark:text-gray-200 text-lg pop-semibold pt-3 pb-1 tracking-wide capitalize'>{firstname === null ? "John Doe" : firstname + " " + surname}</h2>
+              : <h2 className='text-[#1c295d] text-center dark:text-gray-200 text-lg pop-semibold pt-3 pb-1 tracking-wide capitalize'>{firstname === null ? "John Doe" : firstname + " " + surname}</h2>
             }
             <h5 className='text-[#ccd2e3] dark:text-gray-500'>Student Voter</h5>
           </div>
@@ -97,11 +97,11 @@ export default function VHome() {
                     </div>
                   : <div className="elections-cards grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                       { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
-                          <div key={index} onClick={() => navigate('/voter/cast-vote') } className="ongoing cursor-pointer border-[1px] border-gray-200 dark:border-gray-600 dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
-                            <img src={ongoing.banner ?? cict} alt="cict logo" className='object-cover w-full h-32' />
-                            <h4 className='text-center py-3 pop-semibold dark:text-gray-200 text-lg'>{ongoing.title}</h4>
+                          <div key={index} onClick={() => navigate('/voter/cast-vote') } className="ongoing cursor-pointer border-[1px] border-gray-300 dark:border-gray-600 dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
+                            <img src={ongoing.banner ?? cict} alt="cict logo" className='object-cover w-full h-24' />
+                            <h4 className='text-center py-2 pop-semibold dark:text-gray-200 text-md sm:text-lg'>{ongoing.title}</h4>
                             {/* DATE DISPLAY */}
-                            <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-5 pop-regular">
+                            <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-4 pop-regular">
                                     <p className="">
                                       {new Date(ongoing.startDate).toLocaleDateString("en-US", {
                                         timeZone: "Asia/Manila",
