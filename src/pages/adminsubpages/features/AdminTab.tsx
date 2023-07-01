@@ -318,16 +318,32 @@ export default function AdminTab() {
                             </tr>
                         </thead>
                         <tbody>
-                            {adminFilter?.map((admin:any, index:any) => (
-                                <tr key={index} className="odd:bg-gray-100 dark:odd:bg-zinc-700 text-center">
-                                    <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.firstname ?? "John"}</td>
-                                    <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.mobile_number}</td>
-                                    <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.role}</td>
-                                    <td className="rounded-sm text-xs sm:text-sm py-2">
-                                        <button onClick={() => demoteIt(admin.student_id, admin.surname)} className='bg-yellow-400 dark:bg-yellow-500 opacity-100 text-xs md:text-sm py-1 px-2 rounded-lg hover:bg-yellow-500'>Demote</button>
+                            {usersQuery?.isLoading 
+                                ? <tr className="animate-pulse bg-gray-100 dark:bg-zinc-700 text-center">
+                                    <td className="rounded-sm py-2">
+                                        <button className='bg-gray-300 dark:bg-gray-500  py-3 px-9 rounded-md'></button>
+                                    </td>
+                                    <td className="rounded-sm py-2">
+                                        <button className='bg-gray-300 dark:bg-gray-500  py-3 px-9 rounded-md'></button>
+                                    </td>
+                                    <td className="rounded-sm py-2">
+                                        <button className='bg-gray-300 dark:bg-gray-500  py-3 px-9 rounded-md'></button>
+                                    </td>
+                                    <td className="rounded-sm py-2">
+                                        <button className='bg-yellow-400 dark:bg-yellow-500 opacity-100 py-3 px-9 rounded-lg hover:bg-yellow-500'></button>
                                     </td>
                                 </tr>
-                            ))}
+                                : adminFilter?.map((admin:any, index:any) => (
+                                    <tr key={index} className="odd:bg-gray-100 dark:odd:bg-zinc-700 text-center">
+                                        <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.firstname ?? "John"}</td>
+                                        <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.mobile_number}</td>
+                                        <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.role}</td>
+                                        <td className="rounded-sm text-xs sm:text-sm py-2">
+                                            <button onClick={() => demoteIt(admin.student_id, admin.surname)} className='bg-yellow-400 dark:bg-yellow-500   py-1 px-2 rounded-md hover:bg-yellow-500'>Demote</button>
+                                        </td>
+                                    </tr>
+                                ))
+                            }
                         </tbody>
                     </table>
                 </div>
