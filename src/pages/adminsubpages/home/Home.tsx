@@ -376,7 +376,19 @@ export default function Home(){
 
                   <h3 className="pop-normal w-full text-center text-sm tracking-wide pt-5 opacity-50 dark:text-gray-200">{activitiesError}</h3>
               )}
-              {!activitiesError && votedActivitiesQuery?.data?.activities?.map((activity: Activity) => (
+              {votedActivitiesQuery?.isLoading 
+                ? <div className="animate-pulse flex justify-between items-center shadow-sm py-1">
+                    <div
+                      className="w-6 h-6 bg-gray-300 dark:bg-gray-400 rounded-full"
+                    />
+                    <div className="flex flex-col gap-1">
+                      <div className="w-4 sm:w-10 h-3 rounded-sm bg-gray-300 dark:bg-gray-500"></div>
+                      <div className="w-8 sm:w-24 h-3 rounded-sm bg-gray-300 dark:bg-gray-500">
+                      </div>
+                    </div>
+                    <div className="w-8 sm:w-16 h-3 rounded-sm bg-emerald-300 dark:bg-emerald-600"></div>
+                  </div>
+                : votedActivitiesQuery?.data?.activities?.map((activity: Activity) => (
                   <div key={activity.id} className="activity flex justify-between items-center shadow-sm py-1 text-[#090650] dark:text-gray-400">
                     <img
                       className="object-cover w-6 h-6 rounded-full"
