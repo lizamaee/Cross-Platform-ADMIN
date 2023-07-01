@@ -24,13 +24,13 @@ export default function NavBar({ pageName}: navProp) {
           
         </span>
 
-        <span>
+        <span className='flex'>
           <Tooltip
             placement="bottom"
             title="This system is developed by Menard M. Pajares for CICT department of Taguig City University."
           >
             <span style={{ display: 'inline-block' }}>
-              <CgInfo className="text-[#a3aed0]" size={20} />
+              <CgInfo className="text-[#a3aed0]" size={23} />
             </span>
           </Tooltip>
         </span>
