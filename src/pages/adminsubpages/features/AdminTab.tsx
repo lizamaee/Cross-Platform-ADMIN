@@ -318,7 +318,7 @@ export default function AdminTab() {
                             </tr>
                         </thead>
                         <tbody>
-                            {adminFilter.map((admin:any, index:any) => (
+                            {adminFilter?.map((admin:any, index:any) => (
                                 <tr key={index} className="odd:bg-gray-100 dark:odd:bg-zinc-700 text-center">
                                     <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.firstname ?? "John"}</td>
                                     <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.mobile_number}</td>
