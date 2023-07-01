@@ -359,8 +359,23 @@ export default function Home(){
 
             <div className="card py-2 sm:p-10 bg-[#090650] dark:bg-[#4a4a4a] rounded-xl text-center text-white">
               <h2 className="pop-bold text-sm sm:text-2xl">
-                <span className="text-[#00ffdf]  dark:text-[#49ecd6]">{String(votedActivitiesQuery?.data?.count ?? "0")}</span>
-                <span className="pop-regular px-4">out of</span>{votersQuery?.data?.length}
+                <span className="text-[#00ffdf]  dark:text-[#49ecd6]">
+                  {votedActivitiesQuery?.isLoading ? (
+                    <Skeleton.Avatar active shape='circle' size='small' />
+                  ) : (
+                      <span className="md:pb-2">
+                        {String(votedActivitiesQuery?.data?.count ?? "0")}
+                      </span>
+                  )}
+                </span>
+                <span className="pop-regular px-4">out of</span>
+                  {votersQuery.isLoading ? (
+                    <Skeleton.Avatar active shape='circle' size='small' />
+                  ) : (
+                      <span className="md:pb-2">
+                        {votersQuery.data?.length}
+                      </span>
+                  )}
               </h2>
               <p className="opacity-50 text-sm sm:text-2xl">the votes used</p>
             </div>
