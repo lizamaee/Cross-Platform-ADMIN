@@ -631,10 +631,10 @@ export default function ElectionTab() {
         {image.length > 0 && (
           <div className="btn-container flex items-center justify-center pt-3">
             {!isCreating 
-              ? <button className='flex items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-7 rounded-full' onClick={handleCreateElection}>
+              ? <button className='flex items-center text-gray-100 bg-[#2F92F0] hover:bg-[#2F92F0] rounded-lg py-2 px-5 sm:px-7' onClick={handleCreateElection}>
                   <p className='pop-medium'>Create</p>   
                 </button>
-              : <button className='flex pop-medium items-center border-2 border-[#1677ff] text-[#1677ff] py-2 px-3 rounded-full'>
+              : <button className='flex pop-medium items-centertext-gray-100 bg-[#2F92F0] hover:bg-[#2F92F0] rounded-lg py-2 px-5 sm:px-7'>
                   Creating...
                   <Spin className='pl-1'/> 
                 </button>
