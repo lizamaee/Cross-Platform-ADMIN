@@ -346,7 +346,7 @@ export default function CVote() {
           </div>
 
           <div className="elections p-5">
-            {ongoingElectionsQuery?.data === undefined ? (
+            {ongoingElectionsQuery?.data?.length === 0 ? (
               <div className="no-ongoingx">
                 <div className="h4 text-gray-400 pop-regular text-sm text-center ">
                   No ongoing Election.
