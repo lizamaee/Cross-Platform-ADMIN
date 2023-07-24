@@ -56,7 +56,7 @@ export default function OrganizationTab() {
   }, [organizationsQuery, status])
 
   //SORT ORGANIZATION ARRAY IN DESCENDING ORDER
-  const descendingOrganizations = byStatus.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  const descendingOrganizations = byStatus?.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   
   //CALL BACK TO FIRE WHEN FILE IS DRAGGED INSIDE DROPZONE
   const onDrop = React.useCallback((acceptedFiles: any) => {

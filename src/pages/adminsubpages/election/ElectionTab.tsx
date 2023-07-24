@@ -56,7 +56,7 @@ export default function ElectionTab() {
   }, [electionsQuery, status])
   
   //SORT ELECTION ARRAY IN DESCENDING ORDER
-  const descendingElections = byStatus.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const descendingElections = byStatus?.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   //CALL BACK TO FIRE WHEN FILE IS DRAGGED INSIDE DROPZONE
   const onDrop = useCallback((acceptedFiles: any) => {
