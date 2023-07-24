@@ -96,11 +96,11 @@ export default function ElectionTab() {
 
   //THUMBNAIL OR PREVIEW OF SELECTED IMAGE
   const thumbs = image.map((file:any) => (
-    <div className='w-full p-3 flex justify-center' key={file.name}>
+    <div className='w-full p-3 border-2 mt-3 rounded-lg flex justify-center' key={file.name}>
       <div className=''>
         <img
           src={file.preview}
-          className='h-32'
+          className='h-32 rounded-lg'
           onLoad={() => { URL.revokeObjectURL(file.preview) }}
         />
         <h3 className='text-center pt-3 opacity-80'>Preview</h3>
@@ -653,7 +653,7 @@ export default function ElectionTab() {
               ? <button className='flex items-center text-gray-100 bg-[#2F92F0] hover:bg-[#2F92F0] rounded-lg py-2 px-5 sm:px-7' onClick={handleCreateElection}>
                   <p className='pop-medium'>Create</p>   
                 </button>
-              : <button className='flex pop-medium items-centertext-gray-100 bg-[#2F92F0] hover:bg-[#2F92F0] rounded-lg py-2 px-5 sm:px-7'>
+              : <button className='flex pop-medium items-center text-gray-100 bg-[#2F92F0] hover:bg-[#2F92F0] rounded-lg py-2 px-5 sm:px-7'>
                   Creating...
                   <Spin className='pl-1'/> 
                 </button>
