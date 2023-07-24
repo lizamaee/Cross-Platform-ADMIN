@@ -707,7 +707,7 @@ export default function AccountTab() {
               
               {voterQuery?.isLoading
                 ? <div className="w-32 h-6 bg-gray-300 rounded-md dark:bg-gray-600 animate-pulse"></div>
-                : <h4 className="pop-regular">{number?.slice(0,2).toString() + "*******"}</h4>
+                : <h4 className="pop-regular">{number !== undefined ? number?.slice(0,2).toString() + "*******" : "09*******" }</h4>
               }
               <button
                 onClick={showNumberDrawer}
