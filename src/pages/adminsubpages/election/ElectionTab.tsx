@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {BsPlus} from 'react-icons/bs'
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ import { TiWarning } from 'react-icons/ti';
 import { useDropzone } from 'react-dropzone';
 import { FaCamera } from 'react-icons/fa';
 import axios from 'axios';
+import Radio, { RadioGroup } from '../../../components/Radio';
 
 interface DataType {
   id: string;
@@ -37,6 +38,7 @@ export default function ElectionTab() {
   const navigate = useNavigate()
   const location = useLocation()
   const [image, setImage] = useState([])
+  const [status, setStatus] = useState("upcoming");
   
   //ELECTOIN QUERY HOOKS
   //GET ALL
@@ -45,9 +47,16 @@ export default function ElectionTab() {
   const { mutate: createElection} = useCreateElection()
   //DELETE SINGLE
   const { mutate: deleteElection, isLoading: isDeletingElection} = useDeleteElection()
+
+  //SORT BY STATUS
+  const byStatus = useMemo(() => {
+    return electionsQuery?.data?.filter((elec:any) => {
+        return elec.status === status.toLowerCase()
+    })
+  }, [electionsQuery, status])
   
   //SORT ELECTION ARRAY IN DESCENDING ORDER
-  const descendingElections = electionsQuery?.data?.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const descendingElections = byStatus.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   //CALL BACK TO FIRE WHEN FILE IS DRAGGED INSIDE DROPZONE
   const onDrop = useCallback((acceptedFiles: any) => {
@@ -488,12 +497,22 @@ export default function ElectionTab() {
       </div>
       {/* CREATE BUTTON */}
 
+      <div className="flex items-center py-3 sm:py-2 px-1 mx-4 sm:mx-5 w-full overflow-x-auto centered">
+        <RadioGroup value={status} onChange={(e:any) => setStatus(e.target.value)}>
+          <div className="flex gap-2 justify-center">
+            <Radio value="upcoming">Upcoming</Radio>
+            <Radio value="ongoing">Ongoing</Radio>
+            <Radio value="ended">Ended</Radio>
+          </div>
+        </RadioGroup>
+      </div>
+
       {/* ALL ORGANIZATIONS */}
       <div className="container centered w-full mx-auto p-4 overflow-x-auto">
         {electionsQuery.status === 'error' || electionsQuery.data?.[0]?.error === 'Network Error'
             ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
             : descendingElections?.length === 0 
-                ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Elections</h4>
+                ? <h4 className='text-gray-400 opacity-90 border-2 dark:border-gray-400 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1 capitalize'>No {status}</h4>
                 : <div className="grid items-center gap-5">
                   {descendingElections?.map((elec:DataType, index: any) =>(
                     <div key={index} className="card relative gap-2 py-2 px-4 shadow-md bg-gray-100 rounded-md dark:bg-[#2a2a2a] flex flex-cols-2">
