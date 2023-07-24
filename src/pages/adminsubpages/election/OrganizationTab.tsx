@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {BsPlus} from 'react-icons/bs'
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -16,6 +16,7 @@ import { DownOutlined } from '@ant-design/icons';
 import { useCreateOrganization, useDeleteOrganization, useOrganizations, useUpdateOrganization } from '../../../hooks/queries/useOrganization';
 import DeleteMe from '../../../components/DeleteMe';
 import { TiWarning } from 'react-icons/ti';
+import Radio, { RadioGroup } from '../../../components/Radio';
 
 interface DataType {
   id: string;
@@ -37,6 +38,7 @@ export default function OrganizationTab() {
   const axiosPrivate = useAxiosPrivate()
   const navigate = useNavigate()
   const location = useLocation()
+  const [status, setStatus] = useState("upcoming");
 
   //ORGANIZATION HOOKS
   //GET ALL
@@ -46,8 +48,15 @@ export default function OrganizationTab() {
   //DELETE SINGLE
   const { mutate: deleteOrganization, isLoading: isDeletingOrg} = useDeleteOrganization()
 
+  //SORT BY STATUS
+  const byStatus = useMemo(() => {
+    return organizationsQuery?.data?.filter((org:any) => {
+        return org.org_status === status.toLowerCase()
+    })
+  }, [organizationsQuery, status])
+
   //SORT ORGANIZATION ARRAY IN DESCENDING ORDER
-  const descendingOrganizations = organizationsQuery.data?.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  const descendingOrganizations = byStatus.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   
   //CALL BACK TO FIRE WHEN FILE IS DRAGGED INSIDE DROPZONE
   const onDrop = React.useCallback((acceptedFiles: any) => {
@@ -483,12 +492,22 @@ export default function OrganizationTab() {
       </div>
       {/* CREATE BUTTON */}
 
+      <div className="flex items-center py-3 sm:py-2 px-1 mx-4 sm:mx-5 w-full overflow-x-auto centered">
+        <RadioGroup value={status} onChange={(e:any) => setStatus(e.target.value)}>
+          <div className="flex gap-2 justify-center">
+            <Radio value="upcoming">Upcoming</Radio>
+            <Radio value="ongoing">Ongoing</Radio>
+            <Radio value="ended">Ended</Radio>
+          </div>
+        </RadioGroup>
+      </div>
+
       {/* ALL ORGANIZATIONS */}
       <div className="container w-full mx-auto p-4 overflow-x-auto">
         {organizationsQuery.status === 'error' || organizationsQuery.data?.[0]?.error === 'Network Error'
             ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
             : descendingOrganizations?.length === 0 
-                ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Organization</h4>
+                ? <h4 className='text-gray-400 opacity-90 border-2 dark:border-gray-400 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1 capitalize'>No {status}</h4>
                 : <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
                 {descendingOrganizations?.map((org:DataType, index: any) =>(
                   <div key={index} className="card p-2 shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
