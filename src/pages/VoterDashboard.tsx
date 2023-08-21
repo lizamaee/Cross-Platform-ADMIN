@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { RiHistoryLine, RiSettings2Fill } from "react-icons/ri";
 import { BsShieldLockFill } from "react-icons/bs";
@@ -25,7 +25,7 @@ export default function VoterDashboard() {
   async function handleLogout(){
     await logout()
     localStorage.removeItem('student_id')
-    console.log("Logged out")
+    //console.log("Logged out")
     navigate("/login", {replace: true})
   }
   
@@ -35,6 +35,19 @@ export default function VoterDashboard() {
   const surname = voterQuery?.data?.voter?.surname 
   const profile_picture = voterQuery?.data?.voter?.profile_picture ?? blank
   
+
+  useEffect(() => {
+    const handlePopState = () => {
+      window.history.pushState(null, document.title, window.location.href);
+    };
+
+    window.history.pushState(null, document.title, window.location.href);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   return (
     <div className="container md:overflow-hidden h-screen max-w-screen-2xl md:flex">

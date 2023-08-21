@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { RiSettings2Line } from "react-icons/ri";
 import { BiHomeAlt } from "react-icons/bi";
@@ -20,9 +20,22 @@ export default function Dashboard() {
   async function handleLogout(){
     await logout()
     localStorage.removeItem('student_id')
-    console.log("Logged out")
+    //console.log("Logged out")
     navigate("/login", {replace: true})
   }
+
+  useEffect(() => {
+    const handlePopState = () => {
+      window.history.pushState(null, document.title, window.location.href);
+    };
+
+    window.history.pushState(null, document.title, window.location.href);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
 
   return (
