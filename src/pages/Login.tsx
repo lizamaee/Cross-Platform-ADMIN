@@ -2,13 +2,14 @@ import { useState } from "react";
 import tcu from "../images/bg.png";
 import { loginadmin } from "../api/auth"
 import { useAuthStore } from "../hooks/state";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaEyeSlash,FaEye } from 'react-icons/fa';
 import { NavLink } from "react-router-dom";
 import { z, ZodType } from 'zod'
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { message } from "antd";
+import { CgChevronLeftR } from "react-icons/cg";
 
 type LoginFormData = {
   student_id: string;
@@ -85,8 +86,13 @@ export default function Login() {
     <div className="md:flex md:items-center md:justify-center md:min-h-screen md:p-10 font-medium text-lg">
       <form
         onSubmit={handleSubmit(handleLogin)}
-        className=" bg-[#E5E0FF] dark:bg-[#2b2b2b] dark:text-gray-200 md:rounded-3xl overflow-hidden text-[#3C486B] pb-5 md:shadow-2xl md:max-w-md"
+        className=" bg-[#E5E0FF] relative dark:bg-[#2b2b2b] dark:text-gray-200 md:rounded-3xl overflow-hidden text-[#3C486B] pb-5 md:shadow-2xl md:max-w-md"
       >
+        <div onClick={() => {
+          navigate('/')
+        }} className="btn-back absolute top-7 left-7">
+          <CgChevronLeftR className="text-[#938dff] h-8 w-8"/>
+        </div>
         <img className="" src={tcu} height={400} alt="Taguig City University" />
         <div className="inputs-container -translate-y-10 md:translate-y-0 bg-[#E5E0FF] dark:bg-[#2b2b2b] rounded-[50px] md:rounded-t-0">
           <div className=" flex flex-col p-5">

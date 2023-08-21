@@ -3,11 +3,12 @@ import {ReactComponent as Recoverpass} from '../assets/recoverpass.svg'
 import { ZodType, z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { TbInfoSquareRoundedFilled, TbSquareRoundedArrowLeft } from 'react-icons/tb';
+import { TbInfoSquareRoundedFilled } from 'react-icons/tb';
 import { Link, useNavigate } from 'react-router-dom';
 import { forgotPasswordSendOTP } from '../api/auth';
 import { Popover, message } from 'antd';
 import { useAuthStore } from '../hooks/state';
+import { CgChevronLeftR } from 'react-icons/cg';
 
 type NumberFormData = {
   mobile_number: string;
@@ -133,7 +134,7 @@ export default function FPassword() {
   return (
     <div className='flex w-full flex-col items-center pt-14 sm:px-10'>
       <Link to="/login" className='absolute top-8 left-8 md:top-10 md:left-16'>
-        <TbSquareRoundedArrowLeft className='opacity-80 h-9 w-9 md:h-12 md:w-12 text-[#4C7CE5]'/>
+        <CgChevronLeftR className='opacity-80 h-9 w-9 md:h-12 md:w-12 text-[#4C7CE5]'/>
       </Link>
       <div className="label-for-number flex items-center flex-col md:w-[70%] pt-10">
         <Recoverpass className='h-32 sm:h-40 drop-shadow-xl'/>
