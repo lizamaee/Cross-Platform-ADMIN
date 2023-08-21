@@ -3,12 +3,13 @@ import OtpInput from 'react-otp-input';
 import otpImage from '../images/otp.png'
 import { confirmNumberSendOTP, confirmNumberVerifyOTP } from '../api/auth';
 import { useAuthStore } from '../hooks/state';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { message, Popover,Button, Modal  } from 'antd';
 import {TbInfoSquareRoundedFilled} from 'react-icons/tb'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { ZodType, z } from 'zod';
+import { CgChevronLeftR } from 'react-icons/cg';
 
 type MobileFormData = {
   mobile_number: string;
@@ -224,10 +225,12 @@ export default function MVerification() {
   };
 
   return (
-    <div className='w-full px-3'>
+    <div className='w-full px-4 sm:px-5'>
+      <Link to="/register" replace className='absolute top-8 left-8 md:top-10 md:left-16'>
+        <CgChevronLeftR className='opacity-80 h-9 w-9 md:h-12 md:w-12 text-[#4C7CE5]'/>
+      </Link>
       <div className="head flex flex-col items-center pt-20">
         <img className='w-36 md:w-40' src={otpImage} alt="OTP Image illustration" />
-        
       </div>
       
       <div className="otp-wrapper  w-full flex flex-col items-center sm:px-10">
@@ -257,7 +260,7 @@ export default function MVerification() {
             renderInput={(props) => 
               <input {...props}
               />}
-            containerStyle={"gap-2 md:gap-5 flex grow"}
+            containerStyle={"gap-2 md:gap-5 flex justify-center grow"}
             inputStyle={"box-content p-2 sm:p-3 md:p-4 rounded-lg text-xl md:text-3xl dark:text-gray-400 pop-bold bg-[#D2CEE6] dark:bg-[#232323] shadow-md"}
             inputType='tel'
           />
