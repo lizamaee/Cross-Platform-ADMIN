@@ -263,6 +263,46 @@ export const useOngoingElections = () =>{
   }) 
 } 
 
+//QUERY FOR GETTING ALL PARTICIPATED ELECTIONS (For History)
+export const useHistory = (student_id:string) =>{
+  const axiosPrivate = useAxiosPrivate()
+  return useQuery({
+      queryKey: ['history'], 
+      queryFn: async () => {
+        try {
+          const response = await axiosPrivate.get(`election/participated-election-history/${student_id}`)
+          return response.data
+        } catch (error:any) {
+            if (error.message === 'Network Error') {
+                message.open({
+                  type: 'error',
+                  content: 'Server Unavailable',
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                });
+              } else if(error.response.data?.message){
+                message.open({
+                  type: 'error',
+                  content: `${error.response.data.message}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                });
+              }else {
+                // Handle other errors
+                error.response.data.errors?.map((err:any) => {
+                  message.open({
+                    type: 'error',
+                    content: `${err.msg}`,
+                    className: 'custom-class pop-medium',
+                    duration: 2.5,
+                  })
+                })
+              } 
+        }
+      },
+  }) 
+} 
+
 //QUERY FOR CASTING CONNECTIONS & VOTES
 export const useCastVote= () => {
   const queryClient = useQueryClient()
