@@ -38,20 +38,62 @@ export default function CVote() {
   const { isNight, student_id, switchMode } = useAuthStore((state) => state);
   const [selectedOrganizationID, setSelectedOrganizationID] =
     useState<string>("");
-  const [selectedElectionID, setSelectedElectionID] = useState<string>("");
 
   //ONGOING ELECTIONS QUERY HOOK
   const ongoingElectionsQuery = useOngoingElections();
 
   //SHOW ORGANIZATIONS
-  const handleActiveOrganizations = (id: string) => {
-    setSelectedElectionID(id);
+  const handleActiveOrganizations = async (id: string) => {
+
+    //Only append once
+    await appendElectionToUser(id)
+
     const orgs = ongoingElectionsQuery?.data?.filter(
       (elec: any) => elec.id === id
     );
     setActiveOrgs(orgs[0]?.organizations);
     setIsActiveOrgs(true);
   };
+
+  //APPEND CLICKED ELECTION TO USER
+  const appendElectionToUser = async (election_id: string) => {
+    const connectElectionToVoter = {
+      election_id,
+      student_id
+    }
+
+    await axiosPrivate.patch('election/connect-voter-election', connectElectionToVoter)
+    .then((response) => {
+        console.log(response.data)
+    })
+    .catch((error) => {
+        if (error.message === 'Network Error') {
+          message.open({
+            type: 'error',
+            content: 'Server Unavailable',
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        } else if(error.response.data?.message){
+          message.open({
+            type: 'error',
+            content: `${error.response.data.message}`,
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        }else {
+          // Handle other errors
+          error.response.data.errors?.map((err:any) => {
+            message.open({
+              type: 'error',
+              content: `${err.msg}`,
+              className: 'custom-class pop-medium',
+              duration: 2.5,
+            })
+          })
+        }
+    });
+  }
 
   //GET BALLOT
   const axiosPrivate = useAxiosPrivate();
