@@ -15,6 +15,7 @@ import VoteModal from "../../components/VoteModal";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Tag, message } from "antd";
 import cict from "../../images/cict.jpg";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Position = {
   id: string;
@@ -45,16 +46,19 @@ export default function CVote() {
   //SHOW ORGANIZATIONS
   const handleActiveOrganizations = async (id: string) => {
 
-    //Only append once
-    await appendElectionToUser(id)
-
+    
     const orgs = ongoingElectionsQuery?.data?.filter(
       (elec: any) => elec.id === id
-    );
-    setActiveOrgs(orgs[0]?.organizations);
-    setIsActiveOrgs(true);
-  };
+      );
+      setActiveOrgs(orgs[0]?.organizations);
+      setIsActiveOrgs(true);
+    
+    //Only append once
+    await appendElectionToUser(id)
+    };
 
+    const queryClient = useQueryClient()
+    
   //APPEND CLICKED ELECTION TO USER
   const appendElectionToUser = async (election_id: string) => {
     const connectElectionToVoter = {
@@ -64,10 +68,9 @@ export default function CVote() {
 
     await axiosPrivate.patch('election/connect-voter-election', connectElectionToVoter)
     .then((response) => {
-        //console.log(response.data)
     })
     .catch((error) => {
-        if (error.message === 'Network Error') {
+      if (error.message === 'Network Error') {
           message.open({
             type: 'error',
             content: 'Server Unavailable',
@@ -92,11 +95,15 @@ export default function CVote() {
             })
           })
         }
-    });
-  }
-
-  //GET BALLOT
-  const axiosPrivate = useAxiosPrivate();
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['history'],
+        exact: true
+      })
+    }
+    
+    //GET BALLOT
+    const axiosPrivate = useAxiosPrivate();
   //Vote Modal state
   const [openModal, setOpenModal] = useState<boolean>(false);
 
