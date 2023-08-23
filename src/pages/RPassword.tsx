@@ -42,9 +42,6 @@ export default function RPassword() {
     };
 
     const handleConfirm = async (data: ResetPasswortForm) => {
-        console.log(data.password);
-        console.log(tempMobileNumber);
-        
         try {
           setIsConfirming(true)
           
