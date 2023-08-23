@@ -48,7 +48,7 @@ export default function VHome() {
             <h2 className="md:text-2xl pop-bold text-white tracking-widest">Welcome!</h2>
             <p className='text-xs break-all sm:pr-20 md:pr-32 text-white pop-regular pt-1 sm:text-sm'>Greetings dear student, your votes shape the future. Engage, express, and make a difference through our student voting system.</p>
             <div className="btn-vote-now flex justify-center pt-1 md:pt-4">
-              <Link to="/voter/cast-vote" className='bg-[#ffc739] transition duration-300 ease-in-out hover:bg-yellow-300 text-white pop-semibold rounded-lg shadow-md mt-2 p-1 sm:py-2 sm:px-4 text-center text-xs sm:text-sm md:text-md'>Participate Now</Link>
+              <Link to="/voter/cast-vote" className='bg-[#ffc739] transition duration-300 ease-in-out hover:bg-yellow-300 text-white pop-semibold rounded-lg shadow-md mt-2 p-1 sm:py-2 sm:px-4 text-center text-[0.7em] sm:text-sm md:text-md'>Participate Now</Link>
             </div>
           </div>
           <div className="welcome-animation lg:translate-x-6 lg:-translate-y-10 md:block absolute top-0 right-0 w-[50px] h-[50px] sm:w-[100px] sm:h-[100px] lg:w-[200px] lg:h-[200px]"  >
