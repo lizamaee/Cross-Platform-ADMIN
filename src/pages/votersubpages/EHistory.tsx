@@ -30,11 +30,11 @@ export default function EHistory() {
       <div className="history shadow-md overflow-hidden sm:p-5 mt-3 rounded-lg text-gray-800 dark:text-gray-300 bg-white dark:bg-[#313131]">
         <div className="elections sm:p-5">
           <div className="h3 pop-medium">
-            {participatedElectionsQuery?.data?.elections?.length === 0 
+            {participatedElectionsQuery?.data?.length === 0 
               ? <h3 className='text-center text-gray-400'>No election history</h3>
               : participatedElectionsQuery?.data?.map((election:any) => (
                 
-                <div key={election.id} className="election shadow-md pop-medium flex flex-col px-4 py-2 rounded-lg bg-gray-200 dark:bg-zinc-700">
+                <div key={election.id} className="election hover:opacity-90 shadow-md pop-medium flex flex-col px-4 py-2 rounded-lg bg-gray-200 dark:bg-zinc-700">
                   <p className="text-[10px]">Title</p>
                   <div className="title w-full pb-1 flex justify-between items-baseline">
                     <h3 className='pop-semibold'>{election.title}</h3>

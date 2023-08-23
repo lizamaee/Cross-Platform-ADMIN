@@ -64,7 +64,7 @@ export default function CVote() {
 
     await axiosPrivate.patch('election/connect-voter-election', connectElectionToVoter)
     .then((response) => {
-        console.log(response.data)
+        //console.log(response.data)
     })
     .catch((error) => {
         if (error.message === 'Network Error') {
