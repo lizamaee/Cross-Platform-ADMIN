@@ -4,7 +4,7 @@ import { RiHistoryLine, RiSettings2Fill } from "react-icons/ri";
 import { BsShieldLockFill } from "react-icons/bs";
 import { FaVoteYea } from "react-icons/fa";
 import { HiHome, HiOutlineLogout, HiUserGroup } from "react-icons/hi";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, NavLink} from "react-router-dom";
 import useLogout from "../hooks/useLogout";
 import { useAuthStore } from "../hooks/state";
 import { useVoter } from "../hooks/queries/useAdmin";
@@ -16,7 +16,6 @@ import blank from '../images/blank.jpg'
 export default function VoterDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { student_id } = useAuthStore((state) => state)
-  const navigate = useNavigate()
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -25,8 +24,7 @@ export default function VoterDashboard() {
   async function handleLogout(){
     await logout()
     localStorage.removeItem('student_id')
-    //console.log("Logged out")
-    navigate("/login", {replace: true})
+    window.location.reload()
   }
   
   const voterQuery = useVoter(student_id)

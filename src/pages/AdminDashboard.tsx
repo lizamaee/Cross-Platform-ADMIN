@@ -5,13 +5,12 @@ import { BiHomeAlt } from "react-icons/bi";
 import { BsCalendarEvent,BsListStars } from "react-icons/bs";
 import { MdOutlineHowToVote } from "react-icons/md";
 import { HiOutlineLogout } from "react-icons/hi";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 import useLogout from "../hooks/useLogout";
 import { IoMenu } from "react-icons/io5";
 
 export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const navigate = useNavigate()
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -20,8 +19,7 @@ export default function Dashboard() {
   async function handleLogout(){
     await logout()
     localStorage.removeItem('student_id')
-    //console.log("Logged out")
-    navigate("/login", {replace: true})
+    window.location.reload()
   }
 
   useEffect(() => {
