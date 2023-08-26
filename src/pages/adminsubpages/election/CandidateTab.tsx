@@ -431,7 +431,7 @@ export default function CandidateTab() {
               ? <button className='flex items-center text-gray-100 bg-[#a75de1] hover:bg-[#a75de1] rounded-lg py-2 px-5 sm:px-7' onClick={handleCreate}>
                   <p className='pop-medium'>Create</p>   
                 </button>
-              : <button className='flex pop-medium items-centertext-gray-100 bg-[#a75de1] hover:bg-[#a75de1] rounded-lg py-2 px-5 sm:px-7'>
+              : <button className='flex pop-medium items-center text-gray-100 bg-[#a75de1] hover:bg-[#a75de1] rounded-lg py-2 px-5 sm:px-7'>
                   Creating...
                   <Spin className='pl-1'/> 
                 </button>

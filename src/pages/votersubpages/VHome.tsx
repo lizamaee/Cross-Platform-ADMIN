@@ -69,7 +69,7 @@ export default function VHome() {
               ? <span className='pt-3'>
                   <Skeleton.Input active />
                 </span>
-              : <h2 className='text-[#1c295d] text-center dark:text-gray-200 text-lg pop-semibold pt-3 pb-1 tracking-wide capitalize'>{firstname === null ? "John Doe" : firstname + " " + surname}</h2>
+              : <h2 className='text-[#1c295d] text-center dark:text-gray-200 text-lg pop-semibold pt-3 pb-1 tracking-wide capitalize'>{firstname === null || firstname === undefined ? "John Doe" : firstname + " " + surname}</h2>
             }
             <h5 className='text-[#ccd2e3] dark:text-gray-500'>Student Voter</h5>
           </div>
