@@ -121,7 +121,7 @@ export default function EHistory() {
               ? <h3 className='text-center text-gray-400'>No election history</h3>
               : participatedElectionsQuery?.data?.map((election:any) => (
                 
-                <button disabled={election.status === "ongoing"} key={election.id} onClick={() => handleSingleHistory(election.id, election.status)} className={`election w-full hover:opacity-90 shadow-md pop-medium flex flex-col px-4 py-2 rounded-lg bg-gray-200 dark:bg-zinc-700 ${election.status === "ended" ? 'cursor-pointer' : 'cursor-not-allowed' }`}>
+                <button disabled={election.status === "ongoing"} key={election.id} onClick={() => handleSingleHistory(election.id, election.status)} className={`election mb-3 w-full hover:opacity-90 shadow-md pop-medium flex flex-col px-4 py-2 rounded-lg bg-gray-200 dark:bg-zinc-700 ${election.status === "ended" ? 'cursor-pointer' : 'cursor-not-allowed' }`}>
                   <p className="text-[10px]">Title</p>
                   <div className="title w-full pb-1 flex justify-between items-baseline">
                     <h3 className='pop-semibold'>{election.title}</h3>
