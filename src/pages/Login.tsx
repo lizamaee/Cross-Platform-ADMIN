@@ -23,7 +23,7 @@ export default function Login() {
 
   const schema: ZodType<LoginFormData> = z.object({
     student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7),
-    password: z.string().min(14, {message: "Password must contain at least 14 character(s)"}).max(30),
+    password: z.string().min(4, {message: "Password must contain at least 4 character(s)"}).max(30),
 
   })
 

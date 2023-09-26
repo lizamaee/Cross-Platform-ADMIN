@@ -27,10 +27,7 @@ export default function Register() {
 
   const schema: ZodType<RegisterFormData> = z.object({
     student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7),
-    password: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/, {
-      message:
-        "Password must contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character",
-    }).min(14, {message: "Password must contain at least 14 character(s)"}).max(30),
+    password: z.string().min(4, {message: "Password must contain at least 4 character(s)"}).max(30),
     confirmPassword: z.string(),
     mobile_number: z.string().regex(/^09\d{9}$/, {message: "Mobile number must be a valid PH Mobile Number",
     }).min(11).max(11)
