@@ -22,10 +22,7 @@ export default function RPassword() {
     const navigate = useNavigate()
 
     const schema: ZodType<ResetPasswortForm> = z.object({
-    password: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/, {
-        message:
-        "Password must contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character",
-    }).min(14, {message: "Password must contain at least 14 character(s)"}).max(256),
+    password: z.string().min(4, {message: "Password must contain at least 4 character(s)"}).max(30),
     confirmPassword: z.string(),
 
     }).refine((data) => data.password === data.confirmPassword, {

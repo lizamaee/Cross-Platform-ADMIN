@@ -313,16 +313,10 @@ export default function AccountTab() {
     //CHANGE PASSWORD SCHEMA
     const passwordSchema: ZodType<PasswordFormData> = z.object({
       new_password: z
-        .string()
-        .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/, {
-          message:
-            "Password must contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character",
-        })
-        .min(14, { message: "Password must contain at least 14 character(s)" })
-        .max(30),
+        .string().min(4, {message: "Password must contain at least 4 character(s)"}).max(30),
       current_password: z
         .string()
-        .min(1, { message: "Please enter current password" }),
+        .min(1, { message: "Please enter current password" }).max(30),
     });
     const {
       register: passwordRegister,
