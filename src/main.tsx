@@ -17,6 +17,7 @@ import Settings from './pages/adminsubpages/settings/Settings'
 import './index.css'
 import {
   createBrowserRouter,
+  Navigate,
   RouterProvider,
 } from "react-router-dom";
 import VoterDashboard from './pages/VoterDashboard'
@@ -31,6 +32,7 @@ import RPassword from './pages/RPassword'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
+const isElectionOngoing = import.meta.env.VITE_ELECTION_STATUS === "ONGOING" ? true : false
 
 const client = new QueryClient({
   defaultOptions: {
@@ -134,7 +136,7 @@ const router = createBrowserRouter([
       },
       {
         path: "register",
-        element: <Register />
+        element: isElectionOngoing ? <Navigate to="/login"/> : <Register/>
       },
       {
         path: "mobile-verification",
