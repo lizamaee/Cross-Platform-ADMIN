@@ -46,7 +46,7 @@ export default function AdminTab() {
 
     //PROMOTE ACCOUNT FORM SCHEMA
     const promoteSchema: ZodType<PromoteFormData> = z.object({
-        student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7)
+        student_id: z.string().regex(/^\d{6,7}$/, {message: "Student ID must be a valid Student ID"}).min(6).max(7)
     })
     const {register:promoteRegister, handleSubmit:handleSubmitPromote, formState:{errors:errorPromote}, reset:promoteReset} = useForm<PromoteFormData>({resolver: zodResolver(promoteSchema)})
 
@@ -206,7 +206,7 @@ export default function AdminTab() {
 
     //UPLOAD SINGLE STUDENT ID
     const singleSchema: ZodType<PromoteFormData> = z.object({
-        student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7)
+        student_id: z.string().regex(/^\d{6,7}$/, {message: "Student ID must be a valid Student ID"}).min(6).max(7)
     })
     const {register:singleRegister, handleSubmit:handleSubmitSingle, formState:{errors:errorSingle}, reset:singleReset} = useForm<PromoteFormData>({resolver: zodResolver(singleSchema)})
 
@@ -358,7 +358,7 @@ export default function AdminTab() {
                             {...promoteRegister('student_id')}
                             placeholder="ex. 1234567"
                             maxLength={7}
-                            minLength={7}
+                            minLength={6}
                             className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
                         />
                         {errorPromote.student_id && <span className="text-red-400 text-center text-sm">{errorPromote.student_id.message}</span>}
@@ -398,7 +398,7 @@ export default function AdminTab() {
                                     {...singleRegister('student_id')}
                                     placeholder="ex. 1234567"
                                     maxLength={7}
-                                    minLength={7}
+                                    minLength={6}
                                     className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
                             />
 

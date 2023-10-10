@@ -79,7 +79,7 @@ export default function VoterTab() {
 
     //RECOVER ACCOUNT FORM SCHEMA
     const schema: ZodType<RecoverFormData> = z.object({
-        student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7),
+        student_id: z.string().regex(/^\d{6,7}$/, {message: "Student ID must be a valid Student ID"}).min(6).max(7),
         newPassword: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/, {
           message:
             "Password must contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character",
@@ -108,7 +108,7 @@ export default function VoterTab() {
 
     //DELETE ACCOUNT FORM SCHEMA
     const deleteSchema: ZodType<DeleteFormData> = z.object({
-        student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7)
+        student_id: z.string().regex(/^\d{6,7}$/, {message: "Student ID must be a valid Student ID"}).min(6).max(7)
     })
     const {register:deleteRegister, handleSubmit:handleSubmitDelete, formState:{errors:errorDelete}, reset:deleteReset} = useForm<DeleteFormData>({resolver: zodResolver(deleteSchema)})
 
@@ -197,7 +197,7 @@ export default function VoterTab() {
                             {...register('student_id')}
                             placeholder="ex. 1234567"
                             maxLength={7}
-                            minLength={7}
+                            minLength={6}
                             className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
                         />
                         {errors.student_id && <span className="text-red-400 text-center text-sm">{errors.student_id.message}</span>}
@@ -268,7 +268,7 @@ export default function VoterTab() {
                             {...deleteRegister('student_id')}
                             placeholder="ex. 1234567"
                             maxLength={7}
-                            minLength={7}
+                            minLength={6}
                             className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
                         />
                         {errorDelete.student_id && <span className="text-red-400 text-center text-sm">{errorDelete.student_id.message}</span>}

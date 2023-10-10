@@ -106,8 +106,8 @@ export default function AccountTab() {
     const profileSchema: ZodType<ProfileFormData> = z.object({
       student_id: z
         .string()
-        .regex(/^\d{7}$/, { message: "Student ID must be a valid Student ID" })
-        .min(7)
+        .regex(/^\d{6,7}$/, { message: "Student ID must be a valid Student ID" })
+        .min(6)
         .max(7),
       firstname: z.string().min(1, { message: "Please fill in your firstname" }),
       surname: z.string().min(1, { message: "Please fill in your surname" }),
@@ -532,7 +532,7 @@ export default function AccountTab() {
                     {...profileRegister("student_id")}
                     defaultValue={student_id ?? "1234567"}
                     type="text"
-                    minLength={7}
+                    minLength={6}
                     maxLength={7}
                     required
                     className="bg-transparent py-4 px-4 outline-none focus:outline-indigo-400 rounded-md border-solid border-2 dark:border-zinc-700 opacity-90 w-full"

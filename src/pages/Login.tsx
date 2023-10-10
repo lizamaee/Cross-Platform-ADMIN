@@ -22,7 +22,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const schema: ZodType<LoginFormData> = z.object({
-    student_id: z.string().regex(/^\d{7}$/, {message: "Student ID must be a valid Student ID"}).min(7).max(7),
+    student_id: z.string().regex(/^\d{6,7}$/, {message: "Student ID must be a valid Student ID"}).min(6).max(7),
     password: z.string().min(4, {message: "Password must contain at least 4 character(s)"}).max(30),
 
   })
@@ -104,7 +104,7 @@ export default function Login() {
               {...register("student_id")}
               placeholder="ex. 1234567"
               maxLength={7}
-              minLength={7}
+              minLength={6}
               required
             />
             {errors.student_id && <span className="text-red-400 text-center text-sm">{errors.student_id.message}</span>}
