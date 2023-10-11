@@ -620,9 +620,8 @@ export default function CVote() {
                     {result.position}
                   </h3>
                   <div className="candidates-result flex flex-col gap-3">
-                    {result?.candidates
-                      ?.sort((a: any, b: any) => b.count - a.count)
-                      .map((candidate: any, index: any) => (
+                    {result?.candidates?.sort((a: any, b: any) => b.count - a.count)
+                    .map((candidate: any, index: any) => (
                         <div
                           key={index}
                           className="candidate bg-[#E5E0FF] dark:bg-[#313131]  sm:pr-6 sm:rounded-l-[5rem] py-2 sm:py-0 rounded-xl sm:rounded-br-[3rem] flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
