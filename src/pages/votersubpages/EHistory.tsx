@@ -7,12 +7,14 @@ import { useState } from "react"
 import { axiosPrivate } from "../../api/axios"
 import { message } from "antd"
 import VoteModal from "../../components/VoteModal"
+import {winner} from "../../BMAlgorithm"
 
 type Position = {
   id: string;
   position: string;
   requiredWinner: string;
   candidates: [];
+  voted_candidates: string[];
 };
 
 export default function EHistory() {
@@ -29,7 +31,7 @@ export default function EHistory() {
     isLoading: isResultBallotLoading,
     data: resultBallotData,
   } = useSingleBallotResult()
-  
+
   
   const handleSingleHistory = async (id: string, status: string) => {
     if(status === 'ended') {
@@ -186,23 +188,57 @@ export default function EHistory() {
                     {result.position}
                   </h3>
                   <div className="candidates-result flex flex-col gap-3">
-                    {result?.candidates
-                      ?.sort((a: any, b: any) => b.count - a.count).slice(0, Number(result.requiredWinner))
-                      .map((candidate: any, index: any) => (
-                        <div
-                          key={index}
-                          className="candidate bg-[#E5E0FF] dark:bg-[#313131]  sm:py-3 sm:px-10 rounded-sm flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
-                        >
-                          <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
-                            <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-200 md:text-lg">
-                              {candidate.fullname}
-                            </h3>
-                          </div>
-                          <div className="candidate-votes flex flex-col items-center">
-                              <BsFillTrophyFill className="w-6 h-6 text-yellow-400 dark:text-yellow-300"/>
-                          </div>
-                        </div>
-                      ))}
+                    {Number(result?.requiredWinner) > 1
+                        ? result?.candidates?.sort((a: any, b: any) => b.count - a.count).slice(0, Number(result.requiredWinner))
+                          .map((candidate: any, index: any) => (
+                            <div
+                              key={index}
+                              className="candidate bg-[#E5E0FF] dark:bg-[#313131]  sm:py-3 sm:px-10 rounded-sm flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
+                            >
+                              <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
+                                <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-200 md:text-lg">
+                                  {candidate.fullname}
+                                </h3>
+                              </div>
+                              <div className="candidate-votes flex flex-col items-center">
+                                  <BsFillTrophyFill className="w-6 h-6 text-yellow-400 dark:text-yellow-300"/>
+                              </div>
+                            </div>
+                          ))
+                        : result?.candidates?.filter((candidate:any) => winner(result?.voted_candidates)?.includes(candidate.id)).length > 1
+                          ? result?.candidates?.filter((candidate:any) => winner(result?.voted_candidates)?.includes(candidate.id)).map((candidate: any, index: any) => (
+                              <div
+                                key={index}
+                                className="candidate bg-[#E5E0FF] dark:bg-[#313131]  py-2 sm:py-3 sm:px-10 rounded-sm flex items-center justify-between dark:text-gray-100 flex-col-reverse sm:flex-row"
+                              >
+                                <div className="candidate-profile relative flex flex-col sm:flex-row items-center sm:justify-between gap-2 md:gap-6">
+                                  <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-200 md:text-lg">
+                                    {candidate.fullname}
+                                  </h3>
+                                  <h3 className="pop-regular text-xs">(tie {candidate.count} Vote)</h3>
+                                </div>
+                                <div className="candidate-votes flex flex-col items-center">
+                                    <BsFillTrophyFill className="w-6 h-6 text-gray-400 dark:text-gray-300"/>
+                                </div>
+                              </div>
+                          ))
+                          : result?.candidates?.filter((candidate:any) => winner(result?.voted_candidates)?.includes(candidate.id)).map((candidate: any, index: any) => (
+                            <div
+                              key={index}
+                              className="candidate py-2 bg-[#E5E0FF] dark:bg-[#313131]  sm:py-3 sm:px-10 rounded-sm flex items-center justify-between dark:text-gray-100  flex-col-reverse sm:flex-row"
+                            >
+                              <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
+                                <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-200 md:text-lg">
+                                  {candidate.fullname}
+                                </h3>
+                                <h3 className="pop-regular text-xs">(won {candidate.count} Vote)</h3>
+                              </div>
+                              <div className="candidate-votes flex flex-col items-center">
+                                  <BsFillTrophyFill className="w-6 h-6 text-yellow-400 dark:text-yellow-300"/>
+                              </div>
+                            </div>
+                        ))
+                    }
                   </div>
                 </div>
               ))
