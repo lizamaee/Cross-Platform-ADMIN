@@ -492,16 +492,6 @@ export default function OrganizationTab() {
       </div>
       {/* CREATE BUTTON */}
 
-      <div className="flex items-center py-3 sm:py-2 px-1 mx-4 sm:mx-5 w-full overflow-x-auto centered">
-        <RadioGroup value={status} onChange={(e:any) => setStatus(e.target.value)}>
-          <div className="flex gap-2 justify-center">
-            <Radio value="upcoming">Upcoming</Radio>
-            <Radio value="ongoing">Ongoing</Radio>
-            <Radio value="ended">Ended</Radio>
-          </div>
-        </RadioGroup>
-      </div>
-
       {/* ALL ORGANIZATIONS */}
       <div className="container w-full mx-auto p-4 overflow-x-auto">
         {organizationsQuery.status === 'error' || organizationsQuery.data?.[0]?.error === 'Network Error'
