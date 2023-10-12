@@ -25,7 +25,7 @@ export default function Developers() {
       {/* NOTIFICATION HEADER */}
 
       {/* DEVELOPER PROFILE CARD */}
-      <div className="dev-cards gap-10 grid md:grid-cols-2 lg:grid-cols-3 pb-5 pt-3 px-5">
+      <div className="dev-cards gap-10 grid sm:grid-cols-2 lg:grid-cols-3 pb-5 pt-3 px-5">
         {/* MENARD PAJARES */}
         <DeveloperCard fullname='Menard M. Pajares' tag='@menardpajares' profile={menard} motto='" The best revenge is a massive success. "' role='Fullstack Developer'>
           <ul className='flex justify-center gap-3 py-5 '>
@@ -53,7 +53,7 @@ export default function Developers() {
         </DeveloperCard>
         {/* MENARD PAJARES */}
         {/* LIZA MAE NECERIO */}
-        <DeveloperCard fullname='Liza Mae N. Necerio' tag='@lizamaenecerio' profile={zamae} motto='" Lorem ipsum dolor sit amet consectetur adipisicing elit. "' role='UI/UX Designer'>
+        <DeveloperCard fullname='Liza Mae N. Necerio' tag='@lizamaenecerio' profile={zamae} motto='" Do things in your own pace, life is not a race. "' role='UI/UX Designer'>
           <ul className='flex justify-center gap-3 py-5 '>
             <li className='text-gray-800 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300'>
               <a href="https://github.com/lizamaee" target="_blank">

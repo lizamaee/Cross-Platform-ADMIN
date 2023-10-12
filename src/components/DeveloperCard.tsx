@@ -10,8 +10,8 @@ interface CardProps {
 
 export default function DeveloperCard({fullname, tag, profile, children, motto, role}: CardProps) {
   return (
-    <div className="me rounded-[5rem] bg-white dark:bg-zinc-700 shadow-2xl overflow-hidden">
-          <div className="img-profile bg-[#C46479] py-10 flex justify-center">
+    <div className="me rounded-[4.5rem] bg-white dark:bg-zinc-700 drop-shadow-2xl overflow-hidden">
+          <div className="img-profile bg-[#C46479] py-5 flex justify-center">
             <img src={profile} alt="profile" className='w-28 h-28 drop-shadow-2xl object-cover rounded-full'/>
           </div>
           <div className="custom-shape-divider-top-1686926171 ">
@@ -22,16 +22,19 @@ export default function DeveloperCard({fullname, tag, profile, children, motto, 
                 <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" className="shape-fill3"></path>
             </svg>
           </div>
-          <div className="info p-5 pop-regular">
-            <div className="fullname text-center pop-semibold text-gray-900 dark:text-gray-100">
+          <div className="info p-5 pop-regular relative">
+            <div className="fullname text-center relative z-[1] pop-semibold text-gray-900 dark:text-gray-100">
               <h2>{fullname}</h2>
             </div>
-            <h6 className='text-xs text-center text-gray-400'>{tag}</h6>
-            {children}
-            <div className="moto text-xs h-14 overflow-y-auto centered text-center px-10 text-gray-500 dark:text-gray-300">
+            <h6 className='text-xs text-center relative z-[1] text-gray-400'>{tag}</h6>
+            <div className="relative z-[1]">
+              {children}
+            </div>
+            <div className="moto text-xs relative z-[1] h-14 overflow-y-auto centered text-center px-10 text-gray-500 dark:text-gray-300">
                 <p>{motto}</p>
             </div>
-            <h2 className='pop-bold text-gray-700 dark:text-gray-200 text-sm tracking-widest text-center pt-6'>{role}</h2>
+            <h2 className='pop-bold relative z-[1] text-gray-700 dark:text-gray-200 text-sm tracking-widest text-center pt-4'>{role}</h2>
+            <h1 className="pop-extrabold z-[0] rotate-6 uppercase text-5xl absolute top-16 text-center tracking-widest left-5 text-gray-300 dark:text-gray-600 opacity-25">{role}</h1>
           </div>
         </div>
   )
