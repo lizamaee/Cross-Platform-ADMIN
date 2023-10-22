@@ -22,6 +22,7 @@ type Position = {
   position: string;
   requiredWinner: string;
   candidates: [];
+  voted_candidates: [];
 };
 
 type Candidate = {
@@ -344,6 +345,16 @@ export default function CVote() {
     }
   };
 
+  function percentage(votes: string, overall: []):string{
+    if(overall.length === 0){
+      return String(0)
+    }
+    const calcA = Number(votes) / Number(overall.length)
+    const calcB = calcA * 100
+    const result = Math.trunc(calcB)
+    return String(result)
+  }
+
   return (
     <div>
       <h1 className="text-[#1c295d] dark:text-gray-300 text-xl pt-1 md:pt-3 text-center pop-bold">
@@ -624,7 +635,7 @@ export default function CVote() {
                     .map((candidate: any, index: any) => (
                         <div
                           key={index}
-                          className="candidate bg-[#E5E0FF] dark:bg-[#313131]  sm:pr-6 sm:rounded-l-[5rem] py-2 sm:py-0 rounded-xl sm:rounded-br-[3rem] flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
+                          className="candidate relative bg-[#E5E0FF] dark:bg-[#313131]  sm:pr-6 sm:rounded-l-[5rem] py-2 sm:py-0 rounded-xl sm:rounded-br-[3rem] flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
                         >
                           <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
                             <div className="gradientball w-[54px] h-[54px] sm:w-20 sm:h-20 bg-gradient-to-t from-blue-500 to-red-500 rounded-full absolute "></div>
@@ -638,6 +649,9 @@ export default function CVote() {
                             </h3>
                           </div>
                           <div className="candidate-votes flex flex-col items-center">
+                            <h4 className="pop-light absolute top-4 right-4 sm:top-[50%] sm:translate-x-[50%] sm:-translate-y-[50%] sm:right-[50%] italic text-xs sm:text-base">
+                              {percentage(candidate.count, result?.voted_candidates)}%
+                            </h4>
                             <h4 className="pop-bold text-xl">
                               {candidate.count}
                             </h4>
