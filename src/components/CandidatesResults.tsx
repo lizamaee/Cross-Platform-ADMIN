@@ -39,10 +39,10 @@ const CandidatesResults: React.FC<Props> = ({ seatCandidates, handleClose }) => 
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {candidate.candidates?.map((person) => (
+                                        {candidate.candidates?.sort((a: any, b: any) => b.count - a.count).map((person) => (
                                             <tr key={person.id} className="person bg-white dark:bg-[#4a4a4a] px-5 w-full text-center pop-semibold">
-                                                <td className='pop-semibold text-sm py-2'>{person.fullname}</td>
-                                                <td className='pop-semibold text-sm py-2'>{person.party}</td>
+                                                <td className='pop-regular text-sm py-2'>{person.fullname}</td>
+                                                <td className='pop-regular text-sm py-2'>{person.party}</td>
                                                 <td className='pop-semibold text-sm py-2'>{person.count}</td>
                                             </tr>
                                         ))}

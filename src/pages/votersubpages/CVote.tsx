@@ -379,12 +379,6 @@ export default function CVote() {
               />
             )}
           </div>
-          <div className="bell bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1">
-            <FiBell
-              className="text-[#a3aed0] dark:text-gray-400  dark:hover:text-gray-200 hover:text-slate-500"
-              size={20}
-            />
-          </div>
         </div>
       </div>
       {/* NOTIFICATION HEADER */}
@@ -400,9 +394,6 @@ export default function CVote() {
             <h4 className="pop-medium dark:text-gray-300 text-md md:text-lg">
               Ongoing Elections
             </h4>
-            <button>
-              <BsFillChatSquareDotsFill className="text-[#7268EF] w-7 h-7 md:w-8 md:h-8" />
-            </button>
           </div>
 
           <div className="elections p-5">

@@ -92,9 +92,6 @@ export default function EHistory() {
           <div className="bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1" onClick={switchMode}>
               { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={20}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={20} /> )}
           </div>
-          <div className="bell bg-[#e1e1e1] dark:bg-[#3a3a3a] rounded-full p-1">
-            <FiBell className='text-[#a3aed0] dark:text-gray-400  dark:hover:text-gray-200 hover:text-slate-500' size={20}/>
-          </div>
         </div>
       </div>
       {/* NOTIFICATION HEADER */}
