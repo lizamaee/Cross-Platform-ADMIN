@@ -3,6 +3,7 @@ import {BsPlus} from 'react-icons/bs'
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
+import { TbPower } from 'react-icons/tb';
 import {IoMdRemoveCircle} from 'react-icons/io' 
 import { Drawer, Dropdown, MenuProps, Progress, Space, Spin, Tooltip, message } from 'antd';
 import DatePicker from "react-datepicker";
@@ -16,6 +17,7 @@ import { useDropzone } from 'react-dropzone';
 import { FaCamera } from 'react-icons/fa';
 import axios from 'axios';
 import Radio, { RadioGroup } from '../../../components/Radio';
+import { useActivateElection, useEndElection } from '../../../hooks/queries/useAdmin';
 
 interface DataType {
   id: string;
@@ -47,6 +49,11 @@ export default function ElectionTab() {
   const { mutate: createElection} = useCreateElection()
   //DELETE SINGLE
   const { mutate: deleteElection, isLoading: isDeletingElection} = useDeleteElection()
+  //REACTIVATE ELECTION
+  const {mutate:activateElectionNow} = useActivateElection()
+  
+  //END ELECTION
+  const {mutate:endElectionNow} = useEndElection()
 
   //SORT BY STATUS
   const byStatus = useMemo(() => {
@@ -147,6 +154,16 @@ export default function ElectionTab() {
     setDeletingElectionName(name)
     setDeletingElectionID(id)
     setOpenDeleteModal(true)
+  }
+
+  //END ELECTION 
+  const endIt = (id: string) => {
+    endElectionNow(id)
+  }
+
+  //END ELECTION 
+  const reactivateIt = (id: string) => {
+    activateElectionNow(id)
   }
 
   //OPEN CREATE DRAWER STATE
@@ -544,6 +561,17 @@ export default function ElectionTab() {
                       </div>
                       {/* ACTIONS DISPLAY */}
                       <div className="actions flex flex-col-reverse md:flex-row items-end justify-center gap-3 md:gap-5 py-2">
+                        {status === "ended" &&
+                          (<Tooltip title='Result' color='#26e76f'>
+                          <p
+                            onClick={()=> {
+                              reactivateIt(elec.id)
+                            }}
+                            className={`pop-regular md:px-3 text-center align-middle p-1 rounded-lg dark:text-white cursor-pointer border-2 border-green-400 dark:border-green-800`}
+                            >Result
+                          </p>
+                        </Tooltip>)
+                        }
                         <Tooltip title='Delete' color='#f87171'>
                           <button
                             onClick={(e) => deleteIt(elec.id, elec.title)}
@@ -552,8 +580,11 @@ export default function ElectionTab() {
                             <RiDeleteBin5Fill />
                           </button>
                         </Tooltip>
+
+                        
         
-                        <Tooltip title='Modify' color='#60a5fa'>
+                        {status === "upcoming" || status === "ongoing" ?
+                          (<Tooltip title='Modify' color='#60a5fa'>
                           <button
                             onClick={()=> {
                               openMultiDrawer(elec.id,elec.title)
@@ -562,7 +593,32 @@ export default function ElectionTab() {
                             >
                             <RiEditBoxFill />
                           </button>
-                        </Tooltip>
+                        </Tooltip>) : ''
+                        }
+                        {status === "ongoing" &&
+                          (<Tooltip title='End Election' color='#ff8e40'>
+                          <button
+                            onClick={()=> {
+                              endIt(elec.id)
+                            }}
+                            className={`pop-medium text-center align-middle p-1 md:p-2 rounded-lg text-white bg-orange-500 shadow-sm shadow-orange-500 focus:outline-none`}
+                            >
+                            <TbPower/>
+                          </button>
+                        </Tooltip>)
+                        }
+                        {status === "ended" &&
+                          (<Tooltip title='Re-Activate' color='#26e76f'>
+                          <button
+                            onClick={()=> {
+                              reactivateIt(elec.id)
+                            }}
+                            className={`pop-medium text-center align-middle p-1 md:p-2 rounded-lg text-white bg-green-500 shadow-sm shadow-green-500 focus:outline-none`}
+                            >
+                            <TbPower/>
+                          </button>
+                        </Tooltip>)
+                        }
                       </div>
                       {/* ACTIONS DISPLAY */}
                     </div>
