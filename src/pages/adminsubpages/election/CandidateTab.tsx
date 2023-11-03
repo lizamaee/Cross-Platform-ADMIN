@@ -341,7 +341,7 @@ export default function CandidateTab() {
                 ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Candidates</h4>
                 : <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
                 {descendingCandidates?.map((can:DataType, index: any) =>(
-                  <div key={index} className="card overflow-hidden p-3 hover:-translate-y-2 hover:z-0 ease-in-out duration-300  shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
+                  <div key={index} className="card overflow-hidden p-3  shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
                     <div className="upper grid grid-cols-2">
                       {/* IMAGE DISPLAY */}
                       <div className="img-container shrink-0 flex items-center justify-center py-1">
