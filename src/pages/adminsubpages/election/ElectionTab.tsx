@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import {BsPlus} from 'react-icons/bs'
+import {BsFillTrophyFill, BsPlus} from 'react-icons/bs'
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { RiDeleteBin5Fill, RiEditBoxFill } from 'react-icons/ri';
@@ -14,10 +14,13 @@ import { useCreateElection, useDeleteElection, useElections, useUpdateElection }
 import DeleteMe from '../../../components/DeleteMe';
 import { TiWarning } from 'react-icons/ti';
 import { useDropzone } from 'react-dropzone';
-import { FaCamera } from 'react-icons/fa';
+import { FaAngleLeft, FaCamera } from 'react-icons/fa';
 import axios from 'axios';
 import Radio, { RadioGroup } from '../../../components/Radio';
 import { useActivateElection, useEndElection } from '../../../hooks/queries/useAdmin';
+import VoteModal from '../../../components/VoteModal';
+import { useSingleBallotResult } from '../../../hooks/queries/useVoter';
+import { winner } from '../../../BMAlgorithm';
 
 interface DataType {
   id: string;
@@ -501,6 +504,31 @@ export default function ElectionTab() {
           key: org.id,
         }
       })
+
+  const [activeOrgs, setActiveOrgs] = useState([]);
+  const [isActiveOrgs, setIsActiveOrgs] = useState<boolean>(false);
+
+  //SHOW ORGANIZATIONS
+  const handleActiveOrganizations = async (id: string) => {
+      const orgs = electionsQuery?.data?.filter(
+      (elec: any) => elec.id === id
+      );
+      setActiveOrgs(orgs[0]?.organizations);
+      setIsActiveOrgs(true);
+  }
+
+  const {
+    mutate: getSingleResultBallot,
+    isLoading: isResultBallotLoading,
+    data: resultBallotData,
+  } = useSingleBallotResult()
+
+  const [openSliderResult, setOpenSliderResult] = useState<boolean>(false);
+
+  const handleGetBallot = async (ballots: any) => {
+      setOpenSliderResult(true);
+      getSingleResultBallot(ballots.id);
+  };
       
   return (
     <div className='Election overflow-hidden bg-white dark:bg-[#303030] rounded-b-lg shadow-md'>
@@ -564,9 +592,8 @@ export default function ElectionTab() {
                         {status === "ended" &&
                           (<Tooltip title='Result' color='#26e76f'>
                           <p
-                            onClick={()=> {
-                              reactivateIt(elec.id)
-                            }}
+                            onClick={()=> handleActiveOrganizations(elec.id)
+                            }
                             className={`pop-regular md:px-3 text-center align-middle p-1 rounded-lg dark:text-white cursor-pointer border-2 border-green-400 dark:border-green-800`}
                             >Result
                           </p>
@@ -581,8 +608,6 @@ export default function ElectionTab() {
                           </button>
                         </Tooltip>
 
-                        
-        
                         {status === "upcoming" || status === "ongoing" ?
                           (<Tooltip title='Modify' color='#60a5fa'>
                           <button
@@ -627,6 +652,150 @@ export default function ElectionTab() {
             }
         
       </div>
+      {/* RESULT MODAL */}
+      <VoteModal title='Result' open={isActiveOrgs} onClose={() => setIsActiveOrgs(false)}>
+            <div className="slk overflow-x-hidden h-full overflow-y-auto relative">
+              {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
+              {electionsQuery?.isLoading ? (
+                <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-6">
+                  <h3 className="pop-semibold"></h3>
+                </div>
+              ) : (
+                isActiveOrgs && (
+                  <>
+                    
+                    <div className="active-organization rounded-lg shadow-md bg-white dark:bg-[#202020] h-full">
+                      <div className="all-org grid sm:p-5 sm:gap-10">
+                        {activeOrgs?.length === 0 ? (
+                          <h3>No Active Organizations</h3>
+                        ) : (
+                          <div className="ors">
+                            <h4 className="pb-2 w-full dark:text-gray-200 pop-semibold">
+                                Active Organizations
+                              </h4>
+                            {
+                              activeOrgs?.map((org: any, index: any) => 
+                            <div
+                              key={index}
+                              onClick={() => handleGetBallot(org.ballots[0])}
+                              className="org cursor-pointer hover:bg-gray-200 border-[1px] border-gray-200 dark:border-gray-600 overflow-hidden py-2 bg-gray-100 dark:bg-zinc-700 dark:hover:bg-zinc-600 flex flex-col shadow-md rounded-lg items-center"
+                            >
+                              
+                              <h2 className="pop-medium text-center dark:text-gray-300 text-sm">
+                                {org.org_name}
+                              </h2>
+                              
+                            </div>
+                          )
+                        }
+                        </div>
+                            
+                          
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )
+              )}
+              <div className={`organizations-slider rounded-lg bg-gray-200 dark:bg-zinc-700 w-full h-full absolute top-0 left-0 z-10 ${ openSliderResult ? 'translate-x-0' : 'translate-x-full'} transition-all duration-200`}>
+                <div className="close flex">
+                  <button onClick={() => setOpenSliderResult(false)} className="p-5 rounded-xl">
+                    <FaAngleLeft className="w-6 h-6 text-gray-400 dark:text-gray-300"/>
+                  </button>
+                </div>
+                <div className="vote result p-3">
+                {isResultBallotLoading ? (
+                    <div
+                      className={`result gap-10 p-5 mb-10 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg animate-pulse`}
+                    >
+                      <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 rounded-lg mb-2 h-10"></h3>
+                      <div className="candidates-result flex flex-col gap-3">
+                        <div className="candidate bg-[#E5E0FF] dark:bg-[#313131]  sm:pr-6 sm:rounded-l-[5rem] rounded-xl sm:rounded-br-[3rem] flex items-center justify-between flex-col sm:flex-row">
+                          <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
+                            <div className="gradientball w-[54px] h-[54px] sm:w-20 sm:h-20 bg-gradient-to-t from-blue-500 to-red-500 rounded-full absolute "></div>
+                            <div className="object-cover z-20 w-[50px] h-[50px] sm:w-[74px] sm:h-[74px] mt-[2px]  sm:ml-[3px] sm:mt-0 rounded-full" />
+                            <h3 className=""></h3>
+                          </div>
+                          <div className="candidate-votes flex flex-col items-center">
+                            <h4 className=""></h4>
+                            <h5 className=""></h5>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    resultBallotData
+                      ?.sort((a: any, b: any) => a.position_order - b.position_order)
+                      .map((result: any, index: any) => (
+                        <div
+                          key={index}
+                          className={`result gap-10 p-2 mb-5 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg`}
+                        >
+                          <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-gray-600 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-t-lg text-sm sm:text-lg">
+                            {result.position}
+                          </h3>
+                          <div className="candidates-result flex flex-col gap-3">
+                            {Number(result?.requiredWinner) > 1
+                                ? result?.candidates?.sort((a: any, b: any) => b.count - a.count).slice(0, Number(result.requiredWinner))
+                                  .map((candidate: any, index: any) => (
+                                    <div
+                                      key={index}
+                                      className="candidate bg-[#E5E0FF] dark:bg-[#313131]  sm:py-3 sm:px-10 rounded-sm flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
+                                    >
+                                      <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
+                                        <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-200 md:text-lg">
+                                          {candidate.fullname}
+                                        </h3>
+                                      </div>
+                                      <div className="candidate-votes flex flex-col items-center">
+                                          <BsFillTrophyFill className="w-6 h-6 text-yellow-400 dark:text-yellow-300"/>
+                                      </div>
+                                    </div>
+                                  ))
+                                : result?.candidates?.filter((candidate:any) => winner(result?.voted_candidates)?.includes(candidate.id)).length > 1
+                                  ? result?.candidates?.filter((candidate:any) => winner(result?.voted_candidates)?.includes(candidate.id)).map((candidate: any, index: any) => (
+                                      <div
+                                        key={index}
+                                        className="candidate bg-[#E5E0FF] dark:bg-[#313131]  py-2 sm:py-3 sm:px-10 rounded-sm flex items-center justify-between dark:text-gray-100 flex-col-reverse sm:flex-row"
+                                      >
+                                        <div className="candidate-profile relative flex flex-col sm:flex-row items-center sm:justify-between gap-2 md:gap-6">
+                                          <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-200 md:text-lg">
+                                            {candidate.fullname}
+                                          </h3>
+                                          <h3 className="pop-regular text-xs">(tie {candidate.count} Vote)</h3>
+                                        </div>
+                                        <div className="candidate-votes flex flex-col items-center">
+                                            <BsFillTrophyFill className="w-6 h-6 text-gray-400 dark:text-gray-300"/>
+                                        </div>
+                                      </div>
+                                  ))
+                                  : result?.candidates?.filter((candidate:any) => winner(result?.voted_candidates)?.includes(candidate.id)).map((candidate: any, index: any) => (
+                                    <div
+                                      key={index}
+                                      className="candidate py-2 bg-[#E5E0FF] dark:bg-[#313131]  sm:py-3 sm:px-10 rounded-sm flex items-center justify-between dark:text-gray-100  flex-col-reverse sm:flex-row"
+                                    >
+                                      <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
+                                        <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-200 md:text-lg">
+                                          {candidate.fullname}
+                                        </h3>
+                                        <h3 className="pop-regular text-xs">(won {candidate.count} Vote)</h3>
+                                      </div>
+                                      <div className="candidate-votes flex flex-col items-center">
+                                          <BsFillTrophyFill className="w-6 h-6 text-yellow-400 dark:text-yellow-300"/>
+                                      </div>
+                                    </div>
+                                ))
+                            }
+                          </div>
+                        </div>
+                      ))
+                  )}
+                </div>
+              </div>
+              {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
+            </div>
+      </VoteModal>
+      {/* RESULT MODAL */}
       {/* CREATE ELECTION DRAWER */}
       <Drawer title="Create Election" placement="right" onClose={onClose} open={open}>
         <form className="create-election-container py-3">
