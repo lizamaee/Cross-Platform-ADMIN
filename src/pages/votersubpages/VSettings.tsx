@@ -23,7 +23,6 @@ import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { TiWarning } from "react-icons/ti";
 import { useAuthStore } from "../../hooks/state";
 import { BsFillSunFill, BsMoonFill } from "react-icons/bs";
-import { FiBell } from "react-icons/fi";
 import DeleteMe from "../../components/DeleteMe";
 import blank from '../../images/blank.jpg'
 
@@ -417,14 +416,10 @@ export default function VSettings() {
   const resetPasswordSchema: ZodType<ResetPasswordFormData> = z
     .object({
       new_password: z
-        .string()
-        .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/, {
-          message:
-            "Password must contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character",
-        })
-        .min(14, { message: "Password must contain at least 14 character(s)" })
-        .max(30),
-      confirm_new_password: z.string(),
+      .string().min(4, {message: "Password must contain at least 4 character(s)"}).max(30),
+      confirm_new_password: z
+      .string()
+      .min(4, { message: "Please enter current password" }).max(30),
     })
     .refine((data) => data.new_password === data.confirm_new_password, {
       message: "Password do not match",
