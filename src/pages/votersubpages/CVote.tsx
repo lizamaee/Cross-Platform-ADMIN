@@ -544,7 +544,7 @@ export default function CVote() {
                   >
                     <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-sm sm:text-lg">
                       {position.position}
-                      <span className="text-gray-100 pop-medium block text-xs md:text-sm tracking-widest">
+                      <span className="text-gray-700 dark:text-gray-100 pop-medium block text-xs md:text-sm tracking-widest">
                         {position.requiredWinner === "1"
                           ? "  ( Select " +
                             position.requiredWinner +
