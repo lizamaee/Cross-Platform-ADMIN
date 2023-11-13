@@ -474,21 +474,23 @@ export const useUpdateProfile = () => {
 }
 
 
-//QUERY FOR CHANGING STUDENT MOBILE NUMBER (SEND OTP)
-export const useVoterSendOTP = () => {
+//QUERY FOR CHANGING STUDENT EMAIL (SEND OTP)
+export const useVoterSendOTPEmail = () => {
   const axiosPrivate = useAxiosPrivate()
   return useMutation({
-      mutationFn: async (newMobileNumber: {student_id: string, new_mobile_number: string}) =>{
-          const response = await axiosPrivate.get('/check-mobile-number', { params: newMobileNumber })
+      mutationFn: async (newEmail: {student_id: string, new_email: string}) =>{
+          const response = await axiosPrivate.post('/change-email', newEmail)
           return response.data
       },
-      onSuccess: async () => {
-          message.open({
-              key: 'successCreation',
-              type: 'success',
-              content: 'OTP Sent',
-              duration: 5,
-          });
+      onSuccess: async (data) => {
+          if(data.message === "success"){
+              message.open({
+                  key: 'successCreation',
+                  type: 'success',
+                  content: 'OTP Sent',
+                  duration: 5,
+              });
+          }
       },
       onError: (error:any) => {
           if (error.message === 'Network Error') {
@@ -520,26 +522,28 @@ export const useVoterSendOTP = () => {
   })
 }
 
-//QUERY FOR CHANGING STUDENT MOBILE NUMBER (CONFIRM OTP)
+//QUERY FOR CHANGING STUDENT EMAIL (CONFIRM OTP)
 export const useVoterConfirmOTP = () => {
   const queryClient = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
   return useMutation({
-      mutationFn: async (newMobileNumber: {student_id: string, new_mobile_number: string, new_otp_code: string}) =>{
-          const response = await axiosPrivate.post('/confirm-mobile-number', newMobileNumber)
+      mutationFn: async (newMobileNumber: {student_id: string, email: string, otp_code: string}) =>{
+          const response = await axiosPrivate.patch('/change-email-confirm', newMobileNumber)
           return response.data
       },
-      onSuccess: async () => {
-          message.open({
+      onSuccess: async (data) => {
+          if(data.message === "success"){
+            message.open({
               key: 'successCreation',
               type: 'success',
-              content: 'Mobile Number Successfully Change',
+              content: 'Email Successfully Changed',
               duration: 5,
-          });
-          await queryClient.invalidateQueries({
-            queryKey: ['voter'],
-            exact: true
-        })
+            });
+            await queryClient.invalidateQueries({
+              queryKey: ['voter'],
+              exact: true
+            })
+          }
       },
       onError: (error:any) => {
           if (error.message === 'Network Error') {
@@ -686,30 +690,39 @@ export const useVoterResetPassword = () => {
   const queryClient = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
   return useMutation({
-      mutationFn:async (newData: {mobile_number:string, new_password: string}) => {
+      mutationFn:async (newData: {email:string, new_password: string}) => {
           const response = await axiosPrivate.patch(`/forgot-password`, {
-            mobile_number: newData.mobile_number,
+            email: newData.email,
             new_password: newData.new_password
           } )
           return response.data
       },
-      onSuccess: async () => {
-          message.open({
-              key: 'successCreation',
-              type: 'success',
-              content: 'Password Changed Successfully :)',
-              duration: 2,
-          })
-          await queryClient.invalidateQueries({
-            queryKey: ['voter'],
-            exact: true
-        })
+      onSuccess: async (data) => {
+          if(data.message === "success"){
+            message.open({
+                key: 'successCreation',
+                type: 'success',
+                content: 'Password Changed Successfully :)',
+                duration: 2,
+            })
+            await queryClient.invalidateQueries({
+              queryKey: ['voter'],
+              exact: true
+            })
+          }
       },
       onError: (error:any) => {
           if (error.message === 'Network Error') {
               message.open({
                 type: 'error',
                 content: 'Server Unavailable',
+                className: 'custom-class pop-medium',
+                duration: 2.5,
+              });
+            } else if(error.response.data){
+              message.open({
+                type: 'error',
+                content: `${error.response.data}`,
                 className: 'custom-class pop-medium',
                 duration: 2.5,
               });

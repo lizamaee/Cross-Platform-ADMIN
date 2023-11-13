@@ -506,17 +506,19 @@ export const useChangePassword = () => {
 export const useAdminResetSendOTP = () => {
   const axiosPrivate = useAxiosPrivate()  
   return useMutation({
-      mutationFn: async (newMobileNumber: {mobile_number: string}) =>{
-          const response = await axiosPrivate.get('/forgot-password-send', {params: newMobileNumber})
+      mutationFn: async (sendOtp: {email: string}) =>{
+          const response = await axiosPrivate.post('/forgot-password-send', sendOtp)
           return response.data
       },
-      onSuccess: async () => {
-          message.open({
+      onSuccess: async (data) => {
+          if(data.message === "success"){
+            message.open({
               key: 'successCreation',
               type: 'success',
               content: 'OTP has been Sent :)',
               duration: 3,
           })
+          }
       },
       onError: (error:any) => {
           if (error.message === 'Network Error') {
@@ -551,25 +553,18 @@ export const useAdminResetSendOTP = () => {
 export const useAdminResetConfirmOTP = () => {
   const axiosPrivate = useAxiosPrivate()  
   return useMutation({
-      mutationFn: async (newMobileNumber: {mobile_number: string, otp_code: string}) =>{
-          const response = await axiosPrivate.post('/otp/verify', newMobileNumber)
+      mutationFn: async (confirmOtp: {email: string, otp_code: string}) =>{
+          const response = await axiosPrivate.post('/otp/verify', confirmOtp)
           return response.data
       },
       onSuccess: async (data) => {
-          if(data?.check_status?.status === 'approved'){
+          if(data.message === 'success'){
             message.open({
                 key: 'successCreation',
                 type: 'success',
                 content: 'OTP Verified :)',
                 duration: 3,
             })
-          }else{
-            message.open({
-              type: 'error',
-              content: `Incorrect OTP code`,
-              className: 'custom-class pop-medium',
-              duration: 2.5,
-            });
           }
       },
       onError: (error:any) => {
