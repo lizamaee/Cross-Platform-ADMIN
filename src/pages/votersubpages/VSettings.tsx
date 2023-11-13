@@ -1,12 +1,12 @@
 import {
   useVoterConfirmOTP,
   useVoterResetPassword,
-  useVoterSendOTP,
   useChangePassword,
   useChangePin,
   useDeleteVoterAccount,
   useUpdateImage,
   useUpdateProfile,
+  useVoterSendOTPEmail,
 } from "../../hooks/queries/useVoter";
 import {
   useAdminResetConfirmOTP,
@@ -43,8 +43,8 @@ type ResetPasswordFormData = {
   confirm_new_password: string;
 };
 
-type MobileFormData = {
-  new_mobile_number: string;
+type EmailFormData = {
+  new_email: string;
 };
 
 type OtpFormData = {
@@ -68,7 +68,7 @@ export default function VSettings() {
   const age = voterQuery?.data?.voter?.age;
   const year_level = voterQuery?.data?.voter?.year_level;
   const profile = voterQuery?.data?.voter?.profile_picture;
-  const number = voterQuery?.data?.voter?.mobile_number;
+  const email = voterQuery?.data?.voter?.email;
   const pinCode = voterQuery?.data?.voter?.pin_number;
 
   //PROGRESS BAR STATE
@@ -162,7 +162,7 @@ export default function VSettings() {
 
   //CHANGE MOBILE NUMBER
   const [openChangeNumber, setOpenChangeNumber] = useState<boolean>(false);
-  const [changeNumber, setChangeNumber] = useState<string>("");
+  const [newEmail, setNewEmail] = useState<string>("");
 
   //OPEN DRAWER FUNCTION
   const showNumberDrawer = () => {
@@ -172,57 +172,51 @@ export default function VSettings() {
   //CLOSE DRAWER FUNCTION
   const closeNumberDrawer = () => {
     setOpenChangeNumber(false);
-    mobileReset();
+    emailReset();
     otpReset();
   };
 
-  //CHANGE MOBILE SCHEMA (SEND OTP)
-  const mobileSchema: ZodType<MobileFormData> = z.object({
-    new_mobile_number: z
-      .string()
-      .regex(/^09\d{9}$/, {
-        message: "Mobile number must be a valid PH Mobile Number",
-      })
-      .min(11)
-      .max(11),
+  //CHANGE EMAIL SCHEMA (SEND OTP)
+  const emailSchema: ZodType<EmailFormData> = z.object({
+    new_email: z
+      .string().email(),
   });
   const {
-    register: mobileRegister,
-    handleSubmit: handleSubmitMobile,
-    formState: { errors: errorMobile },
-    reset: mobileReset,
-  } = useForm<MobileFormData>({ resolver: zodResolver(mobileSchema) });
+    register: emailRegister,
+    handleSubmit: handleSubmitEmail,
+    formState: { errors: errorEmail },
+    reset: emailReset,
+  } = useForm<EmailFormData>({ resolver: zodResolver(emailSchema) });
 
-  //CHANGE NUMBER HOOK
+  //CHANGE EMAIL HOOK
   //SEND OTP
   const {
-    mutate: changeMobileNumber,
+    mutate: changeEmail,
     isLoading: isSendingOtp,
-    status: mobileStatus,
-  } = useVoterSendOTP();
+    status: emailStatus,
+  } = useVoterSendOTPEmail();
 
-  const handleSendOtp = (data: MobileFormData) => {
-    if (number === data.new_mobile_number) {
+  const handleSendOtpEmail = (data: EmailFormData) => {
+    if (email === data.new_email) {
       message.open({
         type: "error",
-        content: "Mobile number cannot be same as old Number",
+        content: "Email cannot be same as old Email",
         className: "custom-class pop-medium",
         duration: 2.5,
       });
     } else {
-      const philFormat = data.new_mobile_number.slice(1);
-      changeMobileNumber({
+      changeEmail({
         student_id,
-        new_mobile_number: `+63${philFormat}`,
+        new_email: data.new_email,
       },
       {
-        onSettled: () => setChangeNumber(`+63${philFormat}`)
+        onSettled: () => setNewEmail(data.new_email)
       });
       
     }
   };
 
-  //CHANGE MOBILE SCHEMA (CONFIRM OTP)
+  //CHANGE EMAIL SCHEMA (CONFIRM OTP)
   const otpSchema: ZodType<OtpFormData> = z.object({
     new_otp_code: z
       .string()
@@ -237,7 +231,7 @@ export default function VSettings() {
     reset: otpReset,
   } = useForm<OtpFormData>({ resolver: zodResolver(otpSchema) });
 
-  //CHANGE NUMBER HOOK
+  //CHANGE EMAIL HOOK
   //CONFIRM OTP
   const {
     mutate: confirmMobileNumber,
@@ -246,9 +240,13 @@ export default function VSettings() {
   const handleConfirmOtp = (data: OtpFormData) => {
     confirmMobileNumber({
       student_id,
-      new_mobile_number: changeNumber,
-      new_otp_code: data.new_otp_code,
-    });
+      email: newEmail,
+      otp_code: data.new_otp_code,
+    },
+    {
+      onSettled: () => setOpenChangeNumber(false)
+    }
+    );
   };
 
   //CHANGE PIN
@@ -367,8 +365,7 @@ export default function VSettings() {
 
   //RESET SEND OTP FUNCTION
   const handleResetSendOTP = () => {
-    const philFormat = number.slice(1);
-    resetSendOTP({ mobile_number: `+63${philFormat}` },
+    resetSendOTP({email},
     {
       onSettled: () => resetOtpReset()
     });
@@ -405,9 +402,8 @@ export default function VSettings() {
 
   //RESET CONFIRM OTP FUNCTION
   const handleResetConfirmOtp = (data: OtpFormData) => {
-    const philFormat = number.slice(1);
     resetConfirmOTP({
-      mobile_number: `+63${philFormat}`,
+      email,
       otp_code: data.new_otp_code,
     });
   };
@@ -441,7 +437,7 @@ export default function VSettings() {
 
   //RESET PASSWORD FUNCTION
   const handleResetPassword = (data: ResetPasswordFormData) => {
-    resetPassword({ mobile_number: number, new_password: data.new_password },
+    resetPassword({ email, new_password: data.new_password },
       {
         onSettled: () => closeResetPasswordDrawer()
       });
@@ -706,7 +702,7 @@ export default function VSettings() {
             
             {voterQuery?.isLoading
               ? <div className="w-32 h-6 bg-gray-300 rounded-md dark:bg-gray-600 animate-pulse"></div>
-              : <h4 className="pop-regular">{number?.slice(0,2).toString() + "*******"}</h4>
+              : <h4 className="pop-regular">{email?.slice(0,2).toString() + "*******"}</h4>
             }
             <button
               onClick={showNumberDrawer}
@@ -872,33 +868,31 @@ export default function VSettings() {
         </div>
         {/* DELETE ACCOUNT */}
 
-        {/* NUMBER DRAWER */}
+        {/* Email DRAWER */}
         <Drawer
-          title="Change Mobile Number"
+          title="Change Email Address"
           placement="right"
           onClose={closeNumberDrawer}
           open={openChangeNumber}
         >
           <form
-            onSubmit={handleSubmitMobile(handleSendOtp)}
-            className="change-number-container pt-10"
+            onSubmit={handleSubmitEmail(handleSendOtpEmail)}
+            className="change-email-container pt-10"
           >
             <div className="name flex flex-col pop-medium">
               <label className="pop-regular opacity-80 text-sm">
-                New Mobile Number
+                New Email
               </label>
               <input
                 className="bg-transparent px-4 py-3 mb-2 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 tracking-wider"
                 type="text"
-                {...mobileRegister("new_mobile_number")}
-                placeholder="ex. 09123456789"
-                maxLength={11}
-                minLength={11}
+                {...emailRegister("new_email")}
+                placeholder="ex. youremail@mail.com"
                 required
               />
-              {errorMobile.new_mobile_number && (
+              {errorEmail.new_email && (
                 <span className="text-red-400 text-center block pt-2 text-xs md:text-sm">
-                  {errorMobile.new_mobile_number.message}
+                  {errorEmail.new_email.message}
                 </span>
               )}
             </div>
@@ -924,7 +918,7 @@ export default function VSettings() {
             </div>
             {/* SEND OTP BUTTON */}
           </form>
-          {mobileStatus === "success" && (
+          {emailStatus === "success" && (
             <div className="input-otp">
               <div className="otp pt-20">
                 <label className="pop-regular opacity-80 text-sm block py-1">
@@ -971,7 +965,7 @@ export default function VSettings() {
             </div>
           )}
         </Drawer>
-        {/* NUMBER DRAWER */}
+        {/* Email DRAWER */}
 
         {/* PIN DRAWER */}
         <Drawer
@@ -1122,7 +1116,7 @@ export default function VSettings() {
             </div>
           )}
           {/* RESET PASSWORD FORM */}
-          {resetConfirmData?.check_status?.status === "approved" ? (
+          {resetConfirmData?.message === "success" ? (
             <form onSubmit={handleSubmitResetPassword(handleResetPassword)}>
               <div className="pt-10">
                 <h2 className="pop-semibold text-center block pb-5">
