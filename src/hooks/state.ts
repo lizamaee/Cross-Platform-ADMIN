@@ -11,6 +11,7 @@ type AuthState = {
     tempPassword: string;
     tempMobileNumber: string;
     tempPin: string;
+    events: any[];
 }
 
   
@@ -22,6 +23,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     tempMobileNumber: '',
     tempPassword: '',
     tempPin: '',
+    events: [],
   
     //Login
     setToken: (token: {}) => {

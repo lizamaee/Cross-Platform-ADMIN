@@ -4,13 +4,39 @@ import { useAuthStore } from "./hooks/state";
 import useRefreshToken from "./hooks/useRefreshToken";
 import Lottie from "lottie-react";
 import ballot from "./assets/ballot.json"
+import { socket } from './socket';
 
 function App() {
   const navigate = useNavigate();
   const { isNight, token } = useAuthStore((state) => state)
   const [isLoading, setIsLoading] = useState(true);
   const refresh = useRefreshToken();
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  console.log(isConnected);
+  
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+    }
 
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function ongoingElectionsEvent(value: any) {
+      useAuthStore.setState((previous: any) => ({ events: [...previous.events, value] }));
+    }
+    
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('elections', ongoingElectionsEvent);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('elections', ongoingElectionsEvent);
+    };
+  }, [socket]);
 
   useEffect(() => {
     let isMounted = true;
