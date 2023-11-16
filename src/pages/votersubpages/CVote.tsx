@@ -1,21 +1,20 @@
 import {
-  BsFillChatSquareDotsFill,
   BsFillSunFill,
   BsMoonFill,
 } from "react-icons/bs";
-import { FiBell } from "react-icons/fi";
 import { useAuthStore } from "../../hooks/state";
 import {
   useCastVote,
-  useOngoingElections,
   useSingleBallotResult,
 } from "../../hooks/queries/useVoter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import VoteModal from "../../components/VoteModal";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Tag, message } from "antd";
 import cict from "../../images/cict.jpg";
 import { useQueryClient } from "@tanstack/react-query";
+import { socket } from "../../socket";
+import { set } from "zod";
 
 type Position = {
   id: string;
@@ -35,20 +34,29 @@ type Candidate = {
 
 export default function CVote() {
   const [activeOrgs, setActiveOrgs] = useState([]);
+  const [singleOrgResult, setSingleOrgResult] = useState<any>([]);
   const [isActiveOrgs, setIsActiveOrgs] = useState<boolean>(false);
   const [isPlatformVisible, setIsPlatformVisible] = useState<boolean>(false);
-  const { isNight, student_id, switchMode } = useAuthStore((state) => state);
+  const { isNight, student_id, switchMode, events } = useAuthStore((state) => state);
   const [selectedOrganizationID, setSelectedOrganizationID] =
     useState<string>("");
 
-  //ONGOING ELECTIONS QUERY HOOK
-  const ongoingElectionsQuery = useOngoingElections();
+  useEffect(() => {
+    function singleResultEvent(value:any){
+      setSingleOrgResult(value)
+    }
+    socket.on("single-org-result", singleResultEvent)
+
+    return () => {
+      socket.off('single-org-result', singleResultEvent);
+    };
+  }, [socket])
 
   //SHOW ORGANIZATIONS
   const handleActiveOrganizations = async (id: string) => {
 
     
-    const orgs = ongoingElectionsQuery?.data?.filter(
+    const orgs = events[0]?.filter(
       (elec: any) => elec.id === id
       );
       setActiveOrgs(orgs[0]?.organizations);
@@ -247,12 +255,7 @@ export default function CVote() {
   };
 
   const [openModalResult, setOpenModalResult] = useState<boolean>(false);
-
-  const {
-    mutate: getSingleResultBallot,
-    isLoading: isResultBallotLoading,
-    data: resultBallotData,
-  } = useSingleBallotResult();
+  const [singleBallot, setSingleBallot] = useState<string>("");
 
   const {
     mutate: getSingleBallot,
@@ -275,10 +278,11 @@ export default function CVote() {
 
       if (isVoted?.data?.length === 0) {
         setOpenModal(true);
+        setSingleBallot(ballots.id)
         getSingleBallot(ballots.id);
       } else {
-        setOpenModalResult(true);
-        getSingleResultBallot(ballots.id);
+        setOpenModalResult(true)
+        socket.emit("ballot-id", {ballot_id: `${ballots.id}`} )
       }
     } catch (error) {
       // Handle error here
@@ -331,7 +335,10 @@ export default function CVote() {
           organization_id: selectedOrganizationID,
           vote,
         }, {
-          onSuccess: () => setOpenModal(false)
+          onSuccess: () => {
+            socket.emit("cast-vote", {ballot_id: `${singleBallot}`} )
+            setOpenModal(false)
+          }
         })
       }
     } else {
@@ -384,11 +391,6 @@ export default function CVote() {
       {/* NOTIFICATION HEADER */}
 
       {/* SHOW ONGOING ELECTIONS */}
-      {ongoingElectionsQuery?.isLoading ? (
-        <div className="loading flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-6">
-          <h3 className="pop-semibold">Loading...</h3>
-        </div>
-      ) : (
         <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-3 rounded-lg">
           <div className="ongoing flex justify-between p-5">
             <h4 className="pop-medium dark:text-gray-300 text-md md:text-lg">
@@ -397,7 +399,7 @@ export default function CVote() {
           </div>
 
           <div className="elections p-5">
-            {ongoingElectionsQuery?.data?.length === 0 ? (
+            {events?.length === 0 ? (
               <div className="no-ongoingx">
                 <div className="h4 text-gray-400 pop-regular text-sm text-center ">
                   No ongoing Election.
@@ -405,7 +407,7 @@ export default function CVote() {
               </div>
             ) : (
               <div className="elections-cards grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {ongoingElectionsQuery?.data?.map(
+                {events[0]?.map(
                   (ongoing: any, index: any) => (
                     <div
                       key={index}
@@ -454,16 +456,10 @@ export default function CVote() {
             )}
           </div>
         </div>
-      )}
       {/* SHOW ONGOING ELECTIONS */}
 
       {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
-      {ongoingElectionsQuery?.isLoading ? (
-        <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-6">
-          <h3 className="pop-semibold"></h3>
-        </div>
-      ) : (
-        isActiveOrgs && (
+      {isActiveOrgs && (
           <>
             <div className="flex">
               <h4 className="pt-4 pb-2 text-center text-xs sm:text-md md:text-lg dark:text-gray-200 pop-semibold">
@@ -516,7 +512,6 @@ export default function CVote() {
               </div>
             </div>
           </>
-        )
       )}
       {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
 
@@ -591,69 +586,49 @@ export default function CVote() {
         onClose={() => setOpenModalResult(false)}
       >
         <div className="result-ballot">
-          {isResultBallotLoading ? (
-            <div
-              className={`result gap-10 p-5 mb-10 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg animate-pulse`}
-            >
-              <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 rounded-lg mb-2 h-10"></h3>
-              <div className="candidates-result flex flex-col gap-3">
-                <div className="candidate bg-[#E5E0FF] dark:bg-[#313131]  sm:pr-6 sm:rounded-l-[5rem] rounded-xl sm:rounded-br-[3rem] flex items-center justify-between flex-col sm:flex-row">
-                  <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
-                    <div className="gradientball w-[54px] h-[54px] sm:w-20 sm:h-20 bg-gradient-to-t from-blue-500 to-red-500 rounded-full absolute "></div>
-                    <div className="object-cover z-20 w-[50px] h-[50px] sm:w-[74px] sm:h-[74px] mt-[2px]  sm:ml-[3px] sm:mt-0 rounded-full" />
-                    <h3 className=""></h3>
-                  </div>
-                  <div className="candidate-votes flex flex-col items-center">
-                    <h4 className=""></h4>
-                    <h5 className=""></h5>
-                  </div>
+          {singleOrgResult
+            ?.sort((a: any, b: any) => a.position_order - b.position_order)
+            .map((result: Position, index: any) => (
+              <div
+                key={index}
+                className={`result gap-10 p-5 mb-10 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg`}
+              >
+                <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-sm sm:text-lg">
+                  {result.position}
+                </h3>
+                <div className="candidates-result flex flex-col gap-3">
+                  {result?.candidates?.sort((a: any, b: any) => b.count - a.count)
+                  .map((candidate: any, index: any) => (
+                      <div
+                        key={index}
+                        className="candidate relative bg-[#E5E0FF] dark:bg-[#313131]  sm:pr-6 sm:rounded-l-[5rem] py-2 sm:py-0 rounded-xl sm:rounded-br-[3rem] flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
+                      >
+                        <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
+                          <div className="gradientball w-[54px] h-[54px] sm:w-20 sm:h-20 bg-gradient-to-t from-blue-500 to-red-500 rounded-full absolute "></div>
+                          <img
+                            src={candidate.imageUrl}
+                            alt={candidate.fullname + " " + "Profile"}
+                            className="object-cover z-20 w-[50px] h-[50px] sm:w-[74px] sm:h-[74px] mt-[2px]  sm:ml-[3px] sm:mt-0 rounded-full"
+                          />
+                          <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-300 md:text-lg">
+                            {candidate.fullname}
+                          </h3>
+                        </div>
+                        <div className="candidate-votes flex flex-col items-center">
+                          <h4 className="pop-light absolute top-4 right-4 sm:top-[50%] sm:translate-x-[50%] sm:-translate-y-[50%] sm:right-[50%] italic text-xs sm:text-base">
+                            {percentage(candidate.count, result?.voted_candidates)}%
+                          </h4>
+                          <h4 className="pop-bold text-xl">
+                            {candidate.count}
+                          </h4>
+                          <h5 className="pop-semibold text-sm">votes</h5>
+                        </div>
+                      </div>
+                    ))}
                 </div>
               </div>
-            </div>
-          ) : (
-            resultBallotData
-              ?.sort((a: any, b: any) => a.position_order - b.position_order)
-              .map((result: Position, index: any) => (
-                <div
-                  key={index}
-                  className={`result gap-10 p-5 mb-10 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg`}
-                >
-                  <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-sm sm:text-lg">
-                    {result.position}
-                  </h3>
-                  <div className="candidates-result flex flex-col gap-3">
-                    {result?.candidates?.sort((a: any, b: any) => b.count - a.count)
-                    .map((candidate: any, index: any) => (
-                        <div
-                          key={index}
-                          className="candidate relative bg-[#E5E0FF] dark:bg-[#313131]  sm:pr-6 sm:rounded-l-[5rem] py-2 sm:py-0 rounded-xl sm:rounded-br-[3rem] flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
-                        >
-                          <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
-                            <div className="gradientball w-[54px] h-[54px] sm:w-20 sm:h-20 bg-gradient-to-t from-blue-500 to-red-500 rounded-full absolute "></div>
-                            <img
-                              src={candidate.imageUrl}
-                              alt={candidate.fullname + " " + "Profile"}
-                              className="object-cover z-20 w-[50px] h-[50px] sm:w-[74px] sm:h-[74px] mt-[2px]  sm:ml-[3px] sm:mt-0 rounded-full"
-                            />
-                            <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-300 md:text-lg">
-                              {candidate.fullname}
-                            </h3>
-                          </div>
-                          <div className="candidate-votes flex flex-col items-center">
-                            <h4 className="pop-light absolute top-4 right-4 sm:top-[50%] sm:translate-x-[50%] sm:-translate-y-[50%] sm:right-[50%] italic text-xs sm:text-base">
-                              {percentage(candidate.count, result?.voted_candidates)}%
-                            </h4>
-                            <h4 className="pop-bold text-xl">
-                              {candidate.count}
-                            </h4>
-                            <h5 className="pop-semibold text-sm">votes</h5>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              ))
-          )}
+            ))
+          }
         </div>
       </VoteModal>
       {/* RESULT BALLOT MODAL */}

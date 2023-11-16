@@ -12,6 +12,7 @@ import { MdOutlineHowToVote } from "react-icons/md";
 import { Skeleton } from "antd";
 import { IoMenu } from "react-icons/io5";
 import blank from '../images/blank.jpg'
+import { socket } from "../socket"
 
 export default function VoterDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -23,6 +24,7 @@ export default function VoterDashboard() {
 
   async function handleLogout(){
     await logout()
+    socket.disconnect();
     localStorage.removeItem('student_id')
     window.location.reload()
   }
