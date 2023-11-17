@@ -49,17 +49,23 @@ export const useUploadId = () => {
   const axiosPrivate = useAxiosPrivate()
 
   return useMutation({
-      mutationFn: async (newStudentId: {student_id: string}) =>{
-          const response = await axiosPrivate.post('/id', newStudentId)
+      mutationFn: async (newStudentId: {student_id: string, student_email: string}) =>{
+          const response = await axiosPrivate.post('/register-student', newStudentId)
           return response.data
       },
-      onSuccess: async () => {
+      onSuccess: async (data) => {
+        if(data?.message === 'success'){
+          await queryClient.invalidateQueries({
+            queryKey: ['users'],
+            exact: true
+          })
           message.open({
               key: 'successCreation',
               type: 'success',
-              content: 'ID Uploaded Successfully',
+              content: 'Account sent to Email.',
               duration: 2,
           });
+        }
       },
       onError: (error:any) => {
           if (error.message === 'Network Error') {
