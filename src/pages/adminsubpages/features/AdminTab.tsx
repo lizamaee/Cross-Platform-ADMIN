@@ -1,23 +1,27 @@
 import { Button, Drawer, Modal, Skeleton, Spin, message } from 'antd'
 import { FaUserShield } from 'react-icons/fa'
-import { useChangeRole, useUploadId, useUploadIds, useUsers } from '../../../hooks/queries/useAdmin'
+import { useChangeRole, useUploadId,  useUsers } from '../../../hooks/queries/useAdmin'
 import { useState } from 'react'
 import { ZodType, z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as XLSX from 'xlsx';
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
-import { MdCloudUpload } from 'react-icons/md'
 import DeleteMe from '../../../components/DeleteMe'
 import { TiWarning } from 'react-icons/ti'
 
+type RegisterSingleFormData = {
+    student_id: string;
+    student_email:string;
+}
 type PromoteFormData = {
     student_id: string;
 }
 
 type XlsxFormData = {
     sheet: string;
-    column: string;
+    idColumn: string;
+    emailColumn: string;
 }
 
 export default function AdminTab() {
@@ -78,7 +82,6 @@ export default function AdminTab() {
     //CLOSE UPLOAD XLSX ID MULTI-PARENT DRAWER FUNCTION
     const onCloseMultiDrawer = () => {
         singleReset()
-        multipleReset()
         setOpenMulti(false)
     }
 
@@ -136,9 +139,10 @@ export default function AdminTab() {
                 const formData = new FormData();
                 formData.append('file', xlsxFile);
                 formData.append('sheet', data.sheet); // default to sheet '0' if not assigned
-                formData.append('column', data.column); // default to column 'A' if not assigned
+                formData.append('idColumn', data.idColumn); // default to column 'A' if not assigned
+                formData.append('emailColumn', data.emailColumn); // default to column 'A' if not assigned
         
-                const response = await axiosPrivate.post('/id/xlsx', formData, {
+                const response = await axiosPrivate.post('/register-xlsx', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
                 });
                 setIsUploading(false)
@@ -146,7 +150,7 @@ export default function AdminTab() {
                     key: 'successCreation',
                     type: 'success',
                     content: `${response.data.message}`,
-                    duration: 2,
+                    duration: 5,
                 })
             } catch (error:any) {
                 setIsUploading(false)
@@ -184,7 +188,11 @@ export default function AdminTab() {
         sheet: z.string()
         .regex(/^(?:[0-9]|[1-9][0-9]?)$/, { message: "Sheet must be a number between 0 and 99" })
         .max(2),
-        column: z.string()
+        idColumn: z.string()
+        .regex(/^[A-Z]$/, { message: "Column Letter must be a capital letter between A-Z" })
+        .min(1)
+        .max(1),
+        emailColumn: z.string()
         .regex(/^[A-Z]$/, { message: "Column Letter must be a capital letter between A-Z" })
         .min(1)
         .max(1),
@@ -205,51 +213,29 @@ export default function AdminTab() {
     }
 
     //UPLOAD SINGLE STUDENT ID
-    const singleSchema: ZodType<PromoteFormData> = z.object({
-        student_id: z.string().regex(/^\d{6,7}$/, {message: "Student ID must be a valid Student ID"}).min(6).max(7)
+    const singleSchema: ZodType<RegisterSingleFormData> = z.object({
+        student_id: z.string().regex(/^\d{6,7}$/, {message: "Student ID must be a valid Student ID"}).min(6).max(7),
+        student_email: z.string().email()
     })
-    const {register:singleRegister, handleSubmit:handleSubmitSingle, formState:{errors:errorSingle}, reset:singleReset} = useForm<PromoteFormData>({resolver: zodResolver(singleSchema)})
+    const {register:singleRegister, handleSubmit:handleSubmitSingle, formState:{errors:errorSingle}, reset:singleReset} = useForm<RegisterSingleFormData>({resolver: zodResolver(singleSchema)})
 
     //SINGLE ID QUERY HOOKS
-    const {mutate:uploadSingleID, isLoading:isSingleLoading} = useUploadId()
+    const {mutate:registerSingleID, isLoading:isSingleLoading} = useUploadId()
     
     //UPLOAD SINGLE ID FUNCTION
-    const handleUploadSingleId = (data:PromoteFormData) => {
-        uploadSingleID(
+    const handleUploadSingleId = (data:RegisterSingleFormData) => {
+        registerSingleID(
             {
-                student_id: data.student_id
+                student_id: data.student_id,
+                student_email: data.student_email
             },
             {
-                onSettled: () => {
-                    singleReset()}
+                onSuccess: (data) => {
+                    if(data.message === 'success') singleReset()}
             }
             )
     }
 
-    //UPLOAD MULTIPLE STUDENT ID
-    const multipleSchema: ZodType<PromoteFormData> = z.object({
-        student_id: z
-        .string()
-        .refine((value) => {
-          const studentIds = value.split(',');
-          return studentIds.every((id) => /^\d{7}$/.test(id.trim()));
-        }, 'Student IDs should be comma-separated 7-digit numbers'),
-    });
-    const {register:multipleRegister, handleSubmit:handleSubmitMultiple, formState:{errors:errorMultiple}, reset:multipleReset} = useForm<PromoteFormData>({resolver: zodResolver(multipleSchema)})
-    
-    //MULTIPLE ID QUERY HOOKS
-    const {mutate:uploadMultipleID, isLoading: isMultiLoading} = useUploadIds()
-    const handleUploadMultipleId = (data: PromoteFormData) => {
-        uploadMultipleID(
-            {
-                student_ids: data.student_id
-            },
-            {
-                onSettled: () => {
-                    multipleReset()}
-            }
-            )
-    }
 
     //DEMOTE MODAL STATE   
     const [openDemoteModal, setOpenDemoteModal] = useState<boolean>(false)
@@ -302,7 +288,7 @@ export default function AdminTab() {
                 <h3 className="pt-5 pop-semibold text-gray-900 dark:text-gray-300">Actions</h3>
                 <div className="actions pop-medium flex flex-col md:flex-row gap-2 md:gap-5 border-b-2 py-4 border-dashed dark:border-gray-500">
                     <button onClick={showPromoteDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500 text-xs sm:text-sm">Promote to Admin</button>
-                    <button onClick={openMultiDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500 text-xs sm:text-sm">Upload Student ID</button>
+                    <button onClick={openMultiDrawer} className="border-2 py-1 px-2 rounded-md dark:text-gray-500 dark:border-gray-500 hover:bg-gray-200 dark:hover:text-gray-300 dark:hover:bg-gray-500 text-xs sm:text-sm">Register Students</button>
                 </div>
                 {/* ACTIONS */}
                 {/* ADMINS */}
@@ -381,66 +367,55 @@ export default function AdminTab() {
             {/* PROMOTE ACCOUNT DRAWER */}
 
             {/* UPLOAD XLSX ID MULTI-PARENT DRAWER */}
-            <Drawer title="Upload Student ID" className='centered' onClose={onCloseMultiDrawer} open={openMulti}>
+            <Drawer title="Register Students" className='centered' onClose={onCloseMultiDrawer} open={openMulti}>
                 <div className='pop-medium flex flex-col'>
                     {/* UPLOAD XLSX BUTTON */}
-                    <button onClick={showChildrenDrawer} className='border-2 py-1 px-2 rounded-md'>Upload Excel File</button>
+                    <button onClick={showChildrenDrawer} className='border-2 py-1 px-2 rounded-md'>Excel Registration</button>
                     {/* UPLOAD XLSX BUTTON */}
 
                     {/* UPLOAD SINGLE ID */}
                     <div className="single flex justify-center rounded-2xl mt-10 border-t-2 py-5 uppercase pop-semibold">
-                        <h4>Single ID Upload</h4>
+                        <h4>Single Registration</h4>
                     </div>
-                    <form>
-                        <label className='pb-1 opacity-80 block'>Student ID</label>
-                        <div className="single-input flex justify-between">
-                            <input 
-                                    {...singleRegister('student_id')}
-                                    placeholder="ex. 1234567"
-                                    maxLength={7}
-                                    minLength={6}
-                                    className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
-                            />
+                    <form className='flex flex-col' onSubmit={handleSubmitSingle(handleUploadSingleId)}>
+                        <label className='pb-1 opacity-80 block'>Student ID Number</label>
+                        <input 
+                                {...singleRegister('student_id')}
+                                placeholder="ex. 1234567"
+                                maxLength={7}
+                                minLength={6}
+                                className='py-2 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
+                        />
+                        {errorSingle.student_id && <span className="text-red-400 block pt-4 text-center text-sm">{errorSingle.student_id.message}</span>}
 
-                            {/* UPLOAD SINGLE BUTTON */}
-                            <div className="cnt flex items-center h-12 w-10  justify-center">
-                                {isSingleLoading
-                                    ? <Spin size='large' className=' pt-3 pb-1'/>
-                                    : <button className='flex items-center border-2 border-blue-800 text-blue-800 h-12 px-2 rou rounded-full box-border  hover:bg-blue-800 hover:text-white' onClick=   {handleSubmitSingle(handleUploadSingleId)}>
-                                        <MdCloudUpload size={30}/> 
-                                    </button>
-                                }
-                            </div>
-                            {/* UPLOAD SINGLE BUTTON */}
-                        </div>
-                        {errorSingle.student_id && <span className="text-red-400 block py-4 text-center text-sm">{errorSingle.student_id.message}</span>}
+                        <label className="pb-1  pt-5 opacity-80 block">
+                            Student Email
+                        </label>
+                        <input
+                            className="py-2 px-3 bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2"
+                            type="text"
+                            {...singleRegister("student_email")}
+                            placeholder="ex. studentemail@mail.com"
+                            required
+                        />
+                        {errorSingle.student_email && (
+                            <span className="text-red-400 text-center block pt-2 text-xs md:text-sm">
+                            {errorSingle.student_email.message}
+                            </span>
+                        )}
+                        {/* UPLOAD SINGLE BUTTON */}
+                        {isSingleLoading 
+                            ? <button disabled={isSingleLoading} className="pop-medium items-center text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-3 mt-4 px-5 sm:px-7">Uploading...</button>
+                            : <button type='submit' disabled={isSingleLoading} className="pop-medium items-center text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-3 mt-4 px-5 sm:px-7rounded-full">Upload</button>
+                        }
+                        {/* UPLOAD SINGLE BUTTON */}
                     </form>
                     {/* UPLOAD SINGLE ID */}
-
-                    {/* UPLOAD MULTIPLE ID */}
-                    <div className="single flex justify-center mt-10 border-t-2 py-5 uppercase pop-semibold">
-                        <h4>Multiple ID Upload</h4>
-                    </div>
-                    {/* UPLOAD MULTIPLE ID */}
-                    <form onSubmit={handleSubmitMultiple(handleUploadMultipleId)}>
-                        <textarea className='p-3 resize-none focus:outline-indigo-400 rounded-md border-solid border-2'  {...multipleRegister('student_id')} name="student_id" placeholder='ex. 1234567,0987654, ...' cols={40} rows={8}/>
-                        
-                        {errorMultiple.student_id && <span className="text-red-400 block py-4 text-center text-sm">{errorMultiple.student_id.message}</span>}
-
-                        {/* UPLOAD MULTIPLE BUTTON */}
-                        <div className="btn flex items-center justify-center pt-5">
-                            {isMultiLoading 
-                                ? <button disabled={isMultiLoading} className="pop-medium items-center text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7">Uploading...</button>
-                                : <button type='submit' disabled={isMultiLoading} className="pop-medium items-center text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7rounded-full">Upload</button>
-                            }
-                        </div>
-                        {/* UPLOAD MULTIPLE BUTTON */}
-                    </form>
 
                 </div>
                 {/* UPLOAD XLSX ID MULTI-CHILD DRAWER */}
                 <Drawer
-                    title="Upload Excel File"
+                    title="Mass Registration"
                     width={320}
                     onClose={onChildrenDrawerClose}
                     open={childrenDrawer}
@@ -472,15 +447,24 @@ export default function AdminTab() {
                             />
                             {errorXlxs.sheet && <span className="block text-red-400 text-center text-sm">{errorXlxs.sheet.message}</span>}
 
-                            <label className='pb-1 block mt-4 opacity-80'>Column Letter</label>
+                            <label className='pb-1 block mt-4 opacity-80'>ID Column Letter</label>
                             <input 
-                                {...xlsxRegister("column")}
+                                {...xlsxRegister("idColumn")}
                                 placeholder="ex. A"
                                 maxLength={1}
                                 minLength={1}
                                 className='py-1 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
                             />
-                            {errorXlxs.column && <span className="block text-red-400 text-center text-sm">{errorXlxs.column.message}</span>}
+                            {errorXlxs.idColumn && <span className="block text-red-400 text-center text-sm">{errorXlxs.idColumn.message}</span>}
+                            <label className='pb-1 block mt-4 opacity-80'>Email Column Letter</label>
+                            <input 
+                                {...xlsxRegister("emailColumn")}
+                                placeholder="ex. A"
+                                maxLength={1}
+                                minLength={1}
+                                className='py-1 px-3 text-lg bg-[#E5E0FF] focus:outline-indigo-400 rounded-md border-solid border-2' 
+                            />
+                            {errorXlxs.emailColumn && <span className="block text-red-400 text-center text-sm">{errorXlxs.emailColumn.message}</span>}
                         </div>
                         
                         <div className="btn flex items-center justify-center py-5">
