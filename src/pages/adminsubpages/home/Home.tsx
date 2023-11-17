@@ -16,6 +16,8 @@ import { useOrganizations } from "../../../hooks/queries/useOrganization";
 import { useActivateElection, useUsers } from "../../../hooks/queries/useAdmin";
 import blank from '../../../images/blank.jpg'
 import { socket } from "../../../socket";
+import useSound from "use-sound";
+import votedSoundEffect from "../../../assets/votedsound.mp3"
 
 interface Election {
   id: number;
@@ -64,6 +66,7 @@ export default function Home(){
   const [allElections, setAllElections] = useState<any>([]);
   const [allOrganizations, setAllOrganizations] = useState<any>([]);
   const [votedActivities, setvotedActivities] = useState<any>({});
+  const [votedSound] = useSound(votedSoundEffect)
 
   useEffect(() => {
     socket.emit("admin-emit")
@@ -270,7 +273,7 @@ export default function Home(){
       {/* DASHBOARD */}
 
 
-      { !renderCandidates ? "" : <CandidatesResults handleClose={closeCandidateTable} seatCandidates={singleOrgResult}/>}
+      { !renderCandidates ? "" : <CandidatesResults votedSound={votedSound} handleClose={closeCandidateTable} seatCandidates={singleOrgResult}/>}
 
 
       {/* PHASE I */}
