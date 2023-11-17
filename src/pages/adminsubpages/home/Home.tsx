@@ -15,7 +15,7 @@ import { useElections } from "../../../hooks/queries/useElection";
 import { useOrganizations } from "../../../hooks/queries/useOrganization";
 import { useActivateElection, useUsers } from "../../../hooks/queries/useAdmin";
 import blank from '../../../images/blank.jpg'
-
+import { socket } from "../../../socket";
 
 interface Election {
   id: number;
@@ -29,6 +29,7 @@ interface ElectionOrg {
   id: string;
   org_name: string;
   logo_url: string;
+  ballots: any;
   startDate: string;
   endDate: string;
 }
@@ -45,35 +46,61 @@ interface Activity {
   }
 }
 
-interface seatCandidate{
-  id: string;
-  position: string;
-  candidates: {
-      id: string;
-      fullname: string;
-      party: string;
-      count: number;
-  }[];
-}
-
 export default function Home(){
   const [asOfNow, setAsOfNow] = useState<string>("");
   const [upcomingTab, setUpcomingTab] = useState<boolean>(true)
   const [ongoingTab, setOngoingTab] = useState<boolean>(false)
   const [renderOrganizations, setRenderOrganizations] = useState<boolean>(false)
-  const [upcomingsError, setUpcomingsError] = useState<string>("")
-  const [ongoingsError, setOngoingsError] = useState<string>("")
-  const [activitiesError, setActivitiesError] = useState<string>("")
-
   const [electionOrgs, setElectionOrgs] = useState<ElectionOrg[]>([])
-  const [seatCandidates, setSeatCandidates] = useState<seatCandidate[]>([])
   const [renderCandidates, setRenderCandidates] = useState(false)
 
   const axiosPrivate = useAxiosPrivate()
   const location = useLocation()
   const navigate = useNavigate()
 
-  const { isNight } = useAuthStore((state) => state)
+  const { isNight, events } = useAuthStore((state) => state)
+  const [singleOrgResult, setSingleOrgResult] = useState<any>([]);
+  const [allVoters, setAllVoters] = useState<any>([]);
+  const [allElections, setAllElections] = useState<any>([]);
+  const [allOrganizations, setAllOrganizations] = useState<any>([]);
+  const [votedActivities, setvotedActivities] = useState<any>({});
+
+  useEffect(() => {
+    socket.emit("admin-emit")
+
+    function singleResultEvent(data:any){
+      setSingleOrgResult(data)
+    }
+    socket.on("single-org-result", singleResultEvent)
+
+    function votedActivitiesEvent(data:any){
+      setvotedActivities(data)
+    }
+    socket.on("activities", votedActivitiesEvent)
+
+    function allVotersEvent(data:any){
+      setAllVoters(data)
+    }
+    socket.on("all-voters", allVotersEvent)
+
+    function allElectionsEvent(data:any){
+      setAllElections(data)
+    }
+    socket.on("all-elections", allElectionsEvent)
+
+    function allOrganizationsEvent(data:any){
+      setAllOrganizations(data)
+    }
+    socket.on("all-organizations", allOrganizationsEvent)
+
+    return () => {
+      socket.off('single-org-result', singleResultEvent);
+      socket.off('activities', votedActivitiesEvent);
+      socket.off('all-voters', allVotersEvent);
+      socket.off('all-elections', allElectionsEvent);
+      socket.off('all-organizations', allOrganizationsEvent);
+    };
+  }, [socket])
 
   const fetchData = async (endpoints: string) => {
     try {
@@ -99,9 +126,7 @@ export default function Home(){
   //Elections Query
   const electionsQuery = useElections()
   
-  const upcomingElections: Election[] = electionsQuery.data?.filter((election: Election)=> election.status === 'upcoming');
-
-  const ongoingElections: Election[] = electionsQuery.data?.filter((election: Election)=> election.status === 'ongoing');
+  const upcomingElections: Election[] = electionsQuery.data?.filter((election: Election)=> election.status === 'upcoming')
 
   //Organizations Query
   const organizationsQuery = useOrganizations()
@@ -148,7 +173,6 @@ export default function Home(){
     formatDate()
 
   }, []);
-  //add [ newUser, upcomings, voters, elections, organizations ] dependency above on production
 
   const data = {
     labels: dataDay,
@@ -190,43 +214,19 @@ export default function Home(){
       activateElectionNow(id)
   }
 
-  //Get All organization of passed election id
-  const getCandidatesBasedOnOrgId = async (id: string) => {
-    try {
-      const response = await fetchData(`seat/org-seat-candidates/${id}`)
-      return response
-      
-    } catch (error) {
-      throw error
-    }
-  }
-
-  const getOrganizationsBasedOnId = async (id:string) => {
-    try {
-      const response = await fetchData(`election/${id}`)
-      return response
-    } catch (err) {
-      throw err
-      //console.log(err);
-    }
-  }
+  //SHOW ORGANIZATIONS
   const getOrganizations = async (id: string) => {
-    const response = await getOrganizationsBasedOnId(id)
-    setElectionOrgs(response.organizations)
-    setRenderOrganizations(true)
+    const orgs = events[0]?.filter(
+      (elec: any) => elec.id === id
+      );
+      setElectionOrgs(orgs[0]?.organizations)
+      setRenderOrganizations(true)
   }
-
-  const getCandidates = async (id: string) => {
-    const response = await getCandidatesBasedOnOrgId(id)
-    //console.log(response.seats);
-    if(!response.seats) {
-      console.log("Empty response");
-      
-    }else{
-      setSeatCandidates(response.seats)
-      setRenderCandidates(true)
-    }
-  }
+  
+  const handleGetBallot = async (ballots: any) => {
+    socket.emit("ballot-id", {ballot_id: `${ballots.id}`} )
+    setRenderCandidates(true)
+  };
 
   const handleUpcomingTab = () => {
     setUpcomingTab(true)
@@ -270,19 +270,19 @@ export default function Home(){
       {/* DASHBOARD */}
 
 
-      { !renderCandidates ? "" : <CandidatesResults handleClose={closeCandidateTable} seatCandidates={seatCandidates}/>}
+      { !renderCandidates ? "" : <CandidatesResults handleClose={closeCandidateTable} seatCandidates={singleOrgResult}/>}
 
 
       {/* PHASE I */}
       <div className="boxes py-5 grid md:grid-cols-3 gap-5">
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#A75DE1] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
-          {votersQuery.isLoading ? (
+          {votersQuery?.isLoading ? (
             <Skeleton.Avatar active shape='circle' size='large' />
           ) : (
             <div>
               <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
-                {votersQuery.data?.length}
+                {allVoters?.length}
               </h1>
             </div>
           )}
@@ -297,12 +297,12 @@ export default function Home(){
 
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#2F92F0] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
-            {electionsQuery.isLoading ? (
+            {electionsQuery?.isLoading ? (
               <Skeleton.Avatar active shape='circle' size='large' />
             ) : (
               <div>
                 <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
-                  {electionsQuery.data?.length}
+                  {allElections?.length}
                 </h1>
               </div>
             )}
@@ -315,12 +315,12 @@ export default function Home(){
 
         <div className="all-voters md:drop-shadow-md md:grid md:grid-cols-2 md:gap-2 py-3 px-3 md:py-4 bg-[#1AB98C] rounded-xl text-white text-center md:text-left">
           <div className="icon-container text-center">
-            {organizationsQuery.isLoading ? (
+            {organizationsQuery?.isLoading ? (
               <Skeleton.Avatar active shape='circle' size='large' />
             ) : (
               <div>
                 <h1 className="pop-bold text-xl md:text-3xl md:pb-2">
-                  {organizationsQuery.data?.length}
+                  {allOrganizations?.length}
                 </h1>
               </div>
             )}
@@ -360,20 +360,16 @@ export default function Home(){
             <div className="card py-2 sm:p-10 bg-[#090650] dark:bg-[#4a4a4a] rounded-xl text-center text-white">
               <h2 className="pop-bold text-sm sm:text-2xl">
                 <span className="text-[#00ffdf]  dark:text-[#49ecd6]">
-                  {votedActivitiesQuery?.isLoading ? (
-                    <Skeleton.Avatar active shape='circle' size='small' />
-                  ) : (
                       <span className="md:pb-2">
-                        {String(votedActivitiesQuery?.data?.count ?? "0")}
+                        {String(votedActivities?.count?.length ?? "0")}
                       </span>
-                  )}
                 </span>
                 <span className="pop-regular px-4">out of</span>
-                  {votersQuery.isLoading ? (
+                  {votersQuery?.isLoading ? (
                     <Skeleton.Avatar active shape='circle' size='small' />
                   ) : (
                       <span className="md:pb-2">
-                        {votersQuery.data?.length}
+                        {allVoters?.length}
                       </span>
                   )}
               </h2>
@@ -387,10 +383,6 @@ export default function Home(){
 
             <div className="voting-activity overflow-y-auto max-h-60 sm:px-2">
 
-              { activitiesError && (
-
-                  <h3 className="pop-normal w-full text-center text-sm tracking-wide pt-5 opacity-50 dark:text-gray-200">{activitiesError}</h3>
-              )}
               {votedActivitiesQuery?.isLoading 
                 ? <div className="animate-pulse flex justify-between items-center shadow-sm py-1">
                     <div
@@ -403,7 +395,7 @@ export default function Home(){
                     </div>
                     <div className="w-8 sm:w-16 h-3 rounded-sm bg-emerald-300 dark:bg-emerald-600"></div>
                   </div>
-                : votedActivitiesQuery?.data?.activities?.map((activity: Activity) => (
+                : votedActivities?.activities?.map((activity: Activity) => (
                   <div key={activity.id} className="activity flex justify-between items-center shadow-sm py-1 text-[#090650] dark:text-gray-400">
                     <img
                       className="object-cover w-6 h-6 rounded-full"
@@ -437,8 +429,8 @@ export default function Home(){
         </div>
         {/* Elections Table */}
         <div className="tables overflow-x-auto py-5 sm:px-7 centered">
-          { upcomingTab && <ElectionTable election={upcomingElections} error={upcomingsError} handleElection={activateElection} action='activate' actionStyle='text-gray-100 bg-sky-800 hover:bg-sky-700 rounded-lg'/> }
-          { ongoingTab && <ElectionTable election={ongoingElections} error={ongoingsError} handleElection={getOrganizations} action='view' actionStyle='text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg'/> }
+          { upcomingTab && <ElectionTable election={upcomingElections} handleElection={activateElection} action='activate' actionStyle='text-gray-100 bg-sky-800 hover:bg-sky-700 rounded-lg'/> }
+          { ongoingTab && <ElectionTable election={events[0]} handleElection={getOrganizations} action='view' actionStyle='text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg'/> }
         </div>
       
 
@@ -448,7 +440,7 @@ export default function Home(){
         
         {!renderOrganizations ? "" : (electionOrgs?.map((org) => (
             
-            <div onClick={() => getCandidates(org.id)} className="single-org cursor-pointer bg-white hover:bg-[#dcdcdc] dark:hover:bg-[#6d6d6d] dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-2 sm:p-4 text-xs pop-medium" key={org.id}>
+            <div onClick={() => handleGetBallot(org.ballots[0])} className="single-org cursor-pointer bg-white hover:bg-[#dcdcdc] dark:hover:bg-[#6d6d6d] dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-2 sm:p-4 text-xs pop-medium" key={org.id}>
               <div className="org-img-container p-1 flex justify-center">
                 <img className='object-cover w-24 h-24 rounded-full' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
               </div>
