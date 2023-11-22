@@ -10,8 +10,8 @@ import { Popover, message } from 'antd';
 import { useAuthStore } from '../hooks/state';
 import { CgChevronLeftR } from 'react-icons/cg';
 
-type NumberFormData = {
-  mobile_number: string;
+type EmailFormData = {
+  email: string;
 }
 
 export default function FPassword() {
@@ -48,27 +48,24 @@ export default function FPassword() {
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
-  const schema: ZodType<NumberFormData> = z.object({
-    mobile_number: z.string().regex(/^09\d{9}$/, {message: "Mobile number must be a valid PH Mobile Number",
-    }).min(11).max(11)
+  const schema: ZodType<EmailFormData> = z.object({
+    email: z.string().email()
 
   })
 
-  const {register, handleSubmit, formState:{errors}} = useForm<NumberFormData>({resolver: zodResolver(schema)})
+  const {register, handleSubmit, formState:{errors}} = useForm<EmailFormData>({resolver: zodResolver(schema)})
 
-  const handleNext = async (data: NumberFormData) => {
+  const handleNext = async (data: EmailFormData) => {
     try {
       setIsProcessing(true)
-      const philFormat = data.mobile_number.slice(1)
-      const validNumber = `+63${philFormat}`
       
-      const res = await forgotPasswordSendOTP(validNumber) 
+      const res = await forgotPasswordSendOTP(data.email) 
       //console.log(res.data);
 
       if(res.data.message === 'success') {
         setIsProcessing(false)
-        message.success("Please confirm the OTP for verification :)", 2.5)
-        useAuthStore.setState({ tempMobileNumber: data.mobile_number })
+        message.success("Please check your Email for OTP code :)", 2.5)
+        useAuthStore.setState({ tempMobileNumber: data.email })
         navigate('/forgot-password-verify', {replace: true})
       }else{
         setIsProcessing(false)
@@ -85,7 +82,7 @@ export default function FPassword() {
             duration: 2.5,
           });
         } else if(error.response.data.error){
-            if(error.response.data.error === 'No Student with that Number'){
+            if(error.response.data.error === 'No Student with that Email'){
               setTries(tries + 1);
               setLife(life - 1)
               if (tries === 5) {
@@ -142,7 +139,7 @@ export default function FPassword() {
       <form className='flex flex-col md:px-36 md:w-[80%] lg:w-[60%] px-5' >
         <h2 className='text-[#4C7CE5] text-sm sm:text-lg md:text-xl pb-10 md:pb-18 text-center pop-bold'>Provide the details below to begin the process</h2>
         <div className="label-for-change-number items-center flex py-1">
-                  <label className="pop-medium text-gray-600 flex-1 opacity-80 text-xs md:text-md">Mobile Number</label>
+                  <label className="pop-medium text-gray-600 flex-1 opacity-80 text-xs md:text-md">Email Address</label>
                   <Popover
                     content={<div>
                       <p>A 5-Minute Pause after 5 requests</p>
@@ -161,14 +158,12 @@ export default function FPassword() {
           <input
             className="bg-[#E5E0FF] text-sm sm:text-md w-full  px-4 py-3 mb-2 rounded-lg text-black dark:text-gray-300 text-md md:text-lg pop-medium outline-none border-2  border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] tracking-wider"
             type="text"
-            {...register("mobile_number")}
-            placeholder="ex. 09123456789"
-            maxLength={11}
-            minLength={11}
+            {...register("email")}
+            placeholder="ex. youremail@mail.com"
             required
           />
         </div>
-        {errors.mobile_number && <span className="text-red-400 text-center text-sm">{errors.mobile_number.message}</span>}
+        {errors.email && <span className="text-red-400 text-center text-sm">{errors.email.message}</span>}
         {timeRemaining > 0 && (
             <div className='text-sm text-center text-red-500 pt-5'>
                 Please wait {formatTime(timeRemaining)} before trying again.

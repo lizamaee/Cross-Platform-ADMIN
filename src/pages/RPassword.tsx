@@ -45,14 +45,11 @@ export default function RPassword() {
           const res = await forgotPassword(tempMobileNumber,data.password) 
           //console.log(res.data);
     
-          if(res.data.message === 'Password Updated!') {
+          if(res.data.message === 'success') {
             setIsConfirming(false)
             message.success("Password reset Successfully :)", 2.5)
             useAuthStore.setState({ tempMobileNumber: ''})
             navigate('/login', {replace: true})
-          }else{
-            setIsConfirming(false)
-            message.success(`${res.data.message}`, 2.5)
           }
         } catch (error: any) {
             //console.log(err)

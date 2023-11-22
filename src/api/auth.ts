@@ -29,17 +29,22 @@ export const loginFinaly = async (student_id: string, password: string) => {
     throw err;
   }
 };
-export const forgotPasswordSendOTP = async (mobile_number: string) => {
+export const forgotPasswordSendOTP = async (email: string) => {
   try {
-    const res = await axios.get(`${apiUrl}/forgot-password-send`,{params:{ mobile_number} })
+    const res = await axios.post(`${apiUrl}/forgot-password-send`,
+    JSON.stringify({ email }),
+    {
+      headers: { "Content-Type": "application/json"}
+    }
+    )
     return res;
   } catch (err) {
     throw err;
   }
 };
-export const forgotPassword = async (mobile_number: string, new_password: string) => {
+export const forgotPassword = async (email: string, new_password: string) => {
   try {
-    const res = await axios.patch(`${apiUrl}/forgot-password`,{ mobile_number, new_password})
+    const res = await axios.patch(`${apiUrl}/forgot-password-outside`,{ email, new_password})
     return res;
   } catch (err) {
     throw err;
@@ -55,10 +60,10 @@ export const checkStudentID = async (student_id: string) => {
   }
 };
 
-export const confirmNumberSendOTP = async (new_number: string) => {
+export const confirmNumberSendOTP = async (new_email: string) => {
   try {
     const res = await axios.post(`${apiUrl}/otp/send`, 
-    JSON.stringify({ mobile_number: new_number }),
+    JSON.stringify({ email: new_email }),
     {
       headers: { "Content-Type": "application/json"},
       withCredentials: true
@@ -69,10 +74,10 @@ export const confirmNumberSendOTP = async (new_number: string) => {
     throw err;
   }
 }
-export const confirmNumberVerifyOTP = async (mobile_number: string, otp_code: string) => {
+export const confirmNumberVerifyOTP = async (email: string, otp_code: string) => {
   try {
     const res = await axios.post(`${apiUrl}/otp/verify`, 
-    JSON.stringify({ mobile_number, otp_code }),
+    JSON.stringify({ email, otp_code }),
     {
       headers: { "Content-Type": "application/json"},
       withCredentials: true

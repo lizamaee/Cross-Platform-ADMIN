@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import OtpInput from 'react-otp-input';
 import otpImage from '../images/otp.png'
-import { confirmNumberSendOTP, confirmNumberVerifyOTP, forgotPasswordSendOTP } from '../api/auth';
+import { confirmNumberVerifyOTP, forgotPasswordSendOTP } from '../api/auth';
 import { useAuthStore } from '../hooks/state';
 import { useNavigate } from 'react-router-dom';
 import { message, Popover, Modal, Button  } from 'antd';
@@ -10,8 +10,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { ZodType, z } from 'zod';
 
-type MobileFormData = {
-  mobile_number: string;
+type EmailFormData = {
+  email: string;
 }
 
 export default function FVerification() {
@@ -54,12 +54,9 @@ export default function FVerification() {
       setIsVerifying(false)
     }else{
       try {
-        const philNum = tempMobileNumber.slice(1)
-        const validNum = `+63${philNum}`
-        
-        const res = await confirmNumberVerifyOTP(validNum, otp)
+        const res = await confirmNumberVerifyOTP(tempMobileNumber, otp)
 
-        if(res.data?.check_status.status === "approved"){
+        if(res.data?.message === "success"){
           setIsVerifying(false)
           message.success('OTP Confirmed!')
           navigate('/reset-password', {replace: true})
@@ -110,13 +107,12 @@ export default function FVerification() {
   const handleResend = async () => {
     try {
       setIsResending(true)
-      const philNum = tempMobileNumber.slice(1)
-      const validNum = `+63${philNum}`
-      await confirmNumberSendOTP(validNum).then(() => {
+      const resendotp = await forgotPasswordSendOTP(tempMobileNumber)
+      if(resendotp?.data?.message === "success"){
         message.success('OTP Resent')
         setIsResending(false)
         setCountdown(60);
-      })
+      }
     
     } catch (error:any) {
       setIsResending(false)
@@ -156,30 +152,26 @@ export default function FVerification() {
     setOpenAtNumber(newOpen);
   };
 
-  const schema: ZodType<MobileFormData> = z.object({
-    
-    mobile_number: z.string().regex(/^09\d{9}$/, {message: "Mobile number must be a valid PH Mobile Number",
-    }).min(11).max(11)
+  const schema: ZodType<EmailFormData> = z.object({
+    email: z.string().email()
   })
 
 
-  const {register, handleSubmit, formState:{errors}} = useForm<MobileFormData>({resolver: zodResolver(schema)})
+  const {register, handleSubmit, formState:{errors}} = useForm<EmailFormData>({resolver: zodResolver(schema)})
 
-  const handleChangeNumber = async (data: MobileFormData) => {
+  const handleChangeNumber = async (data: EmailFormData) => {
     try {
       setConfirmLoading(true);
-
-      const philFormat = data.mobile_number.slice(1)
-      const res = await forgotPasswordSendOTP(`+63${philFormat}`) 
+      const res = await forgotPasswordSendOTP(data.email) 
       //console.log(res.data);
 
       if(res.data.message === 'success') {
         setConfirmLoading(false);
         setOpenModal(false);
         setOpenAtNumber(false)
-        message.success('OTP Sent')
+        message.success('OTP Sent to email.')
         setCountdown(60);
-        useAuthStore.setState({ tempMobileNumber: data.mobile_number })
+        useAuthStore.setState({ tempMobileNumber: data.email })
       }else{
         setConfirmLoading(false)
         message.success(`${res.data.message}`, 2.5)
@@ -240,7 +232,7 @@ export default function FVerification() {
           </div>
           <div className='text-gray-900 break-words text-center text-sm sm:text-lg dark:text-gray-500 pop-semibold pb-10 md:pb-18'>
             Enter OTP sent to
-            <span className='dark:text-gray-400 text-xs sm:text-sm px-3'>{`#${tempMobileNumber}`}</span>
+            <span className='dark:text-gray-400 text-xs sm:text-sm px-3'>{`${tempMobileNumber}`}</span>
           </div>
           <div className="subheading-input flex gap-5 items-center">
             <h3 className='text-[#3F3D56] dark:text-gray-400 pop-light text-xs sm:text-sm py-3'>Enter 6 digits code</h3>
@@ -272,10 +264,10 @@ export default function FVerification() {
             />
           </div>
           <div className="resend-wrapper text-xs sm:text-sm flex justify-between pop-semibold  text-[#4C7CE5]">
-            <button onClick={showModal} className='opacity-80 focus:outline-none '>Change number</button>
+            <button onClick={showModal} className='opacity-80 focus:outline-none '>Change email</button>
             <Modal
               className=''
-              title={<h2 className='pop-semibold text-[#4C7CE5]'>Change Mobile Number</h2>}
+              title={<h2 className='pop-semibold text-[#4C7CE5]'>Change Email Address</h2>}
               open={openModal}
               confirmLoading={confirmLoading}
               onCancel={handleCancel}
@@ -287,7 +279,7 @@ export default function FVerification() {
             >
               <form className='flex flex-col' >
                 <div className="label-for-change-number flex md:w-[70%] py-1">
-                  <label className="pop-regular flex-1 opacity-80 text-xs">Mobile Number (required)</label>
+                  <label className="pop-regular flex-1 opacity-80 text-xs">Email Address (required)</label>
                   <Popover
                     content={<div>
                       <p>A 10-Minute Pause after 5 consecutive changes</p>
@@ -304,14 +296,12 @@ export default function FVerification() {
                 <input
                   className="bg-[#E5E0FF] px-4 md:w-[70%] py-3 mb-2 rounded-lg text-black text-md md:text-lg pop-medium outline-none  border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] tracking-wider"
                   type="text"
-                  {...register("mobile_number")}
-                  placeholder="ex. 09123456789"
-                  maxLength={11}
-                  minLength={11}
+                  {...register("email")}
+                  placeholder="ex. youremail@gmail.com"
                   required
                   />
 
-                {errors.mobile_number && <span className="md:w-[70%] text-red-400 text-center text-xs md:text-sm">{errors.mobile_number.message}</span>}
+                {errors.email && <span className="md:w-[70%] text-red-400 text-center text-xs md:text-sm">{errors.email.message}</span>}
 
                 {!confirmLoading
                     ? <button onClick={handleSubmit(handleChangeNumber)} disabled={countdown > 0} className={`md:w-[70%] py-3 mt-5 pop-bold text-white rounded-lg text-sm sm:text-lg bg-[#4C7CE5] ${countdown > 0 ? 'cursor-not-allowed': ''}`}>Confirm</button>
