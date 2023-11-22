@@ -152,9 +152,6 @@ export default function Login() {
               <NavLink to='/forgot-password'>
                 <p className="pop-semibold text-sm py-4 underline">Forgot Password</p>
               </NavLink>
-              <NavLink to='/register'>
-                <p className="pop-semibold text-sm py-4 underline">Register</p>
-              </NavLink>
           </ul>
         </div>
       </form>

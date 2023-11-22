@@ -20,7 +20,6 @@ export default function Landing() {
         </div>
         <ul className='flex gap-2 flex-col pop-semibold py-5'>
           <Link to="/login" className='px-8 py-2 rounded-lg border-2 border-[#6c63ff] '>Login</Link>
-          <Link to="/register" className='bg-[#6c63ff] text-[#E5E0FF] dark:text-gray-300 hover:text-[#6c63ff] py-2 px-8 rounded-lg border-2 border-[#6c63ff] hover:border-[#6c63ff] hover:bg-[#E5E0FF] dark:hover:bg-[#2b2b2b]'>Register</Link>
         </ul>
       </nav>
 
@@ -34,7 +33,6 @@ export default function Landing() {
        </div>
         <ul className='hidden lg:flex gap-10 items-center pop-semibold tracking-widest text-[1.1rem]'>
           <Link to="/login" className='py-2 px-10 rounded-lg border-2 border-[#6c63ff] hover:border-[#6c63ff] hover:bg-[#6c63ff] hover:text-[#E5E0FF] dark:hover:bg-[#6c63ff] drop-shadow-md'>Login</Link>
-          <Link to="/register" className='bg-[#6c63ff] text-[#E5E0FF] dark:text-gray-300 hover:text-[#6c63ff] py-2 px-8 rounded-lg border-2 border-[#6c63ff] hover:border-[#6c63ff] hover:bg-[#E5E0FF] dark:hover:bg-[#2b2b2b] drop-shadow-md'>Register</Link>
         </ul>
         <button onClick={handlerOpenNav}  className='lg:hidden focus:outline-none'>
           <IoMenu size={43} className='text-[#6c63ff]'/>

@@ -4,9 +4,6 @@ import App from './App'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import FPassword from './pages/FPassword'
-import Register from './pages/Register'
-import MVerification from './pages/MVerification'
-import CPin from './pages/CPin'
 import EPin from './pages/EPin'
 import AdminDashboard from './pages/AdminDashboard'
 import NotFound from './pages/NotFound'
@@ -17,7 +14,6 @@ import Settings from './pages/adminsubpages/settings/Settings'
 import './index.css'
 import {
   createBrowserRouter,
-  Navigate,
   RouterProvider,
 } from "react-router-dom";
 import VoterDashboard from './pages/VoterDashboard'
@@ -33,8 +29,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import PVerification from './pages/PVerification'
 import RPin from './pages/RPin'
-
-const isElectionOngoing = import.meta.env.VITE_ELECTION_STATUS === "ONGOING" ? true : false
 
 const client = new QueryClient({
   defaultOptions: {
@@ -143,18 +137,6 @@ const router = createBrowserRouter([
       {
         path: "reset-password",
         element: <RPassword />
-      },
-      {
-        path: "register",
-        element: isElectionOngoing ? <Navigate to="/login"/> : <Register/>
-      },
-      {
-        path: "mobile-verification",
-        element: <MVerification />
-      },
-      {
-        path: "create-pin",
-        element: <CPin />
       },
       {
         path: "*",
