@@ -31,6 +31,8 @@ import FVerification from './pages/FVerification'
 import RPassword from './pages/RPassword'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import PVerification from './pages/PVerification'
+import RPin from './pages/RPin'
 
 const isElectionOngoing = import.meta.env.VITE_ELECTION_STATUS === "ONGOING" ? true : false
 
@@ -121,6 +123,14 @@ const router = createBrowserRouter([
       {
         path: "enter-pin",
         element: <EPin />
+      },
+      {
+        path: "forgot-pin-verify",
+        element: <PVerification />
+      },
+      {
+        path: "reset-pin",
+        element: <RPin />
       },
       {
         path: "forgot-password",
