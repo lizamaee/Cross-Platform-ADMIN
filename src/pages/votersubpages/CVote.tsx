@@ -591,9 +591,9 @@ export default function CVote() {
             .map((result: Position, index: any) => (
               <div
                 key={index}
-                className={`result gap-10 p-5 mb-10 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg`}
+                className={`result gap-10 p-5 mb-10 border-4 dark:border-zinc-700 shadow-2xl rounded-lg`}
               >
-                <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-sm sm:text-lg">
+                <h3 className="pop-semibold dark:bg-zinc-700 overflow-hidden border-2 dark:border-zinc-700 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-sm sm:text-xl">
                   {result.position}
                 </h3>
                 <div className="candidates-result flex flex-col gap-3">
@@ -601,20 +601,21 @@ export default function CVote() {
                   .map((candidate: any, index: any) => (
                       <div
                         key={index}
-                        className="candidate relative bg-[#E5E0FF] dark:bg-[#313131]  sm:pr-6 sm:rounded-l-[5rem] py-2 sm:py-0 rounded-xl sm:rounded-br-[3rem] flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
+                        className="candidate border-2 dark:border-zinc-700 relative  overflow-hidden  sm:pr-6 sm:rounded-l-[5rem] py-2 sm:py-0 rounded-xl sm:rounded-br-[3rem] flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
                       >
-                        <div className="candidate-profile relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
-                          <div className="gradientball w-[54px] h-[54px] sm:w-20 sm:h-20 bg-gradient-to-t from-blue-500 to-red-500 rounded-full absolute "></div>
+                        <div  style={{ width: `${percentage(candidate.count, result?.voted_candidates)}%` }} className={`progress rounded-l-xl sm:rounded-l-[5rem] h-full bg-purple-500/40 absolute top-0 left-0 transition-width duration-300 sm:rounded-r`}></div>
+
+                        <div className="candidate-profile sm:z-10 relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
                           <img
                             src={candidate.imageUrl}
                             alt={candidate.fullname + " " + "Profile"}
-                            className="object-cover z-20 w-[50px] h-[50px] sm:w-[74px] sm:h-[74px] mt-[2px]  sm:ml-[3px] sm:mt-0 rounded-full"
+                            className="object-cover z-20 w-[50px] h-[50px] sm:w-[74px] sm:h-[74px] mt-[2px] shadow-lg sm:mt-0 rounded-full"
                           />
-                          <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-300 md:text-lg">
+                          <h3 className="pop-semibold text-xs sm:text-sm text-center sm:text-left dark:text-gray-200 md:text-lg">
                             {candidate.fullname}
                           </h3>
                         </div>
-                        <div className="candidate-votes flex flex-col items-center">
+                        <div className="candidate-votes z-10 flex flex-col items-center">
                           <h4 className="pop-light absolute top-4 right-4 sm:top-[50%] sm:translate-x-[50%] sm:-translate-y-[50%] sm:right-[50%] italic text-xs sm:text-base">
                             {percentage(candidate.count, result?.voted_candidates)}%
                           </h4>
