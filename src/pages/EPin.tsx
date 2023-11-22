@@ -5,7 +5,7 @@ import { useAuthStore } from '../hooks/state';
 import { useNavigate } from 'react-router-dom';
 import { message, Popover} from 'antd';
 import {TbInfoSquareRoundedFilled} from 'react-icons/tb'
-import { loginFinaly } from '../api/auth';
+import { forgotPinSendOTP, loginFinaly } from '../api/auth';
 
 
 export default function EPin() {
@@ -108,6 +108,79 @@ export default function EPin() {
     setOpen(newOpen);
   };
 
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  async function handleChangePin(e:any){
+    e.preventDefault()
+    try {
+      setIsProcessing(true)
+      const res = await forgotPinSendOTP(student_id)
+
+      if(res.data.message === 'success') {
+        setIsProcessing(false)
+        message.success("Please check your Email for OTP code :)", 2.5)
+        navigate('/forgot-pin-verify', {replace: true})
+      }else{
+        setIsProcessing(false)
+        message.success(`${res.data.message}`, 2.5)
+      }
+    } catch (error: any) {
+        //console.log(err)
+        setIsProcessing(false)
+        if (error.message === 'Network Error') {
+          message.open({
+            type: 'error',
+            content: 'Server Unavailable',
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          });
+        } else if(error.response.data.error){
+            if(error.response.data.error === 'No Student with that Email'){
+              setTries(tries + 1);
+              setLife(life - 1)
+              if (tries === 5) {
+                  setMistakes(mistakes + 1)
+                  if(mistakes > 0){
+                  console.log("here", mistakes);
+                  
+                  setTries(1) //this should be global state in zustand
+                  setTimeRemaining(60 * 5); 
+                  setLife(5)
+                  }else{
+                  setTries(1) //this should be global state in zustand
+                  setTimeRemaining(0);
+                  setLife(5)
+                  }
+              }else{
+                message.open({
+                  type: 'error',
+                  content: `${error.response.data.error}`,
+                  className: 'custom-class pop-medium',
+                  duration: 2.5,
+                });
+              }
+            }
+        }else if(error.response.data){
+          message.open({
+            type: 'error',
+            content: `${error.response.data}`,
+            className: 'custom-class pop-medium',
+            duration: 2.5,
+          })
+
+        }else {
+          error.response.data.errors?.map((err:any) => {
+            message.open({
+              type: 'error',
+              content: `${err.msg}`,
+              className: 'custom-class pop-medium',
+              duration: 2.5,
+            })
+          })
+        }
+    }
+  }
+
 
   return (
     <div className='w-full'>
@@ -146,6 +219,12 @@ export default function EPin() {
               inputStyle={"box-content p-3 md:p-4 rounded-lg text-xl md:text-3xl dark:text-gray-400 pop-bold bg-[#D2CEE6] dark:bg-[#232323] shadow-md"}
               inputType='tel'
             />
+            <div className="forgotpin flex justify-end dark:text-gray-400 text-right ">
+              {isProcessing
+                ? <button disabled={isProcessing} className='font-semibold underline text-xs sm:text-base p-1 sm:py-2 my-1 rounded-lg cursor-pointer'>Sending OTP...</button>
+                : <button onClick={handleChangePin} className='font-semibold underline text-xs sm:text-base p-1 sm:py-2 my-1 rounded-lg cursor-pointer'>Forgot Pin</button>
+              }
+            </div>
           </div>
 
           {timeRemaining > 0 && (
@@ -156,8 +235,8 @@ export default function EPin() {
 
           <div className="login-wrapper flex justify-center">
             {!isLoggingIn
-              ? <button disabled={timeRemaining > 0 || isLoggingIn} onClick={handleLogIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} w-full py-3 sm:px-20 mt-14 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Login</button>
-              : <button disabled={timeRemaining > 0 || isLoggingIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} w-full py-3 sm:px-20 mt-14 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Logging in...</button>
+              ? <button disabled={timeRemaining > 0 || isLoggingIn} onClick={handleLogIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} w-full py-3 sm:px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Login</button>
+              : <button disabled={timeRemaining > 0 || isLoggingIn} className={`${timeRemaining > 0 ? `cursor-not-allowed` : ``} w-full py-3 sm:px-20 mt-5 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]`}>Logging in...</button>
             }
           </div>
         </div>

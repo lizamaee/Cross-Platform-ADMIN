@@ -136,7 +136,7 @@ export default function FPassword() {
       <div className="label-for-number flex items-center flex-col md:w-[70%] pt-10">
         <Recoverpass className='h-32 sm:h-40 drop-shadow-xl'/>
       </div>
-      <form className='flex flex-col md:px-36 md:w-[80%] lg:w-[60%] px-5' >
+      <form onSubmit={handleSubmit(handleNext)} className='flex flex-col md:px-36 md:w-[80%] lg:w-[60%] px-5' >
         <h2 className='text-[#4C7CE5] text-sm sm:text-lg md:text-xl pb-10 md:pb-18 text-center pop-bold'>Provide the details below to begin the process</h2>
         <div className="label-for-change-number items-center flex py-1">
                   <label className="pop-medium text-gray-600 flex-1 opacity-80 text-xs md:text-md">Email Address</label>
@@ -171,7 +171,7 @@ export default function FPassword() {
             )}
         <div className="verify-wrapper flex w-full justify-center">
             {!isProcessing ? (
-              <button onClick={handleSubmit(handleNext)}
+              <button
                 type="submit"
                 disabled={isProcessing || timeRemaining > 0}
                 className="py-3 flex-1 overflow-hidden sm:px-20 mt-10 pop-bold text-white rounded-lg text-lg bg-[#4C7CE5]"

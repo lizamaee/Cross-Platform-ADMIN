@@ -42,9 +42,44 @@ export const forgotPasswordSendOTP = async (email: string) => {
     throw err;
   }
 };
+export const forgotPinSendOTP = async (student_id: string) => {
+  try {
+    const res = await axios.post(`${apiUrl}/forgot-pin-send`,
+    JSON.stringify({ student_id }),
+    {
+      headers: { "Content-Type": "application/json"}
+    }
+    )
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+export const forgotPinConfirmOTP = async (student_id: string, otp_code: string) => {
+  try {
+    const res = await axios.post(`${apiUrl}/forgot-pin-confirm`,
+    JSON.stringify({ student_id, otp_code }),
+    {
+      headers: { "Content-Type": "application/json"}
+    }
+    )
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
 export const forgotPassword = async (email: string, new_password: string) => {
   try {
     const res = await axios.patch(`${apiUrl}/forgot-password-outside`,{ email, new_password})
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const resetPinCode = async (student_id: string, new_pin_code: string) => {
+  try {
+    const res = await axios.patch(`${apiUrl}/reset-pin`,{student_id, new_pin_code})
     return res;
   } catch (err) {
     throw err;
