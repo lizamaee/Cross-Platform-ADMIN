@@ -23,8 +23,8 @@ const CandidatesResults: React.FC<Props> = ({ seatCandidates, handleClose, voted
         <>
             <div className="shade fixed top-0 left-0  w-full h-screen z-10 bg-[#3333339f]">
             <div className="candidate-wrapper flex justify-center flex-col items-center h-full z-40">
-                <div className="title-btn rounded-t-2xl flex justify-between items-center text-white bg-gray-400 dark:bg-[#596374] py-3 px-5 w-5/6 dark:border-b dark:border-gray-600">
-                    <h2 className='px-6 pop-bold lg:text-xl '>Votes</h2>
+                <div className="title-btn rounded-t-2xl flex justify-between items-center text-white bg-gray-400 dark:bg-zinc-700 py-3 px-5 w-5/6">
+                    <h2 className='px-6 pop-bold lg:text-xl'>Real-time Results</h2>
                     <button  onClick={handleClose} className='text-gray-800 dark:text-[#b7bfcd] sticky z-50 hover:bg-gray-300 dark:hover:bg-gray-600 p-2 rounded-xl'><IoClose size={30}/></button>
                 </div>
                 <div className="centered relative  w-5/6 bg-white dark:bg-[#4a4a4a] overflow-y-auto h-5/6 rounded-b-2xl">
@@ -36,7 +36,6 @@ const CandidatesResults: React.FC<Props> = ({ seatCandidates, handleClose, voted
                                         <thead className='pop-bold bg-gray-200 dark:bg-[#5c5c5c] '>
                                         <tr>
                                             <th className='py-2'>Candidate</th>
-                                            <th className='py-2'>Party</th>
                                             <th className='py-2'>Votes</th>
                                         </tr>
                                     </thead>
@@ -44,7 +43,6 @@ const CandidatesResults: React.FC<Props> = ({ seatCandidates, handleClose, voted
                                         {candidate.candidates?.sort((a: any, b: any) => b.count - a.count).map((person) => (
                                             <tr key={person.id} className="person bg-white dark:bg-[#4a4a4a] px-5 w-full text-center pop-semibold">
                                                 <td className='pop-regular text-sm py-2'>{person.fullname}</td>
-                                                <td className='pop-regular text-sm py-2'>{person.party}</td>
                                                 <td className='pop-semibold text-sm py-2'>{person.count}</td>
                                             </tr>
                                         ))}
