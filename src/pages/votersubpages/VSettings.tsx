@@ -160,7 +160,7 @@ export default function VSettings() {
     }
   };
 
-  //CHANGE MOBILE NUMBER
+  //CHANGE EMAIL ADDRESS
   const [openChangeNumber, setOpenChangeNumber] = useState<boolean>(false);
   const [newEmail, setNewEmail] = useState<string>("");
 
@@ -196,8 +196,10 @@ export default function VSettings() {
     status: emailStatus,
   } = useVoterSendOTPEmail();
 
-  const handleSendOtpEmail = (data: EmailFormData) => {
-    if (email === data.new_email) {
+  const [showConfirmEmailOTP, setShowConfirmEmailOTP] = useState(false)
+
+  const handleSendOtpEmail = (datas: EmailFormData) => {
+    if (email === datas.new_email) {
       message.open({
         type: "error",
         content: "Email cannot be same as old Email",
@@ -207,10 +209,15 @@ export default function VSettings() {
     } else {
       changeEmail({
         student_id,
-        new_email: data.new_email,
+        new_email: datas.new_email,
       },
       {
-        onSettled: () => setNewEmail(data.new_email)
+        onSuccess: (data) =>{
+          if(data.message === "success"){
+            setShowConfirmEmailOTP(true)
+            setNewEmail(datas.new_email)
+          }
+        } 
       });
       
     }
@@ -234,23 +241,31 @@ export default function VSettings() {
   //CHANGE EMAIL HOOK
   //CONFIRM OTP
   const {
-    mutate: confirmMobileNumber,
+    mutate: confirmEmailAddress,
     isLoading: isConfirmingOtp,
   } = useVoterConfirmOTP();
   const handleConfirmOtp = (data: OtpFormData) => {
-    confirmMobileNumber({
+    confirmEmailAddress({
       student_id,
       email: newEmail,
       otp_code: data.new_otp_code,
     },
     {
-      onSettled: () => setOpenChangeNumber(false)
+      onSuccess: (data) => {
+        if(data.message === "success"){
+          setNewEmail("")
+          emailReset()
+          otpReset()
+          setShowConfirmEmailOTP(false)
+          setOpenChangeNumber(false)
+        }
+      }
     }
     );
   };
 
   //CHANGE PIN
-  //CHANGE MOBILE NUMBER
+  //CHANGE EMAIL ADDRESS
   const [openChangePin, setOpenChangePin] = useState<boolean>(false);
   const [currentPin, setCurrentPin] = useState<string>("");
 
@@ -305,7 +320,18 @@ export default function VSettings() {
         duration: 2.5,
       });
     } else {
-      changePin({ student_id, new_pin_number: data.new_pin_code });
+      changePin(
+        { 
+            student_id, new_pin_number: data.new_pin_code 
+        },
+        {
+            onSuccess: () => {
+                pinReset()
+                setCurrentPin("")
+                setOpenChangePin(false)
+            }
+        }
+      )
     }
   };
 
@@ -342,19 +368,22 @@ export default function VSettings() {
       new_password: data.new_password,
     },
     {
-      onSettled: () => setIsPassOpen(false)
+      onSuccess: () => {
+        passwordReset()
+        setIsPassOpen(false)
+      }
     });
   };
 
   //RESET PASSWORD
   const [openResetPassword, setOpenResetPassword] = useState<boolean>(false);
+  const [showResetConfirmOTP, setShowResetConfirmOTP] = useState(false)
 
   //RESET PASSWORD OTP HOOK
   //SEND OTP
   const {
     mutate: resetSendOTP,
     isLoading: isResetSendingOTP,
-    status: resetSendStatus,
   } = useAdminResetSendOTP();
   //VERIFY OTP
   const {
@@ -367,7 +396,12 @@ export default function VSettings() {
   const handleResetSendOTP = () => {
     resetSendOTP({email},
     {
-      onSettled: () => resetOtpReset()
+      onSuccess: (data)=> {
+        if(data.message === "success"){
+          setShowResetConfirmOTP(true)
+          resetOtpReset()
+        }
+      }
     });
     
   };
@@ -400,22 +434,28 @@ export default function VSettings() {
     reset: resetOtpReset,
   } = useForm<OtpFormData>({ resolver: zodResolver(resetOtpSchema) });
 
+  const [showResetPasswordForm, setShowResetPasswordForm] = useState(false)
   //RESET CONFIRM OTP FUNCTION
   const handleResetConfirmOtp = (data: OtpFormData) => {
     resetConfirmOTP({
       email,
       otp_code: data.new_otp_code,
-    });
+    },{
+      onSuccess: (data) => {
+        if(data.message === "success"){
+          setShowResetPasswordForm(true)
+        }
+      }
+    })
   };
 
   //RESET PASSWORD SCHEMA
   const resetPasswordSchema: ZodType<ResetPasswordFormData> = z
     .object({
       new_password: z
-      .string().min(4, {message: "Password must contain at least 4 character(s)"}).max(30),
+      .string().min(4, {message: "Password must contain at least 4 character(s)"}).max(100),
       confirm_new_password: z
-      .string()
-      .min(4, { message: "Please enter current password" }).max(30),
+      .string(),
     })
     .refine((data) => data.new_password === data.confirm_new_password, {
       message: "Password do not match",
@@ -697,7 +737,7 @@ export default function VSettings() {
         <div className="security py-3 sm:py-4">
           <h2 className="text-xl py-5 pop-bold">Security</h2>
 
-          <p className="text-sm opacity-75 pop-light">Mobile Number</p>
+          <p className="text-sm opacity-75 pop-light">Email Address</p>
           <div className="number flex justify-between pb-3">
             
             {voterQuery?.isLoading
@@ -918,7 +958,7 @@ export default function VSettings() {
             </div>
             {/* SEND OTP BUTTON */}
           </form>
-          {emailStatus === "success" && (
+          {showConfirmEmailOTP && (
             <div className="input-otp">
               <div className="otp pt-20">
                 <label className="pop-regular opacity-80 text-sm block py-1">
@@ -1065,11 +1105,11 @@ export default function VSettings() {
             )}
           </div>
           {/* SEND OTP BUTTON */}
-          {resetSendStatus === "success" && (
+          {showResetConfirmOTP && (
             <div className="input-otp">
               <div className="otp">
                 <h4 className="block text-center pop-semibold opacity-90 text-orange-400 py-5">
-                  OTP Has been sent to mobile number associated to your account
+                  OTP Has been sent to email address associated to your account
                 </h4>
 
                 <label className="pop-regular opacity-80 text-sm block py-1">
@@ -1116,7 +1156,7 @@ export default function VSettings() {
             </div>
           )}
           {/* RESET PASSWORD FORM */}
-          {resetConfirmData?.message === "success" ? (
+          {showResetPasswordForm && (
             <form onSubmit={handleSubmitResetPassword(handleResetPassword)}>
               <div className="pt-10">
                 <h2 className="pop-semibold text-center block pb-5">
@@ -1185,8 +1225,6 @@ export default function VSettings() {
                 )}
               </div>
             </form>
-          ) : (
-            ""
           )}
           {/* RESET PASSWORD FORM */}
         </Drawer>

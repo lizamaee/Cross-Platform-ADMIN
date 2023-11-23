@@ -52,7 +52,7 @@ export default function AccountTab() {
     const age = voterQuery?.data?.voter?.age;
     const year_level = voterQuery?.data?.voter?.year_level;
     const profile = voterQuery?.data?.voter?.profile_picture;
-    const email = voterQuery?.data?.voter?.mobile_email;
+    const email = voterQuery?.data?.voter?.email;
     const pinCode = voterQuery?.data?.voter?.pin_number;
   
     //PROGRESS BAR STATE
@@ -148,7 +148,7 @@ export default function AccountTab() {
       }
     };
   
-    //CHANGE MOBILE NUMBER
+    //CHANGE EMAIL ADDRESS
     const [openChangeNumber, setOpenChangeNumber] = useState<boolean>(false);
     const [newEmail, setNewEmail] = useState<string>("");
   
@@ -163,17 +163,6 @@ export default function AccountTab() {
       emailReset();
       otpReset();
     };
-  
-    // //CHANGE MOBILE SCHEMA (SEND OTP)
-    // const mobileSchema: ZodType<EmailFormData> = z.object({
-    //   new_mobile_number: z
-    //     .string()
-    //     .regex(/^09\d{9}$/, {
-    //       message: "Mobile number must be a valid PH Mobile Number",
-    //     })
-    //     .min(11)
-    //     .max(11),
-    // });
 
     //CHANGE EMAIL SCHEMA (SEND OTP)
     const emailSchema: ZodType<EmailFormData> = z.object({
@@ -192,11 +181,12 @@ export default function AccountTab() {
     const {
       mutate: changeEmail,
       isLoading: isSendingOtp,
-      status: emailStatus,
     } = useVoterSendOTPEmail();
+
+    const [showConfirmEmailOTP, setShowConfirmEmailOTP] = useState(false)
   
-    const handleSendOtpEmail = (data: EmailFormData) => {
-      if (email === data.new_email) {
+    const handleSendOtpEmail = (datas: EmailFormData) => {
+      if (email === datas.new_email) {
         message.open({
           type: "error",
           content: "Email cannot be same as old Email",
@@ -206,10 +196,15 @@ export default function AccountTab() {
       } else {
         changeEmail({
           student_id,
-          new_email: data.new_email,
+          new_email: datas.new_email,
         },
         {
-          onSettled: () => setNewEmail(data.new_email)
+          onSuccess: (data) =>{
+            if(data.message === "success"){
+              setShowConfirmEmailOTP(true)
+              setNewEmail(datas.new_email)
+            }
+          } 
         });
         
       }
@@ -233,24 +228,32 @@ export default function AccountTab() {
     //CHANGE EMAIL HOOK
     //CONFIRM OTP
     const {
-      mutate: confirmMobileNumber,
+      mutate: confirmEmailAddress,
       isLoading: isConfirmingOtp,
     } = useVoterConfirmOTP();
 
     const handleConfirmOtp = (data: OtpFormData) => {
-      confirmMobileNumber({
+      confirmEmailAddress({
         student_id,
         email: newEmail,
         otp_code: data.new_otp_code,
       },
       {
-        onSettled: () => setOpenChangeNumber(false)
+        onSuccess: (data) => {
+          if(data.message === "success"){
+            setNewEmail("")
+            emailReset()
+            otpReset()
+            setShowConfirmEmailOTP(false)
+            setOpenChangeNumber(false)
+          }
+        }
       });
       
     };
   
     //CHANGE PIN
-    //CHANGE MOBILE NUMBER
+    //CHANGE EMAIL ADDRESS
     const [openChangePin, setOpenChangePin] = useState<boolean>(false);
     const [currentPin, setCurrentPin] = useState<string>("");
   
@@ -316,7 +319,7 @@ export default function AccountTab() {
                     setOpenChangePin(false)
                 }
             }
-            )
+        )
       }
     };
   
@@ -360,16 +363,16 @@ export default function AccountTab() {
       }
       );
     };
-  
+    
     //RESET PASSWORD
     const [openResetPassword, setOpenResetPassword] = useState<boolean>(false);
+    const [showResetConfirmOTP, setShowResetConfirmOTP] = useState(false)
   
     //RESET PASSWORD OTP HOOK
     //SEND OTP
     const {
       mutate: resetSendOTP,
       isLoading: isResetSendingOTP,
-      status: resetSendStatus,
     } = useAdminResetSendOTP();
     //VERIFY OTP
     const {
@@ -382,7 +385,12 @@ export default function AccountTab() {
     const handleResetSendOTP = () => {
       resetSendOTP({email},
       {
-        onSettled: () => resetOtpReset()
+        onSuccess: (data)=> {
+          if(data.message === "success"){
+            setShowResetConfirmOTP(true)
+            resetOtpReset()
+          }
+        }
       });
       
     };
@@ -415,11 +423,18 @@ export default function AccountTab() {
       reset: resetOtpReset,
     } = useForm<OtpFormData>({ resolver: zodResolver(resetOtpSchema) });
   
+    const [showResetPasswordForm, setShowResetPasswordForm] = useState(false)
     //RESET CONFIRM OTP FUNCTION
     const handleResetConfirmOtp = (data: OtpFormData) => {
       resetConfirmOTP({
         email,
         otp_code: data.new_otp_code,
+      }, {
+        onSuccess: (data) => {
+          if(data.message === "success"){
+            setShowResetPasswordForm(true)
+          }
+        }
       });
     };
   
@@ -428,12 +443,8 @@ export default function AccountTab() {
       .object({
         new_password: z
           .string()
-          .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*])/, {
-            message:
-              "Password must contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character",
-          })
-          .min(14, { message: "Password must contain at least 14 character(s)" })
-          .max(30),
+          .min(4, { message: "Password must contain at least 4 character(s)" })
+          .max(100),
         confirm_new_password: z.string(),
       })
       .refine((data) => data.new_password === data.confirm_new_password, {
@@ -458,7 +469,17 @@ export default function AccountTab() {
     const handleResetPassword = (data: ResetPasswordFormData) => {
       resetPassword({ email, new_password: data.new_password },
         {
-          onSettled: () => closeResetPasswordDrawer()
+          onSuccess: (data) => {
+            if(data.message === "success"){
+              resetOtpReset()
+              resetPasswordReset()
+              setShowResetConfirmOTP(false)
+              setShowResetPasswordForm(false)
+              closeResetPasswordDrawer()
+            }
+            
+          } 
+            
         });
       
     };
@@ -705,12 +726,12 @@ export default function AccountTab() {
           <div className="security py-4">
             <h2 className="text-xl py-5 pop-bold">Security</h2>
   
-            <p className="text-sm opacity-75 pop-light">Mobile Number</p>
+            <p className="text-sm opacity-75 pop-light">Email Address</p>
             <div className="number flex justify-between pb-3">
               
               {voterQuery?.isLoading
                 ? <div className="w-32 h-6 bg-gray-300 rounded-md dark:bg-gray-600 animate-pulse"></div>
-                : <h4 className="pop-regular">{email !== undefined ? email?.slice(0,2).toString() + "*******" : "09*******" }</h4>
+                : <h4 className="pop-regular">{email?.slice(0,2).toString() + "*******"}</h4>
               }
               <button
                 onClick={showNumberDrawer}
@@ -926,7 +947,7 @@ export default function AccountTab() {
               </div>
               {/* SEND OTP BUTTON */}
             </form>
-            {emailStatus === "success" && (
+            {showConfirmEmailOTP && (
               <div className="input-otp">
                 <div className="otp pt-20">
                   <label className="pop-regular opacity-80 text-sm block py-1">
@@ -1073,11 +1094,11 @@ export default function AccountTab() {
               )}
             </div>
             {/* SEND OTP BUTTON */}
-            {resetSendStatus === "success" && (
+            {showResetConfirmOTP && (
               <div className="input-otp">
                 <div className="otp">
                   <h4 className="block text-center pop-semibold opacity-90 text-orange-400 py-5">
-                    OTP Has been sent to mobile number associated to your account
+                    OTP Has been sent to email address associated to your account
                   </h4>
   
                   <label className="pop-regular opacity-80 text-sm block py-1">
@@ -1124,7 +1145,7 @@ export default function AccountTab() {
               </div>
             )}
             {/* RESET PASSWORD FORM */}
-            {resetConfirmData?.message === "success" ? (
+            {showResetPasswordForm && (
               <form onSubmit={handleSubmitResetPassword(handleResetPassword)}>
                 <div className="pt-10">
                   <h2 className="pop-semibold text-center block pb-5">
@@ -1193,8 +1214,6 @@ export default function AccountTab() {
                   )}
                 </div>
               </form>
-            ) : (
-              ""
             )}
             {/* RESET PASSWORD FORM */}
           </Drawer>
