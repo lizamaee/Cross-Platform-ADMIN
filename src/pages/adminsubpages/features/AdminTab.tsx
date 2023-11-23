@@ -298,7 +298,7 @@ export default function AdminTab() {
                         <thead>
                             <tr className="text-center pop-semibold py-5">
                                 <td className="py-4 text-xs sm:text-sm">Firstname</td>
-                                <td className="py-4 text-xs sm:text-sm">Mobile Number</td>
+                                <td className="py-4 text-xs sm:text-sm">Email Address</td>
                                 <td className="py-4 text-xs sm:text-sm">Role</td>
                                 <td className="py-4 text-xs sm:text-sm">Action</td>
                             </tr>
@@ -322,7 +322,7 @@ export default function AdminTab() {
                                 : adminFilter?.map((admin:any, index:any) => (
                                     <tr key={index} className="odd:bg-gray-100 dark:odd:bg-zinc-700 text-center">
                                         <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.firstname ?? "John"}</td>
-                                        <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.mobile_number}</td>
+                                        <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.email}</td>
                                         <td className="rounded-sm text-xs sm:text-sm py-2 opacity-80">{admin.role}</td>
                                         <td className="rounded-sm text-xs sm:text-sm py-2">
                                             <button onClick={() => demoteIt(admin.student_id, admin.surname)} className='bg-yellow-400 dark:bg-yellow-500   py-1 px-2 rounded-md hover:bg-yellow-500'>Demote</button>

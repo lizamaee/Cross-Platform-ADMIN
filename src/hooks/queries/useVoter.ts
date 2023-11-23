@@ -9,16 +9,17 @@ export const useRecoverAccount = () => {
     const queryClient = useQueryClient()
     const axiosPrivate = useAxiosPrivate()
     return useMutation({
-        mutationFn:async (newData: {student_id: string, new_password: string, mobile_number: string, pin_code: string}) => {
+        mutationFn:async (newData: {student_id: string, new_password: string, email: string, pin_code: string}) => {
             const response = await axiosPrivate.patch(`/recover-account`, {
               student_id: newData.student_id,
               new_password: newData.new_password,
-              mobile_number: newData.mobile_number,
+              email: newData.email,
               pin_code: newData.pin_code
             } )
             return response.data
         },
-        onSuccess: async () => {
+        onSuccess: async (data) => {
+          if(data.message === "success"){
             message.open({
                 key: 'successCreation',
                 type: 'success',
@@ -29,6 +30,7 @@ export const useRecoverAccount = () => {
                 queryKey: ['users'],
                 exact: true
             })
+          }
         },
         onError: (error:any) => {
             if (error.message === 'Network Error') {

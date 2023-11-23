@@ -9,7 +9,7 @@ import { useDeleteAccount, useRecoverAccount } from "../../../hooks/queries/useV
 
 type RecoverFormData = {
     student_id: string;
-    newMobileNumber: string;
+    newEmail: string;
     newPassword: string;
     pin_code: string;
 }
@@ -66,12 +66,15 @@ export default function VoterTab() {
         recoverAccount({
             student_id: data.student_id, 
             new_password: data.newPassword, 
-            mobile_number: data.newMobileNumber,
+            email: data.newEmail,
             pin_code: data.pin_code
         },
         {
-            onSettled: () => {
-                reset();
+            onSuccess: (data) => {
+                if(data.message === "success"){
+                    reset()
+                    setOpen(false)
+                }
               },
         }
         )
@@ -82,8 +85,7 @@ export default function VoterTab() {
         student_id: z.string().regex(/^\d{6,7}$/, {message: "Student ID must be a valid Student ID"}).min(6).max(7),
         newPassword: z
         .string().min(4, {message: "Password must contain at least 4 character(s)"}).max(30),
-        newMobileNumber: z.string().regex(/^09\d{9}$/, {message: "Mobile number must be a valid PH Mobile Number",
-        }).min(11).max(11),
+        newEmail: z.string().email(),
         pin_code: z
         .string()
         .regex(/^\d{4}$/, { message: "PIN code must be 4 digit numbers" })
@@ -165,7 +167,7 @@ export default function VoterTab() {
                                     <tr className="text-center pop-semibold py-5">
                                         <td className="py-4 text-xs sm:text-sm">Fullname</td>
                                         <td className="py-4 text-xs sm:text-sm">Student ID</td>
-                                        <td className="py-4 text-xs sm:text-sm">Mobile Number</td>
+                                        <td className="py-4 text-xs sm:text-sm">Email Address</td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -173,7 +175,7 @@ export default function VoterTab() {
                                     <tr key={index} className="odd:bg-gray-100 dark:odd:bg-zinc-700 text-center opacity-80">
                                         <td className="rounded-sm text-xs sm:text-sm py-2">{`${user.firstname ?? "John"} ${user.surname ?? "Doe"}`}</td>
                                         <td className="rounded-sm text-xs sm:text-sm py-2">{user.student_id}</td>
-                                        <td className="rounded-sm text-xs sm:text-sm py-2">{user.mobile_number}</td>
+                                        <td className="rounded-sm text-xs sm:text-sm py-2">{user.email}</td>
                                     </tr>
                                 )
                                 )}
@@ -188,7 +190,7 @@ export default function VoterTab() {
 
             {/* RECOVER ACCOUNT DRAWER */}
             <Drawer title="Recover Account" placement="right" onClose={onClose} open={open}>
-                <form className="recover-account-container py-3">
+                <form onSubmit={handleSubmit(handleRecover)} className="recover-account-container py-3">
                     <div className="name flex flex-col pop-medium">
                         <label className='pb-1 pt-5 opacity-80'>Enter Student ID</label>
                         <input 
@@ -228,38 +230,36 @@ export default function VoterTab() {
                             </button>
                         </div>
                         {errors.newPassword && <span className="text-red-400 text-center text-sm">{errors.newPassword.message}</span>}
-                        <label className='pb-1 pt-2 opacity-80'>New Mobile Number</label>
+                        <label className='pb-1 pt-2 opacity-80'>New Email Address</label>
                         <input 
                             type="text"   
-                            placeholder="ex. 09123456789"
-                            maxLength={11}
-                            minLength={11}
+                            placeholder="ex. yournewemail@gmail.com"
                             required
                             className='bg-[#E5E0FF] py-2 px-3 text-lg focus:outline-indigo-400 rounded-md border-solid border-2' 
-                            {...register('newMobileNumber')}
+                            {...register('newEmail')}
                         />
-                        {errors.newMobileNumber && <span className="text-red-400 text-center text-sm">{errors.newMobileNumber.message}</span>}
+                        {errors.newEmail && <span className="text-red-400 text-center text-sm">{errors.newEmail.message}</span>}
                     </div>
+                    {/* RECOVER BUTTON */}
+                    <div className="btn-container flex items-center justify-center pt-3">
+                        {!isRecovering
+                        ? <button type="submit" className='flex items-center text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7'>
+                            <p className='pop-medium'>Recover</p>   
+                            </button>
+                        : <button disabled={isRecovering} className='flex pop-medium items-center  text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7'>
+                            Recovering...
+                            <Spin className='pl-1'/> 
+                            </button>
+                        }
+                    </div>
+                    {/* RECOVER BUTTON */}
                 </form>
-                {/* RECOVER BUTTON */}
-                <div className="btn-container flex items-center justify-center pt-3">
-                    {!isRecovering
-                    ? <button className='flex items-center text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7' onClick={handleSubmit(handleRecover)}>
-                        <p className='pop-medium'>Recover</p>   
-                        </button>
-                    : <button disabled={isRecovering} className='flex pop-medium items-center  text-gray-100 bg-blue-800 hover:bg-blue-700 rounded-lg py-2 px-5 sm:px-7'>
-                        Recovering...
-                        <Spin className='pl-1'/> 
-                        </button>
-                    }
-                </div>
-                {/* RECOVER BUTTON */}
             </Drawer>
             {/* RECOVER ACCOUNT DRAWER */}
 
             {/* DELETE ACCOUNT DRAWER */}
             <Drawer title="Delete Account" placement="right" onClose={onCloseDelete} open={openDelete}>
-                <form className="delete-account-container py-3">
+                <form onSubmit={handleSubmitDelete(handleDelete)} className="delete-account-container py-3">
                     <div className="name flex flex-col pop-medium">
                         <label className='pb-1 pt-5 opacity-80'>Enter Student ID</label>
                         <input 
@@ -271,20 +271,20 @@ export default function VoterTab() {
                         />
                         {errorDelete.student_id && <span className="text-red-400 text-center text-sm">{errorDelete.student_id.message}</span>}
                     </div>
+                    {/* DELETE BUTTON */}
+                    <div className="btn-container flex items-center justify-center pt-3">
+                        {!isDeleting
+                        ? <button type="submit" className='flex items-center pop-medium text-gray-100 bg-red-600 hover:bg-red-500 rounded-lg py-2 px-5 sm:px-7'>
+                            <p className='pop-medium'>Delete</p>   
+                            </button>
+                        : <button disabled={isDeleting} className='flex pop-medium items-center text-gray-100 bg-red-600 hover:bg-red-500 rounded-lg py-2 px-5 sm:px-7'>
+                            Deleting...
+                            <Spin className='pl-1'/> 
+                            </button>
+                        }
+                    </div>
+                    {/* DELETE BUTTON */}
                 </form>
-                {/* DELETE BUTTON */}
-                <div className="btn-container flex items-center justify-center pt-3">
-                    {!isDeleting
-                    ? <button className='flex items-center pop-medium text-gray-100 bg-red-600 hover:bg-red-500 rounded-lg py-2 px-5 sm:px-7' onClick={handleSubmitDelete(handleDelete)}>
-                        <p className='pop-medium'>Delete</p>   
-                        </button>
-                    : <button disabled={isDeleting} className='flex pop-medium items-center text-gray-100 bg-red-600 hover:bg-red-500 rounded-lg py-2 px-5 sm:px-7'>
-                        Deleting...
-                        <Spin className='pl-1'/> 
-                        </button>
-                    }
-                </div>
-                {/* DELETE BUTTON */}
             </Drawer>
             {/* DELETE ACCOUNT DRAWER */}
         </div>
