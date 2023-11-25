@@ -46,7 +46,6 @@ export default function CVote() {
 
   useEffect(() => {
     function singleResultEvent(value:any){
-      bubble()
       setSingleOrgResult(value)
     }
     socket.on("single-org-result", singleResultEvent)
@@ -55,6 +54,10 @@ export default function CVote() {
       socket.off('single-org-result', singleResultEvent);
     };
   }, [socket])
+
+  useEffect(() => {
+    bubble()
+  }, [singleOrgResult, bubble])
 
   //SHOW ORGANIZATIONS
   const handleActiveOrganizations = async (id: string) => {

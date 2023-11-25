@@ -72,7 +72,6 @@ export default function Home(){
     socket.emit("admin-emit")
 
     function singleResultEvent(data:any){
-      votedSound()
       setSingleOrgResult(data)
     }
     socket.on("single-org-result", singleResultEvent)
@@ -105,6 +104,11 @@ export default function Home(){
       socket.off('all-organizations', allOrganizationsEvent);
     };
   }, [socket])
+
+  useEffect(() => {
+    votedSound()
+  }, [singleOrgResult, votedSound])
+
 
   const fetchData = async (endpoints: string) => {
     try {
