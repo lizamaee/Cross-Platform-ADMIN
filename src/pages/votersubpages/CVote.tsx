@@ -14,7 +14,8 @@ import { Tag, message } from "antd";
 import cict from "../../images/cict.jpg";
 import { useQueryClient } from "@tanstack/react-query";
 import { socket } from "../../socket";
-import { set } from "zod";
+import useSound from "use-sound";
+import bubleSoundEffect from "../../assets/buble.mp3"
 
 type Position = {
   id: string;
@@ -40,9 +41,11 @@ export default function CVote() {
   const { isNight, student_id, switchMode, events } = useAuthStore((state) => state);
   const [selectedOrganizationID, setSelectedOrganizationID] =
     useState<string>("");
+  const [bubble] = useSound(bubleSoundEffect, {volume: 0.35})
 
   useEffect(() => {
     function singleResultEvent(value:any){
+      bubble()
       setSingleOrgResult(value)
     }
     socket.on("single-org-result", singleResultEvent)

@@ -14,11 +14,9 @@ interface Props {
     
   }[];
   handleClose: () => void;
-  votedSound: () => void;
 }
 
-const CandidatesResults: React.FC<Props> = ({ seatCandidates, handleClose, votedSound }: Props) => {
-    votedSound()
+const CandidatesResults: React.FC<Props> = ({ seatCandidates, handleClose }: Props) => {
   return (
         <>
             <div className="shade fixed top-0 left-0  w-full h-screen z-10 bg-[#3333339f]">

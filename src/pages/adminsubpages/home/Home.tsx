@@ -66,12 +66,13 @@ export default function Home(){
   const [allElections, setAllElections] = useState<any>([]);
   const [allOrganizations, setAllOrganizations] = useState<any>([]);
   const [votedActivities, setvotedActivities] = useState<any>({});
-  const [votedSound] = useSound(votedSoundEffect)
+  const [votedSound] = useSound(votedSoundEffect, {volume: 0.35})
 
   useEffect(() => {
     socket.emit("admin-emit")
 
     function singleResultEvent(data:any){
+      votedSound()
       setSingleOrgResult(data)
     }
     socket.on("single-org-result", singleResultEvent)
@@ -273,7 +274,7 @@ export default function Home(){
       {/* DASHBOARD */}
 
 
-      { !renderCandidates ? "" : <CandidatesResults votedSound={votedSound} handleClose={closeCandidateTable} seatCandidates={singleOrgResult}/>}
+      { !renderCandidates ? "" : <CandidatesResults handleClose={closeCandidateTable} seatCandidates={singleOrgResult}/>}
 
 
       {/* PHASE I */}
