@@ -83,10 +83,10 @@ export default function Login() {
   };
 
   return (
-    <div className="md:flex md:items-center md:justify-center md:min-h-screen md:p-10 font-medium text-lg">
+    <div className="md:flex items-start md:justify-center md:min-h-screen md:pt-10 font-medium text-lg">
       <form
         onSubmit={handleSubmit(handleLogin)}
-        className=" bg-[#E5E0FF] relative dark:bg-[#2b2b2b] dark:text-gray-200 md:rounded-3xl overflow-hidden text-[#3C486B] pb-5 md:shadow-2xl md:max-w-md"
+        className=" bg-[#E5E0FF] relative dark:bg-[#2b2b2b] dark:text-gray-200 md:rounded-xl overflow-hidden text-[#3C486B] pb-5 md:pb-0 md:shadow-2xl md:max-w-md md:border-2 border-gray-300 dark:border-zinc-700"
       >
         <div onClick={() => {
           navigate('/')
@@ -95,11 +95,11 @@ export default function Login() {
         </div>
         <img className="" src={tcu} height={400} alt="Taguig City University" />
         <div className="inputs-container -translate-y-10 md:translate-y-0 bg-[#E5E0FF] dark:bg-[#2b2b2b] rounded-[50px] md:rounded-t-0">
-          <div className=" flex flex-col p-5">
-            <h2 className="text-3xl py-6 md:py-3 text-center font-sans pop-bold text-[#4C7CE5] dark:text-white tracking-widest">Login</h2>
+          <div className=" flex flex-col px-5 pt-6 pb-2">
+            <h2 className="text-xl sm:text-3xl py-6 md:py-0 text-center font-sans pop-bold text-[#4C7CE5] dark:text-white tracking-widest uppercase">Log In</h2>
             <label className="pop-regular opacity-80 text-sm">Student ID</label>
             <input
-              className="bg-[#E5E0FF] px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a] dark:text-white tracking-wider focus:bg-transparent"
+              className="bg-[#E5E0FF] px-4 py-3 rounded-lg text-black text-md pop-medium outline-none border-solid border-2 border-gray-300 dark:border-zinc-700 dark:bg-transparent dark:text-white tracking-wider focus:bg-transparent"
               type="text"
               {...register("student_id")}
               placeholder="ex. 1234567"
@@ -107,12 +107,12 @@ export default function Login() {
               minLength={6}
               required
             />
-            {errors.student_id && <span className="text-red-400 text-center text-sm">{errors.student_id.message}</span>}
+            {errors.student_id && <span className="text-red-400 md:pt-2 text-center text-sm">{errors.student_id.message}</span>}
           </div>
 
           <div className="flex flex-col px-5">
             <label className="pop-regular opacity-80 text-sm">Password</label>
-            <div className="flex rounded-lg relative bg-[#E5E0FF] w-full border-solid border-2 border-gray-300 dark:border-gray-600 dark:bg-[#4a4a4a4a]">
+            <div className="flex rounded-lg relative bg-[#E5E0FF] w-full border-solid border-2 border-gray-300 dark:border-zinc-700 dark:bg-transparent">
               <input
                 className="w-5/6 sm:w-full pl-4 py-3 text-black text-md pop-medium outline-none  dark:text-white tracking-wider bg-transparent"
                 type={showPassword ? "text" : "password"}
@@ -128,29 +128,29 @@ export default function Login() {
                 {showPassword ? <FaEyeSlash size={23}/> : <FaEye size={23}/>}
               </button>
             </div>
-            {errors.password && <span className="text-red-400 md:py-2 text-center text-sm">{errors.password.message}</span>}
+            {errors.password && <span className="text-red-400 md:pt-2 text-center text-sm">{errors.password.message}</span>}
           </div>
         </div>
         <div className="flex items-center flex-col px-5">
           {isLoading ? <button
-            className="text-center text-white px-4 py-3 rounded-lg md:mt-5 w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
+            className="text-center text-white px-4 py-3 rounded-lg md:mt-3 w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
             type="submit"
             disabled={isLoading ? true : false}
           >
-            Loading...
+            LOGGING IN...
           </button>
           :
           (<button
-            className="text-center text-white px-4 py-3 rounded-lg md:mt-5 w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
+            className="text-center text-white px-4 py-3 rounded-lg md:mt-3 w-[100%] bg-[#4C7CE5] dark:bg-[#4C7CE5] shadow-md break-words shadow-blue-300 dark:shadow-blue-400"
             type="submit"
             disabled={isLoading ? true : false}
           >
-            Login
+            LOGIN
           </button>)}
 
           <ul className="forgot-register-container flex justify-between w-full dark:text-gray-400">
               <NavLink to='/forgot-password'>
-                <p className="pop-semibold text-sm py-4 underline">Forgot Password</p>
+                <p className="pop-medium text-sm py-4 underline">Forgot Password</p>
               </NavLink>
           </ul>
         </div>
