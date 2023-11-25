@@ -10,12 +10,13 @@ import {
 import { useEffect, useState } from "react";
 import VoteModal from "../../components/VoteModal";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { Tag, message } from "antd";
+import { Tag, Tooltip, message } from "antd";
 import cict from "../../images/cict.jpg";
 import { useQueryClient } from "@tanstack/react-query";
 import { socket } from "../../socket";
 import useSound from "use-sound";
 import bubleSoundEffect from "../../assets/buble.mp3"
+import { FaInfoCircle } from "react-icons/fa";
 
 type Position = {
   id: string;
@@ -57,8 +58,6 @@ export default function CVote() {
 
   //SHOW ORGANIZATIONS
   const handleActiveOrganizations = async (id: string) => {
-
-    
     const orgs = events[0]?.filter(
       (elec: any) => elec.id === id
       );
@@ -525,6 +524,16 @@ export default function CVote() {
         onClose={() => setOpenModal(false)}
       >
         <div className="Ballot p-5">
+          <span className='flex pb-5'>
+            <Tooltip
+              placement="bottom"
+              title="Refresh the page if you wish to change candidates."
+            >
+              <span style={{ display: 'inline-block' }}>
+                <FaInfoCircle className="text-[#a3aed0]" size={23} />
+              </span>
+            </Tooltip>
+          </span>
           <form onSubmit={handleCastVote}>
             {isBallotLoading ? (
               <div
