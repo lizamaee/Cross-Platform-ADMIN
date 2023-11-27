@@ -208,7 +208,8 @@ export default function CVote() {
               </h4>
               <div className="vote sm:pl-10">
                 <input
-                  type="radio"
+                  className="cursor-pointer"
+                  type="checkbox"
                   id={`candidate_${candidate.id}`}
                   value={candidate.id}
                   checked={
@@ -526,7 +527,7 @@ export default function CVote() {
         open={openModal}
         onClose={() => setOpenModal(false)}
       >
-        <div className="Ballot p-5">
+        <div className="Ballot">
           <span className='flex pb-5'>
             <Tooltip
               placement="bottom"
@@ -570,7 +571,7 @@ export default function CVote() {
             )}
 
             {!isBallotLoading && (
-              <div className="btn flex justify-center sm:px-10 sm:py-6">
+              <div className="btn flex justify-center sm:px-10 sm:pb-6">
                 {isCastingVote ? (
                   <button
                     disabled={isCastingVote}
