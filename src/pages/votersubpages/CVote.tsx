@@ -17,6 +17,12 @@ import { socket } from "../../socket";
 import useSound from "use-sound";
 import bubleSoundEffect from "../../assets/buble.mp3"
 import { FaInfoCircle } from "react-icons/fa";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
 
 type Position = {
   id: string;
@@ -185,75 +191,81 @@ export default function CVote() {
   const renderCandidates = (position: any, selectedCandidates: any) => {
     const candidateElements = position.candidates.map(
       (candidate: Candidate) => (
-        <label
+        <SwiperSlide key={candidate.id} className="bg-[#C7C7C7] dark:bg-[#55463e] w-40 relative rounded-2xl">
+          <label
           htmlFor={`candidate_${candidate.id}`}
           key={candidate.id}
-          className="candidate overflow-hidden relative flex flex-col mb-3 bg-white dark:bg-[#313131] shadow-md p-2 sm:p-4 rounded-2xl cursor-pointer"
-        >
-          {/* Render candidate information */}
-          <div className="c flex-col flex">
+          className="candidate mb-3 w-full h-full shadow-md p-2 sm:p-4 rounded-2xl cursor-pointer"
+          >
             <h6 className="absolute top-0 right-0 text-xs">
               <Tag color="magenta" style={{ marginRight: 0 }}>
                 {candidate.party}
               </Tag>
             </h6>
-            <div className="candidate-profile mt-5 sm:mt-0 w-full flex-col sm:flex-row flex items-center">
-              <img
-                src={candidate.imageUrl}
-                alt={candidate.fullname + " " + "Profile"}
-                className="object-cover border-[4px] w-16 h-16 rounded-full"
-              />
-              <h4 className="pop-medium text-sm md:text-md capitalize dark:text-gray-200 text-center sm:text-left sm:pl-5">
-                {candidate.fullname}
-              </h4>
-              <div className="vote sm:pl-10">
-                <input
-                  className="cursor-pointer"
-                  type="checkbox"
-                  id={`candidate_${candidate.id}`}
-                  value={candidate.id}
-                  checked={
-                    selectedCandidates[position.id]?.includes(candidate.id) ||
-                    false
-                  }
-                  onChange={(event: any) =>
-                    handleCandidateSelection(
-                      event,
-                      position.position,
-                      position.id
-                    )
-                  }
+            {/* Render candidate information */}
+            <div className="h-full rounded-2xl">
+              <div className="candidate-profile mt-5 sm:mt-0 w-full h-full flex-col flex items-center">
+                <img
+                  src={candidate.imageUrl}
+                  alt={candidate.fullname + " " + "Profile"}
+                  className={`object-cover w-20 h-20 rounded-full ${
+                    selectedCandidates[position.id]?.includes(candidate.id)
+                      ? 'border-blue-500 border-4'
+                      : 'border-transparent'
+                  }`}
                 />
+                <h4 className="pop-medium text-sm md:text-base md:py-2 capitalize dark:text-gray-200 text-center">
+                  {candidate.fullname}
+                </h4>
+                <div className="vote">
+                  <input
+                    className="cursor-pointer"
+                    type="checkbox"
+                    id={`candidate_${candidate.id}`}
+                    value={candidate.id}
+                    checked={
+                      selectedCandidates[position.id]?.includes(candidate.id) ||
+                      false
+                    }
+                    onChange={(event: any) =>
+                      handleCandidateSelection(
+                        event,
+                        position.position,
+                        position.id
+                      )
+                    }
+                  />
+                </div>
               </div>
-            </div>
-            <div className="candidate-about flex flex-col flex-grow">
-              <div className="name-btn flex flex-col sm:flex-row flex-grow justify-center items-center sm:gap-2">
-                <div className="platform flex flex-col items-center ">
-                  <div className="platform-btn flex w-full justify-center">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsPlatformVisible(!isPlatformVisible);
-                      }}
-                      className="px-3 py-1 bg-slate-100 dark:bg-zinc-700 dark:text-gray-300 rounded-md pop-regular text-xs"
-                    >
-                      Platform
-                    </button>
+              <div className="candidate-about flex flex-col flex-grow">
+                <div className="name-btn flex flex-col sm:flex-row flex-grow justify-center items-center sm:gap-2">
+                  <div className="platform flex flex-col items-center ">
+                    <div className="platform-btn flex w-full justify-center">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setIsPlatformVisible(!isPlatformVisible);
+                        }}
+                        className="px-3 py-1 bg-slate-100 dark:bg-zinc-700 dark:text-gray-300 rounded-md pop-regular text-xs"
+                      >
+                        Platform
+                      </button>
+                    </div>
+                    <p className="text-xs text-justify indent-5 sm:indent-10 pb-3 sm:pb-0 pt-2 dark:text-gray-300 max-h-20 overflow-y-auto centered px-3 sm:px-14 md:px-20 lg:px-32 ">
+                      {!isPlatformVisible ? (
+                        ""
+                      ) : (
+                        <span>{candidate.platform}</span>
+                      )}
+                    </p>
                   </div>
-                  <p className="text-xs text-justify indent-5 sm:indent-10 pb-3 sm:pb-0 pt-2 dark:text-gray-300 max-h-20 overflow-y-auto centered px-3 sm:px-14 md:px-20 lg:px-32 ">
-                    {!isPlatformVisible ? (
-                      ""
-                    ) : (
-                      <span>{candidate.platform}</span>
-                    )}
-                  </p>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Render other candidate details */}
-        </label>
+            {/* Render other candidate details */}
+          </label>
+        </SwiperSlide>
       )
     );
 
@@ -531,7 +543,7 @@ export default function CVote() {
           <span className='flex pb-5'>
             <Tooltip
               placement="bottom"
-              title="Refresh the page if you wish to change candidates."
+              title="Uncheck the checkbox to change candidate."
             >
               <span style={{ display: 'inline-block' }}>
                 <FaInfoCircle className="text-[#a3aed0]" size={23} />
@@ -541,7 +553,7 @@ export default function CVote() {
           <form onSubmit={handleCastVote}>
             {isBallotLoading ? (
               <div
-                className={`position animate-pulse gap-10 p-5 mb-10  odd:bg-blue-100 dark:odd:bg-[#343256] even:bg-red-100 dark:even:bg-[#563232] shadow-2xl rounded-lg`}
+                className={`position animate-pulse gap-10 p-5 mb-10  odd:bg-blue-100 dark:odd:bg-[#555555] even:bg-red-100 dark:even:bg-[#563232] shadow-2xl rounded-lg`}
               >
                 <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-sm sm:text-lg h-10"></h3>
               </div>
@@ -551,9 +563,9 @@ export default function CVote() {
                 .map((position: Position) => (
                   <div
                     key={position.position}
-                    className={`position gap-10 p-5 mb-10  odd:bg-blue-100 dark:odd:bg-[#343256] even:bg-red-100 dark:even:bg-[#563232] shadow-2xl rounded-lg`}
+                    className={`position gap-10 p-5 mb-10  odd:bg-transparent dark:odd:bg-transparent dark:odd:border-zinc-700 border-2 even:bg-red-100 dark:even:bg-[#563232] shadow-2xl rounded-lg`}
                   >
-                    <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-500 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-3 rounded-lg mb-2 text-sm sm:text-lg">
+                    <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-700 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-2 rounded-lg mb-2 text-sm sm:text-lg">
                       {position.position}
                       <span className="text-gray-700 dark:text-gray-100 pop-medium block text-xs md:text-sm tracking-widest">
                         {position.requiredWinner === "1"
@@ -565,7 +577,35 @@ export default function CVote() {
                             " candidates ) "}
                       </span>
                     </h3>
-                    {renderCandidates(position, selectedCandidates)}
+                    <Swiper
+                      effect={'coverflow'}
+                      grabCursor={true}
+                      centeredSlides={true}
+                      loop={true}
+                      slidesPerView={1}
+                      coverflowEffect={{
+                        rotate: 0,
+                        stretch: 0,
+                        depth: 100,
+                        modifier: 2.5,
+                      }}
+                      pagination={{ el: '.swiper-pagination', clickable: true }}
+                      navigation={{
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                      }}
+                      modules={[EffectCoverflow, Pagination, Navigation]}
+                      className="swiper_container"
+                    >
+                      {renderCandidates(position, selectedCandidates)}
+                      <div className="slider-controler">
+                        <div className="swiper-button-prev slider-arrow">
+                        </div>
+                        <div className="swiper-button-next slider-arrow">
+                        </div>
+                        <div className="swiper-pagination"></div>
+                      </div>
+                    </Swiper>
                   </div>
                 ))
             )}
