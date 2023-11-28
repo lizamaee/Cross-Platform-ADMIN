@@ -416,7 +416,7 @@ export default function CVote() {
             </h4>
           </div>
 
-          <div className="elections p-5">
+          <div className="elections px-5 pb-5">
             {events?.length === 0 ? (
               <div className="no-ongoingx">
                 <div className="h4 text-gray-400 pop-regular text-sm text-center ">
@@ -424,49 +424,51 @@ export default function CVote() {
                 </div>
               </div>
             ) : (
-              <div className="elections-cards grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              <div className="elections-cards grid md:grid-cols-2 xl:grid-cols-3 gap-5">
                 {events[0]?.map(
                   (ongoing: any, index: any) => (
                     <div
                       key={index}
                       onClick={() => handleActiveOrganizations(ongoing.id)}
-                      className="ongoing cursor-pointer border-[1px] border-gray-200 dark:border-gray-600 dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden"
+                      className="ongoing relative border-2 dark:border-zinc-700 cursor-pointer shadow-lg rounded-lg overflow-hidden"
                     >
                       <img
                         src={ongoing.banner ?? cict}
                         alt="election banner"
-                        className="object-cover w-full h-32"
+                        className="object-cover w-full h-52"
                       />
-                      <h4 className="text-center py-3 pop-semibold dark:text-gray-200 text-lg">
-                        {ongoing.title}
-                      </h4>
-                      {/* DATE DISPLAY */}
-                      <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-5 pop-regular">
-                        <p className="">
-                          {new Date(ongoing.startDate).toLocaleDateString(
-                            "en-US",
-                            {
-                              timeZone: "Asia/Manila",
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            }
-                          )}
-                        </p>
-                        <span>-</span>
-                        <p className="text-right">
-                          {new Date(ongoing.endDate).toLocaleDateString(
-                            "en-US",
-                            {
-                              timeZone: "Asia/Manila",
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            }
-                          )}
-                        </p>
+                      <div className="fading-info absolute bottom-0 w-full bg-gradient-to-t from-white dark:from-black">
+                        <h4 className="text-center pt-10 pb-3 pop-semibold dark:text-gray-100 text-lg">
+                          {ongoing.title}
+                        </h4>
+                        {/* DATE DISPLAY */}
+                        <div className="dates flex flex-col sm:flex-row text-xs sm:gap-3 items-center justify-center text-gray-900 dark:text-gray-300 pb-2 sm:pb-3 pop-regular">
+                          <p className="">
+                            {new Date(ongoing.startDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                timeZone: "Asia/Manila",
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
+                          </p>
+                          <span>-</span>
+                          <p className="sm:text-right">
+                            {new Date(ongoing.endDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                timeZone: "Asia/Manila",
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
+                          </p>
+                        </div>
+                        {/* DATE DISPLAY */}
                       </div>
-                      {/* DATE DISPLAY */}
                     </div>
                   )
                 )}
@@ -479,13 +481,11 @@ export default function CVote() {
       {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
       {isActiveOrgs && (
           <>
-            <div className="flex">
-              <h4 className="pt-4 pb-2 text-center text-xs sm:text-md md:text-lg dark:text-gray-200 pop-semibold">
+            <div className="active-organization rounded-lg shadow-xl bg-white dark:bg-[#313131] mt-5 p-5">
+              <h4 className="pb-5 text-center text-xs sm:text-md md:text-lg dark:text-gray-300 pop-semibold">
                 Active Organizations
               </h4>
-            </div>
-            <div className="active-organization rounded-lg shadow-xl bg-white dark:bg-[#313131] p-5">
-              <div className="all-org grid sm:p-5 sm:gap-10 md:grid-cols-2 lg:grid-cols-3">
+              <div className="all-org grid gap-2 sm:gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
                 {activeOrgs?.length === 0 ? (
                   <h3>No Active Organizations</h3>
                 ) : (
@@ -493,7 +493,7 @@ export default function CVote() {
                     <div
                       key={index}
                       onClick={() => handleGetBallot(org.ballots[0], org.id)}
-                      className="org cursor-pointer hover:bg-gray-200 border-[1px] border-gray-200 dark:border-gray-600 overflow-hidden py-2 bg-gray-100 dark:bg-zinc-700 dark:hover:bg-zinc-600 flex flex-col shadow-md rounded-2xl items-center"
+                      className="org cursor-pointer hover:bg-gray-200 border-[1px] border-gray-200 dark:border-zinc-700 overflow-hidden py-2 bg-gray-100 dark:bg-[#282828] dark:hover:bg-[#2f2f2f] flex flex-col shadow-md rounded-lg items-center"
                     >
                       <img
                         src={org.logo_url}
@@ -503,27 +503,6 @@ export default function CVote() {
                       <h2 className="pop-medium text-center pt-3 dark:text-gray-300 text-sm">
                         {org.org_name}
                       </h2>
-                      {/* DATE DISPLAY */}
-                      <div className="dates flex text-xs gap-3 pt-4 items-center justify-center text-gray-600 dark:text-gray-400 pb-2 pop-regular">
-                        <p className="">
-                          {new Date(org.startDate).toLocaleDateString("en-US", {
-                            timeZone: "Asia/Manila",
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </p>
-                        <span>-</span>
-                        <p className="text-right">
-                          {new Date(org.endDate).toLocaleDateString("en-US", {
-                            timeZone: "Asia/Manila",
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </p>
-                      </div>
-                      {/* DATE DISPLAY */}
                     </div>
                   ))
                 )}

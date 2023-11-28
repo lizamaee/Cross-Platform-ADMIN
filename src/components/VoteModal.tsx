@@ -16,7 +16,7 @@ export default function VoteModal({title, open, onClose, children }: VoteModalPr
             open ? "visible bg-black/70" : "invisible"
         }`}
             >
-            <div onClick={(e:any) => e.stopPropagation()} className="close items-center bg-white py-3 px-5 rounded-t-xl dark:bg-[#313131] flex w-5/6 border-b-[1px] dark:border-gray-600 justify-end">
+            <div onClick={(e:any) => e.stopPropagation()} className="close items-center bg-white py-3 px-5 rounded-t-xl dark:bg-[#313131] flex w-5/6 border-b-[1px] dark:border-zinc-700 justify-end">
                 <h4 className="text-md md:text-xl dark:text-gray-100 pop-extrabold uppercase sm:tracking-[.4rem] flex-grow text-center">{title}</h4>
                 <button onClick={onClose} className="p-1 rounded-lg text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-zinc-700">
                     <IoClose size={25}/>
