@@ -201,28 +201,30 @@ export const useUpdateProfile = () => {
   const queryClient = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
   return useMutation({
-      mutationFn:async (newData: {student_id:string, firstname: string, surname: string, age: string, year_level: string, new_student_id: string}) => {
+      mutationFn:async (newData: {student_id:string, firstname: string, surname: string, age: string, year_level: string}) => {
           const response = await axiosPrivate.patch(`/admin-profile`, {
             student_id: newData.student_id,
             firstname: newData.firstname,
             surname: newData.surname,
             age: newData.age,
             year_level: newData.year_level,
-            new_student_id: newData.new_student_id
           } )
           return response.data
       },
-      onSuccess: async () => {
+      onSuccess: async (data) => {
+        if(data.message === 'success'){
           message.open({
               key: 'successCreation',
               type: 'success',
-              content: 'Profile Updated :)',
+              content: 'Profile information saved',
               duration: 2,
           })
           await queryClient.invalidateQueries({
               queryKey: ['users'],
               exact: true
           })
+        }
+          
       },
       onError: (error:any) => {
           if (error.message === 'Network Error') {
