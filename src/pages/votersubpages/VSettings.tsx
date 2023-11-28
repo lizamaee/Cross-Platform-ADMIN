@@ -27,7 +27,6 @@ import DeleteMe from "../../components/DeleteMe";
 import blank from '../../images/blank.jpg'
 
 type ProfileFormData = {
-  student_id: string;
   firstname: string;
   surname: string;
   age: string;
@@ -117,11 +116,6 @@ export default function VSettings() {
   };
 
   const profileSchema: ZodType<ProfileFormData> = z.object({
-    student_id: z
-      .string()
-      .regex(/^\d{6,7}$/, { message: "Student ID must be a valid Student ID" })
-      .min(6)
-      .max(7),
     firstname: z.string().min(1, { message: "Please fill in your firstname" }),
     surname: z.string().min(1, { message: "Please fill in your surname" }),
     age: z
@@ -133,8 +127,7 @@ export default function VSettings() {
   const {
     register: profileRegister,
     handleSubmit: handleSubmitProfile,
-    formState: { errors: errorProfile },
-    reset: profileReset,
+    formState: { errors: errorProfile }
   } = useForm<ProfileFormData>({ resolver: zodResolver(profileSchema) });
 
   //UPDATE PROFILE HOOKS
@@ -154,8 +147,7 @@ export default function VSettings() {
         firstname: data.firstname,
         surname: data.surname,
         age: data.age,
-        year_level: data.year_level,
-        new_student_id: data.student_id,
+        year_level: data.year_level
       });
     }
   };
@@ -564,26 +556,10 @@ export default function VSettings() {
 
         <form onSubmit={handleSubmitProfile(handleSave)}>
           <div className="id w-3/6 md:w-2/6">
-            <label className="pb-1 opacity-80 mt-4 md:mt-8 block text-sm pop-regular">
-              Student ID
-            </label>
             {voterQuery?.isLoading
               ? <Skeleton.Input size="large" active/>
-              : <input
-                  {...profileRegister("student_id")}
-                  defaultValue={student_id ?? "1234567"}
-                  type="text"
-                  minLength={6}
-                  maxLength={7}
-                  required
-                  className="bg-transparent py-4 px-4 outline-none focus:outline-indigo-400 rounded-md border-solid border-[1px] dark:border-zinc-700 opacity-90 w-full"
-                />
+              : <h4 className="font-normal">Student ID: <strong>{student_id ?? "1234567"}</strong></h4>
             }
-            {errorProfile.student_id && (
-              <span className="text-red-400 text-center text-sm">
-                {errorProfile.student_id.message}
-              </span>
-            )}
           </div>
           <div className="grid md:grid-cols-2 md:gap-32 pop-regular ">
             <div className="firstname">
@@ -725,7 +701,6 @@ export default function VSettings() {
                     className="flex pop-medium items-center text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg py-2 px-3"
                   >
                     Saving...
-                    <Spin className="pl-1" />
                   </button>
                 )}
               </div>

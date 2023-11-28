@@ -421,29 +421,29 @@ export const useUpdateProfile = () => {
         firstname: string, 
         surname: string, 
         age: string, 
-        year_level: string, 
-        new_student_id: string}) => {
+        year_level: string,}) => {
           const response = await axiosPrivate.patch(`/student-profile`, {
             student_id: newData.student_id,
             firstname: newData.firstname,
             surname: newData.surname,
             age: newData.age,
             year_level: newData.year_level,
-            new_student_id: newData.new_student_id
           } )
           return response.data
       },
-      onSuccess: async () => {
+      onSuccess: async (data) => {
+        if(data.message === "success"){
           message.open({
               key: 'successCreation',
               type: 'success',
-              content: 'Profile Information Updated :)',
+              content: 'Profile information saved',
               duration: 5,
           })
           await queryClient.invalidateQueries({
               queryKey: ['voter'],
               exact: true
           })
+        }
       },
       onError: (error:any) => {
           if (error.message === 'Network Error') {
