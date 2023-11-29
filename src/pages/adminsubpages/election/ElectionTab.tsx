@@ -535,7 +535,7 @@ export default function ElectionTab() {
       {/* CREATE BUTTON */}
       <div className="top flex justify-between items-center pt-10  mx-5">
         <h3 className='text-lg pop-semibold text-gray-950 dark:text-gray-100'>Elections</h3>
-        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 sm:pr-3 px-1 text-white pop-medium bg-[#2F92F0] hover:text-[#2F92F0] border-2 border-[#2F92F0] hover:bg-transparent focus:outline-none rounded-2xl'>
+        <button onClick={showDrawer} className='flex justify-center items-center py-1 md:py-2 sm:pr-3 px-1 text-white pop-medium bg-[#2F92F0] hover:text-[#2F92F0] border-2 border-[#2F92F0] hover:bg-transparent focus:outline-none rounded-2xl transition duration-300 ease-in-out'>
           <BsPlus size={25} className='' />
           <h3 className='text-sm md:text-md hidden sm:inline'>CREATE</h3>
         </button>
