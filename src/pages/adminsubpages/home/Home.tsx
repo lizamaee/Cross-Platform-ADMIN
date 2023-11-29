@@ -437,8 +437,8 @@ export default function Home(){
         </div>
         {/* Elections Table */}
         <div className="tables overflow-x-auto py-5 sm:px-7 centered">
-          { upcomingTab && <ElectionTable election={upcomingElections} handleElection={activateElection} action='activate' actionStyle='text-gray-100 bg-sky-800 hover:bg-sky-700 rounded-lg'/> }
-          { ongoingTab && <ElectionTable election={events[0]} handleElection={getOrganizations} action='view' actionStyle='text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg'/> }
+          { upcomingTab && <ElectionTable electionType="upcoming" election={upcomingElections} handleElection={activateElection} action='activate' actionStyle='text-gray-100 bg-sky-800 hover:bg-sky-700 rounded-lg'/> }
+          { ongoingTab && <ElectionTable electionType="ongoing" election={events[0]} handleElection={getOrganizations} action='view' actionStyle='text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg'/> }
         </div>
       
 
