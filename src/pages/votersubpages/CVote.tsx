@@ -493,7 +493,7 @@ export default function CVote() {
                     <div
                       key={index}
                       onClick={() => handleGetBallot(org.ballots[0], org.id)}
-                      className="org cursor-pointer hover:bg-gray-200 border-[1px] border-gray-200 dark:border-zinc-700 overflow-hidden py-2 bg-gray-100 dark:bg-[#282828] dark:hover:bg-[#2f2f2f] flex flex-col shadow-md rounded-lg items-center"
+                      className="org cursor-pointer hover:bg-gray-200 border-[1px] border-gray-200 dark:border-zinc-700 overflow-hidden py-2 bg-gray-100 dark:bg-[#282828] dark:hover:bg-[#2f2f2f] flex flex-col shadow-xl rounded-lg items-center"
                     >
                       <img
                         src={org.logo_url}

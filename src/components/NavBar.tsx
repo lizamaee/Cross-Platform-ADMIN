@@ -3,7 +3,6 @@ import { CgInfo } from "react-icons/cg";
 import {BsFillSunFill,BsMoonFill, BsPersonCircle} from 'react-icons/bs'
 import { Link } from "react-router-dom";
 import { Tooltip } from "antd";
-import { useRef } from "react";
 
 interface navProp {
     pageName: string;
@@ -21,13 +20,12 @@ export default function NavBar({ pageName}: navProp) {
       <div className="hero hidden md:flex gap-5 bg-white dark:bg-[#333333] items-center py-1 px-3 rounded-full">
         <span onClick={switchMode}>
           { isNight ? ( <BsFillSunFill className='text-gray-400 hover:text-gray-200' size={18}/>) : ( < BsMoonFill className='text-[#a3aed0] hover:text-slate-500' size={18} /> )}
-          
         </span>
 
         <span className='flex'>
           <Tooltip
             placement="bottom"
-            title="This system is developed by Menard M. Pajares for CICT department of Taguig City University."
+            title="This system is developed by Menard M. Pajares & Liza Mae N. Necerio for CICT department of Taguig City University."
           >
             <span style={{ display: 'inline-block' }}>
               <CgInfo className="text-[#a3aed0]" size={23} />
