@@ -21,6 +21,8 @@ import { useActivateElection, useEndElection } from '../../../hooks/queries/useA
 import VoteModal from '../../../components/VoteModal';
 import { useSingleBallotResult } from '../../../hooks/queries/useVoter';
 import { winner } from '../../../BMAlgorithm';
+import PDFResult from '../../../components/PDFResult';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 
 interface DataType {
   id: string;
@@ -524,9 +526,11 @@ export default function ElectionTab() {
   } = useSingleBallotResult()
 
   const [openSliderResult, setOpenSliderResult] = useState<boolean>(false);
+  const [resultOrgName, setresultOrgName] = useState("");
 
-  const handleGetBallot = async (ballots: any) => {
+  const handleGetBallot = async (ballots: any, orgname: string) => {
       setOpenSliderResult(true);
+      setresultOrgName(orgname);
       getSingleResultBallot(ballots.id);
   };
       
@@ -653,7 +657,7 @@ export default function ElectionTab() {
         
       </div>
       {/* RESULT MODAL */}
-      <VoteModal title='Result' open={isActiveOrgs} onClose={() => setIsActiveOrgs(false)}>
+      <VoteModal title='Election Result' open={isActiveOrgs} onClose={() => setIsActiveOrgs(false)}>
             <div className="slk overflow-x-hidden h-full overflow-y-auto relative">
               {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
               {electionsQuery?.isLoading ? (
@@ -667,18 +671,18 @@ export default function ElectionTab() {
                     <div className="active-organization rounded-lg shadow-md bg-white dark:bg-[#202020] h-full">
                       <div className="all-org grid sm:p-5 sm:gap-10">
                         {activeOrgs?.length === 0 ? (
-                          <h3>No Active Organizations</h3>
+                          <h3>No Organizations</h3>
                         ) : (
                           <div className="ors">
                             <h4 className="pb-2 w-full dark:text-gray-200 pop-semibold">
-                                Active Organizations
+                                Organizations
                               </h4>
                             {
                               activeOrgs?.map((org: any, index: any) => 
                             <div
                               key={index}
-                              onClick={() => handleGetBallot(org.ballots[0])}
-                              className="org cursor-pointer hover:bg-gray-200 border-[1px] border-gray-200 dark:border-gray-600 overflow-hidden py-2 bg-gray-100 dark:bg-zinc-700 dark:hover:bg-zinc-600 flex flex-col shadow-md rounded-lg items-center"
+                              onClick={() => handleGetBallot(org.ballots[0], org.org_name)}
+                              className="org cursor-pointer hover:bg-gray-200 border-[1px] border-gray-200 dark:border-gray-600 overflow-hidden py-2 bg-gray-100 dark:bg-zinc-700 dark:hover:bg-zinc-600 flex flex-col shadow-md rounded-lg items-center mb-2"
                             >
                               
                               <h2 className="pop-medium text-center dark:text-gray-300 text-sm">
@@ -698,12 +702,21 @@ export default function ElectionTab() {
                 )
               )}
               <div className={`organizations-slider rounded-lg bg-gray-200 dark:bg-zinc-700 w-full h-full absolute top-0 left-0 z-10 ${ openSliderResult ? 'translate-x-0' : 'translate-x-full'} transition-all duration-200`}>
-                <div className="close flex">
+                <div className="close pr-3 flex items-center justify-between">
                   <button onClick={() => setOpenSliderResult(false)} className="p-5 rounded-xl">
                     <FaAngleLeft className="w-6 h-6 text-gray-400 dark:text-gray-300"/>
                   </button>
+
+                  {/* <PDFFile /> */}
+                  <PDFDownloadLink className='p-1 font-semibold shadow-md text-white cursor-pointer sm:px-3 sm:py-2 text-sm sm:text-base rounded-lg bg-blue-300 dark:bg-sky-800' document={<PDFResult orgname={resultOrgName} result={resultBallotData} />} fileName={`${resultOrgName}-Winners`}>
+                    {({loading}) => 
+                    loading 
+                      ? (<h4>Loading Document...</h4> )
+                      : (<h4>Download PDF</h4>)
+                      }
+                  </PDFDownloadLink>
                 </div>
-                <div className="vote result p-3">
+                <div className="vote result px-3 pb-3">
                 {isResultBallotLoading ? (
                     <div
                       className={`result gap-10 p-5 mb-10 bg-gradient-to-t  from-blue-400 to-red-400 dark:bg-gradient-to-br dark:from-[#323356] dark:to-[#563232] shadow-2xl rounded-lg animate-pulse`}
