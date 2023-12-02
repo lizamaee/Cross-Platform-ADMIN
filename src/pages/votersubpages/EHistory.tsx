@@ -97,18 +97,18 @@ export default function EHistory() {
       {/* NOTIFICATION HEADER */}
 
       <div className="history h-96 relative shadow-md overflow-hidden p-2 sm:p-5 mt-3 rounded-lg text-gray-800 dark:text-gray-300 bg-white dark:bg-[#313131]">
-        <div className={`organizations-slider bg-gray-200 dark:bg-zinc-700 w-full h-full absolute top-0 left-0 z-10 ${ isOrgSliderOpen ? 'translate-x-0' : 'translate-x-full'} transition-all duration-200`}>
+        <div className={`organizations-slider bg-gray-200 dark:bg-[#313131] w-full h-full absolute top-0 left-0 z-10 ${ isOrgSliderOpen ? 'translate-x-0' : 'translate-x-full'} transition-all duration-200`}>
           <div className="close flex">
             <button onClick={() => setIsOrgSliderOpen(false)} className="p-5 rounded-xl">
               <FaAngleLeft className="w-6 h-6 text-gray-400 dark:text-gray-300"/>
             </button>
           </div>
-          <h3 className="text-sm text-center pop-bold">Organizations</h3>
+          <h3 className="text-sm sm:text-base text-center pop-bold">Organizations</h3>
           <div className="organizations p-3">
-            <div className="orgs-wrapper grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="orgs-wrapper grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {gettedOrganizations?.map((org:any) => (
-                <div key={org.id} onClick={() => resultHandler(org.ballots[0])} className="orgs cursor-pointer shadow-sm flex flex-col justify-center items-center p-3 rounded-md bg-gray-300 dark:bg-zinc-600">
-                  <h3 className="text-center text-gray-800 dark:text-gray-300 pop-semibold text-sm">{org.org_name}</h3>
+                <div key={org.id} onClick={() => resultHandler(org.ballots[0])} className="orgs cursor-pointer dark:hover:bg-[#343434] shadow-sm flex flex-col justify-center items-center p-3 rounded-md bg-transparent border-2 border-gray-300 dark:border-[#394048] transition duration-300 ease-in-out">
+                  <h3 className="text-center text-gray-800 dark:text-gray-300 pop-semibold text-xs sm:text-sm">{org.org_name}</h3>
                 </div>
               ))}
             </div>
@@ -120,11 +120,11 @@ export default function EHistory() {
               ? <h3 className='text-center text-gray-400'>No election history</h3>
               : participatedElectionsQuery?.data?.map((election:any) => (
                 
-                <button disabled={election.status === "ongoing"} key={election.id} onClick={() => handleSingleHistory(election.id, election.status)} className={`election mb-3 w-full hover:opacity-90 shadow-md pop-medium flex flex-col px-4 py-2 rounded-lg bg-gray-200 dark:bg-zinc-700 ${election.status === "ended" ? 'cursor-pointer' : 'cursor-not-allowed' }`}>
+                <button disabled={election.status === "ongoing"} key={election.id} onClick={() => handleSingleHistory(election.id, election.status)} className={`election mb-3 w-full hover:opacity-90 shadow-md pop-medium flex flex-col px-4 py-2 rounded-lg bg-gray-200 border-2 border-gray-300 dark:border-[#30363d] dark:bg-transparent ${election.status === "ended" ? 'cursor-pointer' : 'cursor-not-allowed' }`}>
                   <p className="text-[10px]">Title</p>
                   <div className="title w-full pb-1 flex justify-between items-baseline">
-                    <h3 className='pop-semibold'>{election.title}</h3>
-                    <FaAngleRight className="w-6 h-6 text-gray-400 dark:text-gray-300"/>
+                    <h3 className='pop-semibold text-sm sm:text-base'>{election.title}</h3>
+                    <FaAngleRight className="w-4 sm:w-6 h-4 sm:h-6 text-gray-400 dark:text-gray-300"/>
                   </div>
                   <div className="w-full flex justify-between items-center">
                     <p className="text-xs pop-light opacity-70 ">
@@ -138,7 +138,7 @@ export default function EHistory() {
                         }
                       )}
                     </p>
-                    <h5 className={`capitalize py-1 px-2 rounded-xl text-right text-sm ${election.status === "ended" ? 'text-gray-100 dark:text-gray-300 bg-red-300 dark:bg-red-700' : 'text-gray-100 dark:text-gray-300 bg-sky-300 dark:bg-sky-700'}`}>{election.status}</h5>
+                    <h5 className={`capitalize py-1 px-2 rounded-xl text-right text-xs sm:text-sm ${election.status === "ended" ? 'text-gray-100 dark:text-gray-300 bg-red-300 dark:bg-red-700' : 'text-gray-100 dark:text-gray-300 bg-sky-300 dark:bg-sky-700'}`}>{election.status}</h5>
 
                   </div>
                 </button>
