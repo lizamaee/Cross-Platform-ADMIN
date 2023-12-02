@@ -76,7 +76,7 @@ export default function VHome() {
       {/* WELCOME AND PROFILE CARD */}
 
       {/* EDIT INFO OR SHOW ONGOING ELECTIONS */}
-      {ongoingElectionsQuery?.isLoading
+      {ongoingElectionsQuery?.isLoading || voterQuery?.isLoading
         ? <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-10">
             <h3 className='pop-semibold'>Loading...</h3>
           </div>
