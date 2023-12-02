@@ -23,6 +23,8 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
+import StarterVoter from "../../components/StarterVoter";
+import { useVoter } from "../../hooks/queries/useAdmin";
 
 type Position = {
   id: string;
@@ -49,6 +51,13 @@ export default function CVote() {
   const [selectedOrganizationID, setSelectedOrganizationID] =
     useState<string>("");
   const [bubble] = useSound(bubleSoundEffect, {volume: 0.35})
+  const voterQuery = useVoter(student_id)
+
+  const firstname = voterQuery?.data?.voter?.firstname
+  const surname = voterQuery?.data?.voter?.surname
+  const profile_picture = voterQuery?.data?.voter?.profile_picture
+  const age = voterQuery?.data?.voter?.age
+  const yearLevel = voterQuery?.data?.voter?.year_level
 
   useEffect(() => {
     function singleResultEvent(value:any){
@@ -191,7 +200,11 @@ export default function CVote() {
   const renderCandidates = (position: any, selectedCandidates: any) => {
     const candidateElements = position.candidates.map(
       (candidate: Candidate) => (
-        <SwiperSlide key={candidate.id} className="bg-[#C7C7C7] dark:bg-[#55463e] w-40 relative rounded-2xl">
+        <SwiperSlide key={candidate.id} className={`bg-[#e9e9e9] dark:bg-[#4c4440] w-40 relative rounded-2xl border-4 ${
+          selectedCandidates[position.id]?.includes(candidate.id)
+            ? 'border-purple-500 '
+            : 'border-transparent'
+        }`}>
           <label
           htmlFor={`candidate_${candidate.id}`}
           key={candidate.id}
@@ -208,11 +221,7 @@ export default function CVote() {
                 <img
                   src={candidate.imageUrl}
                   alt={candidate.fullname + " " + "Profile"}
-                  className={`object-cover w-20 h-20 rounded-full ${
-                    selectedCandidates[position.id]?.includes(candidate.id)
-                      ? 'border-blue-500 border-4'
-                      : 'border-transparent'
-                  }`}
+                  className={`object-cover w-20 h-20 rounded-full`}
                 />
                 <h4 className="pop-medium text-sm md:text-base md:py-2 capitalize dark:text-gray-200 text-center">
                   {candidate.fullname}
@@ -408,109 +417,115 @@ export default function CVote() {
       </div>
       {/* NOTIFICATION HEADER */}
 
-      {/* SHOW ONGOING ELECTIONS */}
-        <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-3 rounded-lg">
-          <div className="ongoing flex justify-between p-5">
-            <h4 className="pop-medium dark:text-gray-300 text-md md:text-lg">
-              Ongoing Elections
-            </h4>
+      {/* SHOW FILL-UP INFORMATION FORM AT FIRST */}
+      {voterQuery?.isLoading
+        ? <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-10">
+            <h3 className='pop-semibold'>Loading...</h3>
           </div>
-
-          <div className="elections px-5 pb-5">
-            {events?.length === 0 ? (
-              <div className="no-ongoingx">
-                <div className="h4 text-gray-400 pop-regular text-sm text-center ">
-                  No ongoing Election.
-                </div>
+        : firstname === null || surname === null || profile_picture === null || age === null || yearLevel === null
+          ? <StarterVoter firstname={firstname} profile={profile_picture} />
+          : <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-3 rounded-lg">
+              <div className="ongoing flex justify-between p-5">
+                <h4 className="pop-medium dark:text-gray-300 text-md md:text-lg">
+                  Ongoing Elections
+                </h4>
               </div>
-            ) : (
-              <div className="elections-cards grid md:grid-cols-2 xl:grid-cols-3 gap-5">
-                {events[0]?.map(
-                  (ongoing: any, index: any) => (
-                    <div
-                      key={index}
-                      onClick={() => handleActiveOrganizations(ongoing.id)}
-                      className="ongoing relative border-2 dark:border-zinc-700 cursor-pointer shadow-lg rounded-lg overflow-hidden"
-                    >
-                      <img
-                        src={ongoing.banner ?? cict}
-                        alt="election banner"
-                        className="object-cover w-full h-52"
-                      />
-                      <div className="fading-info absolute bottom-0 w-full bg-gradient-to-t from-white dark:from-black">
-                        <h4 className="text-center pt-10 pb-3 pop-semibold dark:text-gray-100 text-lg">
-                          {ongoing.title}
-                        </h4>
-                        {/* DATE DISPLAY */}
-                        <div className="dates flex flex-col sm:flex-row text-xs sm:gap-3 items-center justify-center text-gray-900 dark:text-gray-300 pb-2 sm:pb-3 pop-regular">
-                          <p className="">
-                            {new Date(ongoing.startDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                timeZone: "Asia/Manila",
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              }
-                            )}
-                          </p>
-                          <span>-</span>
-                          <p className="sm:text-right">
-                            {new Date(ongoing.endDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                timeZone: "Asia/Manila",
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              }
-                            )}
-                          </p>
+      
+              <div className="elections px-5 pb-5">
+                {events?.length === 0 ? (
+                  <div className="no-ongoingx">
+                    <div className="h4 text-gray-400 pop-regular text-sm text-center ">
+                      No ongoing Election.
+                    </div>
+                  </div>
+                ) : (
+                  <div className="elections-cards grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    {events[0]?.map(
+                      (ongoing: any, index: any) => (
+                        <div
+                          key={index}
+                          onClick={() => handleActiveOrganizations(ongoing.id)}
+                          className="ongoing relative border-2 dark:border-zinc-700 cursor-pointer shadow-lg rounded-lg overflow-hidden"
+                        >
+                          <img
+                            src={ongoing.banner ?? cict}
+                            alt="election banner"
+                            className="object-cover w-full h-52"
+                          />
+                          <div className="fading-info absolute bottom-0 w-full bg-gradient-to-t from-white dark:from-black">
+                            <h4 className="text-center pt-10 pb-3 pop-semibold dark:text-gray-100 text-lg">
+                              {ongoing.title}
+                            </h4>
+                            {/* DATE DISPLAY */}
+                            <div className="dates flex flex-col sm:flex-row text-xs sm:gap-3 items-center justify-center text-gray-900 dark:text-gray-300 pb-2 sm:pb-3 pop-regular">
+                              <p className="">
+                                {new Date(ongoing.startDate).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    timeZone: "Asia/Manila",
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                  }
+                                )}
+                              </p>
+                              <span>-</span>
+                              <p className="sm:text-right">
+                                {new Date(ongoing.endDate).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    timeZone: "Asia/Manila",
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                  }
+                                )}
+                              </p>
+                            </div>
+                            {/* DATE DISPLAY */}
+                          </div>
                         </div>
-                        {/* DATE DISPLAY */}
+                      )
+                    )}
+                  </div>
+                )}
+                {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
+                {isActiveOrgs && (
+                  <>
+                    <div className="active-organization rounded-lg shadow-xl bg-white dark:bg-[#313131] py-5">
+                      <h4 className="py-3 text-center text-xs sm:text-md md:text-lg dark:text-gray-300 pop-semibold border-t-2 dark:border-zinc-700">
+                        Active Organizations
+                      </h4>
+                      <div className="all-org grid gap-2 sm:gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+                        {activeOrgs?.length === 0 ? (
+                          <h3>No Active Organizations</h3>
+                        ) : (
+                          activeOrgs?.map((org: any, index: any) => (
+                            <div
+                              key={index}
+                              onClick={() => handleGetBallot(org.ballots[0], org.id)}
+                              className="org cursor-pointer hover:bg-gray-200 border-[1px] border-gray-200 dark:border-zinc-700 overflow-hidden py-2 bg-gray-100 dark:bg-[#282828] dark:hover:bg-[#2f2f2f] flex flex-col shadow-xl rounded-lg items-center"
+                            >
+                              <img
+                                src={org.logo_url}
+                                alt={org.org_name + " " + "Logo"}
+                                className="object-cover w-16 h-16  sm:w-24 sm:h-24 rounded-full"
+                              />
+                              <h2 className="pop-medium text-center pt-3 dark:text-gray-300 text-sm">
+                                {org.org_name}
+                              </h2>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
-                  )
+                  </>
                 )}
-              </div>
-            )}
-          </div>
-        </div>
-      {/* SHOW ONGOING ELECTIONS */}
-
-      {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
-      {isActiveOrgs && (
-          <>
-            <div className="active-organization rounded-lg shadow-xl bg-white dark:bg-[#313131] mt-5 p-5">
-              <h4 className="pb-5 text-center text-xs sm:text-md md:text-lg dark:text-gray-300 pop-semibold">
-                Active Organizations
-              </h4>
-              <div className="all-org grid gap-2 sm:gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                {activeOrgs?.length === 0 ? (
-                  <h3>No Active Organizations</h3>
-                ) : (
-                  activeOrgs?.map((org: any, index: any) => (
-                    <div
-                      key={index}
-                      onClick={() => handleGetBallot(org.ballots[0], org.id)}
-                      className="org cursor-pointer hover:bg-gray-200 border-[1px] border-gray-200 dark:border-zinc-700 overflow-hidden py-2 bg-gray-100 dark:bg-[#282828] dark:hover:bg-[#2f2f2f] flex flex-col shadow-xl rounded-lg items-center"
-                    >
-                      <img
-                        src={org.logo_url}
-                        alt={org.org_name + " " + "Logo"}
-                        className="object-cover w-16 h-16  sm:w-24 sm:h-24 rounded-full"
-                      />
-                      <h2 className="pop-medium text-center pt-3 dark:text-gray-300 text-sm">
-                        {org.org_name}
-                      </h2>
-                    </div>
-                  ))
-                )}
+                {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
               </div>
             </div>
-          </>
-      )}
-      {/* SHOW ACTIVE ORGANIZATIONS ELECTION */}
+      }
+      {/* SHOW FILL-UP INFORMATION FORM AT FIRST */}
 
       {/* CAST VOTE MODAL */}
       <VoteModal
@@ -542,7 +557,7 @@ export default function CVote() {
                 .map((position: Position) => (
                   <div
                     key={position.position}
-                    className={`position gap-10 p-5 mb-10  odd:bg-transparent dark:odd:bg-transparent dark:odd:border-zinc-700 border-2 even:bg-red-100 dark:even:bg-[#563232] shadow-2xl rounded-lg`}
+                    className={`position gap-10 p-5 mb-10  odd:bg-transparent dark:odd:bg-transparent dark:odd:border-zinc-700 border-2 even:bg-red-100 dark:even:bg-[#563232bc] shadow-2xl rounded-lg`}
                   >
                     <h3 className="pop-semibold bg-gray-100 overflow-hidden dark:bg-zinc-700 dark:text-gray-100 text-gray-800 text-center py-2 sm:py-2 rounded-lg mb-2 text-sm sm:text-lg">
                       {position.position}
