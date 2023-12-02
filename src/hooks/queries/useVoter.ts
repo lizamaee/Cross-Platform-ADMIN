@@ -127,7 +127,8 @@ export const useUploadVoterPicture = () => {
           } )
           return response.data
       },
-      onSuccess: async () => {
+      onSuccess: async (data) => {
+        if(data.message === 'Profile Picture Updated!'){
           message.open({
               key: 'successCreation',
               type: 'success',
@@ -138,6 +139,8 @@ export const useUploadVoterPicture = () => {
               queryKey: ['voter'],
               exact: true
           })
+        }
+          
       },
       onError: (error:any) => {
           if (error.message === 'Network Error') {
