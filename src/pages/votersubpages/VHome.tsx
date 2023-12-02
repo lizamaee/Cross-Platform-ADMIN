@@ -22,6 +22,8 @@ export default function VHome() {
   const firstname = voterQuery?.data?.voter?.firstname
   const surname = voterQuery?.data?.voter?.surname
   const profile_picture = voterQuery?.data?.voter?.profile_picture
+  const age = voterQuery?.data?.voter?.age
+  const yearLevel = voterQuery?.data?.voter?.year_level
 
   return (
     <div>
@@ -80,7 +82,7 @@ export default function VHome() {
         ? <div className="loadin flex flex-col gap-3 items-center dark:text-gray-400 justify-center mt-10">
             <h3 className='pop-semibold'>Loading...</h3>
           </div>
-        : firstname === null || surname === null || profile_picture === null
+        : firstname === null || surname === null || profile_picture === null || age === null || yearLevel === null
           ? <StarterVoter firstname={firstname} profile={profile_picture} />
           : <div className="elections-body shadow-md bg-white dark:bg-[#313131] mt-5 rounded-lg">
               <div className="ongoing flex justify-between pt-5 px-5">
@@ -94,30 +96,9 @@ export default function VHome() {
                     </div>
                   : <div className="elections-cards grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                       { ongoingElectionsQuery?.data?.map((ongoing:any, index:any) => (
-                          <div key={index} onClick={() => navigate('/voter/cast-vote') } className="ongoing cursor-pointer border-[1px] border-gray-300 dark:border-gray-600 dark:bg-zinc-700 bg-gray-100 shadow-md rounded-xl overflow-hidden">
+                          <div key={index} onClick={() => navigate('/voter/cast-vote') } className="ongoing cursor-pointer border-[1px] border-gray-300 dark:border-gray-600 dark:bg-zinc-800 bg-gray-100 shadow-md rounded-xl overflow-hidden">
                             <img src={ongoing.banner ?? cict} alt="cict logo" className='object-cover w-full h-24' />
-                            <h4 className='text-center py-2 pop-semibold dark:text-gray-200 text-md sm:text-lg'>{ongoing.title}</h4>
-                            {/* DATE DISPLAY */}
-                            <div className="dates flex text-xs gap-3 items-center justify-center text-gray-600 dark:text-gray-400 pb-4 pop-regular">
-                                    <p className="">
-                                      {new Date(ongoing.startDate).toLocaleDateString("en-US", {
-                                        timeZone: "Asia/Manila",
-                                        day: "numeric",
-                                        month: "short",
-                                        year: "numeric",
-                                      })}
-                                    </p>
-                                    <span>-</span>
-                                    <p className="text-right">
-                                      {new Date(ongoing.endDate).toLocaleDateString("en-US", {
-                                        timeZone: "Asia/Manila",
-                                        day: "numeric",
-                                        month: "short",
-                                        year: "numeric",
-                                      })}
-                                    </p>
-                                  </div>
-                                  {/* DATE DISPLAY */}
+                            <h4 className='text-center py-2 pop-semibold dark:text-gray-200 text-md sm:text-lg px-1'>{ongoing.title}</h4>
                           </div>
                       ))}
                   </div>
