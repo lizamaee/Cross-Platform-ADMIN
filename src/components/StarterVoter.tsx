@@ -107,11 +107,11 @@ export default function ({profile,firstname}:StarterProp) {
     return (
     <div className="edit-info-first mt-5 p-5 bg-white dark:bg-[#313131] rounded-xl">
         <div className="edit-head">
-            <h2 className='pop-medium dark:text-gray-300'>Please complete your Information below</h2>
+            <h2 className='pop-medium text-xs sm:text-base dark:text-gray-200'>Please complete your Information below</h2>
         </div>
         {/* PROFILE PICTURE UPLOAD */}
         <div className="profile-container ">
-            <div className="img-holder flex flex-col items-center md:flex-row  my-5 gap-3 md:gap-10">
+            <div className="img-holder flex flex-col items-center md:flex-row  mt-5 gap-3 md:gap-10">
                 <div className="img flex flex-col justify-center items-center">
                     <img 
                         src={profile ?? blank} alt={`${firstname ?? "John Doe"} Image`} 
@@ -137,10 +137,10 @@ export default function ({profile,firstname}:StarterProp) {
                 <div className="choose-btn flex flex-col gap-5 justify-center">
                     {isPictureUploading
                         ? <button
-                        className="bg-[#202142] dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-3 px-5">Uploading...</button>
+                        className="bg-[393c72] shadow-lg text-xs sm:text-sm dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-2 sm:py-3 px-3">Uploading...</button>
                         : <button
                         onClick={handleButtonClick}
-                        className="bg-[#202142] dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-3 px-5">Choose picture</button>
+                        className="bg-[#393c72] shadow-lg text-xs sm:text-sm dark:bg-[#33366d] text-white pop-medium focus:outline-none border-[1px] border-[#202142] rounded-lg flex py-2 sm:py-3 px-3">Choose picture</button>
                     }
                 </div>
             </div>
@@ -151,41 +151,41 @@ export default function ({profile,firstname}:StarterProp) {
         <form onSubmit={handleSubmitInfo(handleUploadVoterInfo)}>
             <div className="grid md:grid-cols-2 md:gap-32 pop-regular ">
                 <div className="firstname">
-                    <label className='pb-1 opacity-80 mt-8 block text-sm dark:text-gray-300'>Firstname</label>
-                    <input {...infoRegister("firstname")} type="text" className='bg-transparent py-4 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-full' />
-                    {errorInfo.firstname && <span className="text-red-400 text-center text-sm">{errorInfo.firstname.message}</span>}
+                    <label className='pb-1 opacity-80 mt-3 block text-sm dark:text-gray-300'>Firstname</label>
+                    <input {...infoRegister("firstname")} type="text" className='bg-transparent py-3 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-full' />
+                    {errorInfo.firstname && <span className="text-red-400 pt-2 block text-center text-xs sm:text-sm">{errorInfo.firstname.message}</span>}
                 </div>
                 <div className="surname">
-                    <label className='pb-1 opacity-80 mt-8 block text-sm dark:text-gray-300'>Surname</label>
-                    <input {...infoRegister("surname")} type="text" className='bg-transparent py-4 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-full' />
-                    {errorInfo.surname && <span className="text-red-400 text-center text-sm">{errorInfo.surname.message}</span>}
+                    <label className='pb-1 opacity-80 mt-3 block text-sm dark:text-gray-300'>Surname</label>
+                    <input {...infoRegister("surname")} type="text" className='bg-transparent py-3 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-full' />
+                    {errorInfo.surname && <span className="text-red-400 pt-2 block text-center text-xs sm:text-sm">{errorInfo.surname.message}</span>}
                 </div>
             </div>
             <div className="grid sm:grid-cols-2 md:gap-32 pop-regular ">
                 <div className="age w-full">
-                    <label className='pb-1 opacity-80 mt-8 block text-sm dark:text-gray-300'>Age</label>
-                    <input {...infoRegister("age")} maxLength={2} minLength={1} type="text" className='bg-transparent py-4 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-16 text-center' />
+                    <label className='pb-1 opacity-80 mt-3 block text-sm dark:text-gray-300'>Age</label>
+                    <input {...infoRegister("age")} maxLength={2} minLength={1} type="text" className='bg-transparent py-3 px-4 outline-none rounded-md border-solid border-2 dark:text-gray-100 tracking-wide dark:border-zinc-700 focus:border-indigo-400  opacity-90 w-16 text-center' />
+                    {errorInfo.age 
+                    ? <span className="text-red-400 block text-center text-xs sm:text-sm pt-2">{errorInfo.age.message}</span> 
+                    : <div className="empty"></div>
+                }
                 </div>
+                
                 <div className="year_level pop-regular w-full">
-                    <label className='pb-1 opacity-80 mt-8 block text-sm dark:text-gray-300'>Year Level</label>
-                    <select {...infoRegister('year_level')} className="w-5/6 sm:w-full bg-transparent dark:text-gray-100 rounded-lg focus:border-indigo-400 outline-none dark:border-zinc-700 border-2 py-4 px-4 ">
+                    <label className='pb-1 opacity-80 mt-3 block text-sm dark:text-gray-300'>Year Level</label>
+                    <select {...infoRegister('year_level')} className="w-5/6 sm:w-full bg-transparent dark:text-gray-100 rounded-lg focus:border-indigo-400 outline-none dark:border-zinc-700 border-2 py-3 px-4 ">
                         <option className="bg-transparent rounded dark:bg-[#313131] dark:text-gray-300" value="">Select year level</option>
                         <option className="bg-transparent dark:bg-[#313131] dark:text-gray-300" value="1st Year">1st Year</option>
                         <option className="bg-transparent dark:bg-[#313131] dark:text-gray-300" value="2nd Year">2nd Year</option>
                         <option className="bg-transparent dark:bg-[#313131] dark:text-gray-300" value="3rd Year">3rd Year</option>
                         <option className="bg-transparent dark:bg-[#313131] dark:text-gray-300" value="4th Year">4th Year</option>
                     </select>
+                    {errorInfo.year_level 
+                    ? <span className="text-red-400 text-center block text-xs sm:text-sm pt-2">{errorInfo.year_level.message}</span> 
+                    : <div className="empty"></div>
+                }
                 </div>
-            </div>
-            <div className="grid grid-cols-2 md:gap-32 pop-regular ">
-                {errorInfo.age 
-                    ? <span className="text-red-400 text-center text-sm pt-3">{errorInfo.age.message}</span> 
-                    : <div className="empty"></div>
-                }
-                {errorInfo.year_level 
-                    ? <span className="text-red-400 text-center text-sm pt-3">{errorInfo.year_level.message}</span> 
-                    : <div className="empty"></div>
-                }
+                
             </div>
             {/* SAVE BUTTON */}
             <div className="save-btn flex justify-end py-5">
