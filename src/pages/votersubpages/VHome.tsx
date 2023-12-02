@@ -1,5 +1,4 @@
 import { BsFillSunFill, BsMoonFill } from 'react-icons/bs'
-import {FiBell} from 'react-icons/fi'
 import { useVoter } from '../../hooks/queries/useAdmin'
 import { useAuthStore } from '../../hooks/state'
 import Lottie from 'lottie-react'
@@ -7,13 +6,12 @@ import welcome from '../../assets/welcome.json'
 import StarterVoter from '../../components/StarterVoter'
 import { useOngoingElections } from '../../hooks/queries/useVoter'
 import { Skeleton } from 'antd'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import blankImg from '../../images/blank.jpg'
 import cict from '../../images/cict.jpg'
 
 export default function VHome() {
   const { isNight, switchMode, student_id } = useAuthStore((state) => state)
-
   const navigate = useNavigate()
 
   //ONGOING ELECTIONS QUERY HOOK
@@ -59,7 +57,9 @@ export default function VHome() {
           <div className="prof flex flex-col justify-center items-center">
             {voterQuery?.isLoading
               ?  <Skeleton.Avatar size={80} active />
-              : <img src={profile_picture ?? blankImg} alt={`${firstname ?? "John Doe"} Profile Picture`} className='w-20 h-20 border-[6px] shadow-md border-[#E5D1FA] dark:border-zinc-700 object-cover rounded-full' />
+              : <div className="profile-avatar border-2 border-[#E5D1FA] dark:border-zinc-700 rounded-full">
+                  <img src={profile_picture ?? blankImg} alt={`${firstname ?? "John Doe"} Profile Picture`} className='w-20 h-20 border-4 shadow-md border-white dark:border-[#313131] object-cover rounded-full' />
+              </div>
             }
             
             {voterQuery?.isLoading
