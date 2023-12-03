@@ -361,12 +361,13 @@ export default function PositionTab() {
 
       {/* ALL POSITIONS */}
       <div className="container w-full mx-auto p-4 overflow-x-auto">
+        {positionsQuery.isLoading && <div className='flex justify-center text-gray-600 dark:text-gray-400 items-center py-5'>Loading Positions...</div>}
         {positionsQuery.status === 'error' || positionsQuery.data?.[0]?.error === 'Network Error'
             ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
             : descendingPositions?.length === 0 
                 ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Positions</h4>
                 : <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-                {descendingPositions?.map((pos:DataType, index: any) =>(
+                {descendingPositions?.filter((posi:any) => posi.ballotId === null).map((pos:DataType, index: any) =>(
                   <div key={index} className="card border-2 dark:border-gray-600 p-2 shadow-md bg-gray-100 dark:bg-[#2a2a2a] rounded-tl-sm rounded-br-sm rounded-tr-3xl rounded-bl-3xl">
                     <h3 className='pop-semibold text-[#303030] dark:text-gray-200 text-center pt-3 pb-1'>{pos.position}</h3>
                     

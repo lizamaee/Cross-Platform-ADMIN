@@ -335,12 +335,13 @@ export default function CandidateTab() {
 
       {/* ALL CANDIDATES */}
       <div className="container w-full mx-auto p-4 overflow-x-auto">
+        {candidatesQuery.isLoading && <div className='flex justify-center text-gray-600 dark:text-gray-400 items-center py-5'>Loading Candidates...</div>}
         {candidatesQuery.status === 'error' || candidatesQuery.data?.[0]?.error === 'Network Error'
             ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
             : descendingCandidates?.length === 0 
                 ? <h4 className='text-gray-400 opacity-90 border-2 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>No Candidates</h4>
                 : <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-                {descendingCandidates?.map((can:DataType, index: any) =>(
+                {descendingCandidates?.filter((can:any) => can.seatId === null).map((can:DataType, index: any) =>(
                   <div key={index} className="card overflow-hidden p-3  shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
                     <div className="upper grid grid-cols-2">
                       {/* IMAGE DISPLAY */}
