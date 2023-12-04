@@ -17,7 +17,7 @@ export default function DeleteMe({ open, onClose, children }: DeleteMeProps) {
             {/* Modal */}
             <div
             onClick={(e:any) => e.stopPropagation()} 
-            className={`rounded-xl overflow-y-auto centered shadow p-6 transition-all ${open ? 'scale-100 opacity-100': 'scale-125 opacity-0'}`}>
+            className={`rounded-xl overflow-y-auto centered p-6 transition-all ${open ? 'scale-100 opacity-100': 'scale-125 opacity-0'}`}>
                 {children}  
 
             </div>
