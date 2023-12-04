@@ -17,6 +17,7 @@ import { useCreateOrganization, useDeleteOrganization, useOrganizations, useUpda
 import DeleteMe from '../../../components/DeleteMe';
 import { TiWarning } from 'react-icons/ti';
 import Radio, { RadioGroup } from '../../../components/Radio';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface DataType {
   id: string;
@@ -276,6 +277,8 @@ export default function OrganizationTab() {
     setCurrentPositions(response.seats)
   }
 
+  const queryClient = useQueryClient()
+
   //DISCONNECT SINGLE POSITION FROM SPECIFIC ORGANIZATION
   const disConnectPosition = async (positionId: string, ballotId: string) => {
     setIsDisConnecting(true)
@@ -294,6 +297,10 @@ export default function OrganizationTab() {
           content: 'Disconnected Successfully',
           duration: 2,
         });  
+        queryClient.invalidateQueries({
+          queryKey: ['positions'],
+          exact: true
+        })
         getCurrentPositions()
         getAvailablePositions()
         setIsDisConnecting(false)
@@ -430,6 +437,10 @@ export default function OrganizationTab() {
           content: 'Connected Successfully',
           duration: 2,
         });  
+        queryClient.invalidateQueries({
+          queryKey: ['positions'],
+          exact: true
+        })
         getCurrentPositions()
         getAvailablePositions()
         setIsConnecting(false)
@@ -494,12 +505,13 @@ export default function OrganizationTab() {
 
       {/* ALL ORGANIZATIONS */}
       <div className="container w-full mx-auto p-4 overflow-x-auto">
+        {organizationsQuery.isLoading && <div className='flex justify-center text-gray-600 dark:text-gray-400 items-center py-5'>Loading Organizations...</div>}
         {organizationsQuery.status === 'error' || organizationsQuery.data?.[0]?.error === 'Network Error'
             ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
             : descendingOrganizations?.length === 0 
                 ? <h4 className='text-gray-400 opacity-90 border-2 dark:border-gray-400 rounded-lg pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1 capitalize'>No {status}</h4>
                 : <div className="grid items-center md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-                {descendingOrganizations?.map((org:DataType, index: any) =>(
+                {descendingOrganizations?.filter((org:any) => org.electionId === null).map((org:DataType, index: any) =>(
                   <div key={index} className="card p-2 shadow-md bg-gray-100 rounded-2xl dark:bg-[#2a2a2a]">
                     {/* IMAGE DISPLAY */}
                     <div className="img-container w-full rounded-lg overflow-hidden">
@@ -507,26 +519,6 @@ export default function OrganizationTab() {
                     </div>
                     {/* IMAGE DISPLAY */}
                     <h3 className='pop-semibold text-[#303030] dark:text-gray-200 text-center pt-3 pb-1'>{org.org_name}</h3>
-                    {/* DATE DISPLAY */}
-                    <div className="dates flex text-xs justify-between text-gray-500 pop-regular">
-                      <p className="">
-                        {new Date(org.startDate).toLocaleDateString("en-US", {
-                          timeZone: "Asia/Manila",
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </p>
-                      <p className="text-right">
-                        {new Date(org.endDate).toLocaleDateString("en-US", {
-                          timeZone: "Asia/Manila",
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </p>
-                    </div>
-                    {/* DATE DISPLAY */}
                     {/* ACTIONS DISPLAY */}
                     <div className="actions flex justify-between py-2">
                       <Tooltip title='Delete' color='#f87171'>
@@ -602,7 +594,7 @@ export default function OrganizationTab() {
                   selectsStart
                   startDate={startDate}
                   endDate={endDate}
-                  placeholderText="nothing!"
+                  placeholderText="MM/DD/YYYY"
                   className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
                 />
               </div>
@@ -619,7 +611,7 @@ export default function OrganizationTab() {
                   startDate={startDate}
                   endDate={endDate}
                   minDate={startDate}
-                  placeholderText="nothing!"
+                  placeholderText="MM/DD/YYYY"
                   className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
                   selected={endDate ?? null}
                   onChange={(date) => setEndDate(date)}
@@ -697,7 +689,7 @@ export default function OrganizationTab() {
                   selectsStart
                   startDate={modifyStartDate}
                   endDate={modifyEndDate}
-                  placeholderText="nothing!"
+                  placeholderText="MM/DD/YYYY"
                   className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
                 />
               </div>
@@ -714,7 +706,7 @@ export default function OrganizationTab() {
                   startDate={modifyStartDate}
                   endDate={modifyEndDate}
                   minDate={modifyStartDate}
-                  placeholderText="nothing!"
+                  placeholderText="MM/DD/YYYY"
                   className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
                   selected={modifyEndDate ?? null}
                   onChange={(date) => setModifyEndDate(date)}

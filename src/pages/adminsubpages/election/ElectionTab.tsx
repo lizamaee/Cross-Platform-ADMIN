@@ -23,6 +23,7 @@ import { useSingleBallotResult } from '../../../hooks/queries/useVoter';
 import { winner } from '../../../BMAlgorithm';
 import PDFResult from '../../../components/PDFResult';
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface DataType {
   id: string;
@@ -374,6 +375,8 @@ export default function ElectionTab() {
     setElectionID(response.id)
     setCurrentOrganizations(response)
   }
+  
+  const queryClient = useQueryClient()
 
   //DISCONNECT SINGLE ORGANIZATION FROM SPECIFIC ELECTION
   const disConnectOrganization = async (organizationId: string, electionId: string) => {
@@ -393,6 +396,10 @@ export default function ElectionTab() {
           content: 'Disconnected Successfully',
           duration: 2,
         });  
+        queryClient.invalidateQueries({
+          queryKey: ['organizations'],
+          exact: true
+        })
         getAvailableOrganizations()
         getCurrentOrganizations()
         setIsDisConnecting(false)
@@ -458,6 +465,10 @@ export default function ElectionTab() {
           content: 'Connected Successfully',
           duration: 2,
         });  
+        queryClient.invalidateQueries({
+          queryKey: ['organizations'],
+          exact: true
+        })
         getAvailableOrganizations()
         getCurrentOrganizations()
         setIsConnecting(false)
@@ -546,7 +557,7 @@ export default function ElectionTab() {
       </div>
       {/* CREATE BUTTON */}
 
-      <div className="flex items-center py-3 sm:py-2 px-1 mx-4 sm:mx-5 w-full overflow-x-auto centered">
+      {!electionsQuery.isLoading && (<div className="flex items-center py-3 sm:py-2 px-1 mx-4 sm:mx-5 w-full overflow-x-auto centered">
         <RadioGroup value={status} onChange={(e:any) => setStatus(e.target.value)}>
           <div className="flex gap-2 justify-center">
             <Radio value="upcoming">Upcoming</Radio>
@@ -554,10 +565,11 @@ export default function ElectionTab() {
             <Radio value="ended">Ended</Radio>
           </div>
         </RadioGroup>
-      </div>
+      </div>)}
 
       {/* ALL ORGANIZATIONS */}
       <div className="container centered w-full mx-auto p-4 overflow-x-auto">
+        {electionsQuery.isLoading && <div className='flex justify-center text-gray-600 dark:text-gray-400 items-center py-5'>Loading Elections...</div>}
         {electionsQuery.status === 'error' || electionsQuery.data?.[0]?.error === 'Network Error'
             ? <h4 className='text-red-400 pop-medium py-4 text-center text-xs md:text-sm tracking-wide flex-1'>Sorry, Something went wrong.</h4>
             : descendingElections?.length === 0 
@@ -857,7 +869,7 @@ export default function ElectionTab() {
                   selectsStart
                   startDate={startDate}
                   endDate={endDate}
-                  placeholderText="nothing!"
+                  placeholderText="MM/DD/YYYY"
                   className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
                 />
               </div>
@@ -874,7 +886,7 @@ export default function ElectionTab() {
                   startDate={startDate}
                   endDate={endDate}
                   minDate={startDate}
-                  placeholderText="nothing!"
+                  placeholderText="MM/DD/YYYY"
                   className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
                   selected={endDate ?? null}
                   onChange={(date) => setEndDate(date)}
@@ -954,7 +966,7 @@ export default function ElectionTab() {
                   selectsStart
                   startDate={modifyStartDate}
                   endDate={modifyEndDate}
-                  placeholderText="nothing!"
+                  placeholderText="MM/DD/YYYY"
                   className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
                   />
               </div>
@@ -971,7 +983,7 @@ export default function ElectionTab() {
                   startDate={modifyStartDate}
                   endDate={modifyEndDate}
                   minDate={modifyStartDate}
-                  placeholderText="nothing!"
+                  placeholderText="MM/DD/YYYY"
                   className="pop-regular shadow-sm bg-gray-100 border-2 w-[90%] md:w-[85%] border-slate-200 rounded-md focus:outline-indigo-400 px-4"
                   selected={modifyEndDate ?? null}
                   onChange={(date) => setModifyEndDate(date)}
