@@ -379,15 +379,24 @@ export default function CVote() {
     }
   };
 
-  function percentage(votes: string, overall: []):string{
-    if(overall.length === 0){
-      return String(0)
+  function percentage(votes: string, overall: []): string {
+    if (overall.length === 0) {
+      return String(0);
     }
-    const calcA = Number(votes) / Number(overall.length)
-    const calcB = calcA * 100
-    const result = Math.trunc(calcB)
-    return String(result)
+  
+    const calcA = Number(votes) / Number(overall.length);
+    const calcB = calcA * 100;
+    let result = null;
+  
+    if (Number.isInteger(calcB) || calcB % 1 === 0) {
+      result = Math.trunc(calcB);
+    } else {
+      result = calcB.toFixed(2);
+    }
+  
+    return String(result);
   }
+  
 
   return (
     <div>
@@ -653,7 +662,7 @@ export default function CVote() {
                         key={index}
                         className="candidate border-2 dark:border-zinc-700 relative  overflow-hidden  sm:pr-6 sm:rounded-l-[5rem] py-2 sm:py-0 rounded-xl sm:rounded-br-[3rem] flex items-center justify-between dark:text-gray-100 flex-col sm:flex-row"
                       >
-                        <div  style={{ width: `${percentage(candidate.count, result?.voted_candidates)}%` }} className={`progress rounded-l-xl sm:rounded-l-[5rem] h-full bg-purple-500/40 absolute top-0 left-0 transition-width duration-300 sm:rounded-r`}></div>
+                        <div  style={{ width: `${percentage(candidate.count, result?.voted_candidates)}%` }} className={`progress rounded-l-xl sm:rounded-l-[5rem] h-full bg-purple-500/40 absolute top-0 left-0 transition-width duration-300 sm:rounded-r-md`}></div>
 
                         <div className="candidate-profile sm:z-10 relative flex flex-col sm:flex-row items-center gap-2 md:gap-6">
                           <img
