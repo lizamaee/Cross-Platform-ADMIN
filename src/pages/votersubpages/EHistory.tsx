@@ -114,35 +114,37 @@ export default function EHistory() {
             </div>
           </div>
         </div>
-        <div className="elections sm:p-5">
+        <div className="elections">
           <div className="h3 pop-medium">
-            {participatedElectionsQuery?.data?.length === 0 
+            {participatedElectionsQuery?.isLoading
+             ? <h2 className="loading text-center">Loading History...</h2>
+             : participatedElectionsQuery?.data?.length === 0 
               ? <h3 className='text-center text-gray-400'>No election history</h3>
               : participatedElectionsQuery?.data?.map((election:any) => (
-                
-                <button disabled={election.status === "ongoing"} key={election.id} onClick={() => handleSingleHistory(election.id, election.status)} className={`election mb-3 w-full hover:opacity-90 shadow-md pop-medium flex flex-col px-4 py-2 rounded-lg bg-gray-200 border-2 border-gray-300 dark:border-[#30363d] dark:bg-transparent ${election.status === "ended" ? 'cursor-pointer' : 'cursor-not-allowed' }`}>
-                  <p className="text-[10px]">Title</p>
-                  <div className="title w-full pb-1 flex justify-between items-baseline">
-                    <h3 className='pop-semibold text-sm sm:text-base'>{election.title}</h3>
-                    <FaAngleRight className="w-4 sm:w-6 h-4 sm:h-6 text-gray-400 dark:text-gray-300"/>
-                  </div>
-                  <div className="w-full flex justify-between items-center">
-                    <p className="text-xs pop-light opacity-70 ">
-                      {new Date(election.startDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          timeZone: "Asia/Manila",
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        }
-                      )}
-                    </p>
-                    <h5 className={`capitalize py-1 px-2 rounded-xl text-right text-xs sm:text-sm ${election.status === "ended" ? 'text-gray-100 dark:text-gray-300 bg-red-300 dark:bg-red-700' : 'text-gray-100 dark:text-gray-300 bg-sky-300 dark:bg-sky-700'}`}>{election.status}</h5>
+                  <button disabled={election.status === "ongoing"} key={election.id} onClick={() => handleSingleHistory(election.id, election.status)} className={`election mb-3 w-full hover:opacity-90 shadow-md pop-medium flex flex-col px-4 py-2 rounded-lg bg-gray-200 border-2 border-gray-300 dark:border-[#30363d] dark:bg-transparent ${election.status === "ended" ? 'cursor-pointer' : 'cursor-not-allowed' }`}>
+                    <p className="text-[10px]">Title</p>
+                    <div className="title w-full pb-1 flex justify-between items-baseline">
+                      <h3 className='pop-semibold text-sm sm:text-base'>{election.title}</h3>
+                      <FaAngleRight className="w-4 sm:w-6 h-4 sm:h-6 text-gray-400 dark:text-gray-300"/>
+                    </div>
+                    <div className="w-full flex justify-between items-center">
+                      <p className="text-xs pop-light opacity-70 ">
+                        {new Date(election.endDate).toLocaleDateString(
+                          "en-US",
+                          {
+                            timeZone: "Asia/Manila",
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          }
+                        )}
+                      </p>
+                      <h5 className={`capitalize py-1 px-2 rounded-xl text-right text-xs sm:text-sm ${election.status === "ended" ? 'text-gray-100 dark:text-gray-300 bg-red-300 dark:bg-red-700' : 'text-gray-100 dark:text-gray-300 bg-sky-300 dark:bg-sky-700'}`}>{election.status}</h5>
 
-                  </div>
-                </button>
-            ))}
+                    </div>
+                  </button>
+              ))
+            }
           </div>
         </div>
       </div>
