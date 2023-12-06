@@ -18,6 +18,8 @@ import blank from '../../../images/blank.jpg'
 import { socket } from "../../../socket";
 import useSound from "use-sound";
 import votedSoundEffect from "../../../assets/votedsound.mp3"
+import { MdOutlineFormatListBulleted, MdOutlineHowToVote } from "react-icons/md";
+import VoteModal from "../../../components/VoteModal";
 
 interface Election {
   id: number;
@@ -230,6 +232,15 @@ export default function Home(){
       setElectionOrgs(orgs[0]?.organizations)
       setRenderOrganizations(true)
   }
+
+  const [selectElectionID, setselectElectionID] = useState<any>("")
+  const [isParticipantsModalOpen, setIsParticipantsModalOpen] = useState<boolean>(false)
+
+  //SHOW PARTICIPANTS VOTERS
+  const getParticipants = async (id: string) => {
+    setselectElectionID(id)
+    setIsParticipantsModalOpen(true)
+  }
   
   const handleGetBallot = async (ballots: any) => {
     socket.emit("ballot-id", {ballot_id: `${ballots.id}`} )
@@ -276,6 +287,32 @@ export default function Home(){
       {/* DASHBOARD */}
         <NavBar pageName='Dashboard'/>
       {/* DASHBOARD */}
+      
+      {/* ELECTION PARTICIPANTS */}
+      <VoteModal title="Election Participants" open={isParticipantsModalOpen} onClose={() => setIsParticipantsModalOpen(false)}>
+        <div className=" dark:text-gray-100">
+          <table className="w-full table-auto border border-gray-400 dark:border-zinc-700">
+            <caption className="caption-top text-sm py-3 font-semibold">
+              VOTERS
+            </caption>
+            <thead>
+              <tr>
+                <th>Fullname</th>
+                <th>Year Level</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allElections?.filter((elec: any) => elec.id === selectElectionID)[0]?.users?.map((participant:any) => (
+                <tr key={participant.id} className="text-center border border-gray-400 dark:border-zinc-700 text-sm sm:text-base">
+                  <td>{participant?.surname ?? "Doe"}, {participant?.firstname ?? "John"}</td>
+                  <td>{participant?.year_level ?? "1st Year"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </VoteModal>
+      {/* ELECTION PARTICIPANTS */}
 
 
       { !renderCandidates ? "" : <CandidatesResults handleClose={closeCandidateTable} seatCandidates={singleOrgResult}/>}
@@ -438,35 +475,21 @@ export default function Home(){
         {/* Elections Table */}
         <div className="tables overflow-x-auto py-5 sm:px-7 centered">
           { upcomingTab && <ElectionTable electionType="upcoming" election={upcomingElections} handleElection={activateElection} action='activate' actionStyle='text-gray-100 bg-sky-800 hover:bg-sky-700 rounded-lg'/> }
-          { ongoingTab && <ElectionTable electionType="ongoing" election={events[0]} handleElection={getOrganizations} action='view' actionStyle='text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-lg'/> }
+          { ongoingTab && <ElectionTable electionType="ongoing" election={events[0]} handleElection={getOrganizations} icon1={<MdOutlineFormatListBulleted className="w-5 h-5 text-white" />} handleParticipants={getParticipants} icon2={<MdOutlineHowToVote className="w-5 h-5 text-white" />} actionStyle='text-gray-100 bg-teal-800 hover:bg-teal-700 rounded-md' /> }
         </div>
       
 
-        {renderOrganizations && <h2 className='text-sm pop-bold py-4 mt-2 text-sky-950 dark:text-gray-200 w-full text-center'>Active Organizations Election</h2>}
+        {renderOrganizations && <h2 className='text-sm pop-bold pb-3 text-sky-950 dark:text-gray-200 w-full text-center'>Active Organizations Election</h2>}
 
         <div className="election-per-organizations px-2 sm:px-5 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
         
         {!renderOrganizations ? "" : (electionOrgs?.map((org) => (
             
-            <div onClick={() => handleGetBallot(org.ballots[0])} className="single-org cursor-pointer bg-white hover:bg-[#dcdcdc] dark:hover:bg-[#6d6d6d] dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-2 sm:p-4 text-xs pop-medium" key={org.id}>
+            <div onClick={() => handleGetBallot(org.ballots[0])} className="single-org cursor-pointer bg-white hover:bg-[#dcdcdc] dark:hover:bg-[#6d6d6d] dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-2 sm:px-4 sm:pt-4 sm:pb-0 text-xs pop-medium" key={org.id}>
               <div className="org-img-container p-1 flex justify-center">
                 <img className='object-cover w-24 h-24 rounded-full' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
               </div>
               <h1 className='text-sm text-center py-3'>{org.org_name}</h1>
-              <div className="time-date-container flex justify-between px-2 opacity-60">
-                <p>Start: {new Date(org.startDate).toLocaleDateString("en-US", {
-                    timeZone: "Asia/Manila",
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}</p>
-                <p className='text-right'>End: {new Date(org.endDate).toLocaleDateString("en-US", {
-                    timeZone: "Asia/Manila",
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}</p>
-              </div>
             </div>
 
           )))}
