@@ -1,4 +1,5 @@
-import React from "react";
+import { Tooltip } from "antd";
+import React, { ReactNode } from "react";
 
 interface Election {
     id: number;
@@ -11,13 +12,16 @@ interface Election {
   interface ElectionTableProps {
     election: Election[];
     handleElection?: (id: string) => void;
+    handleParticipants?: (id: string) => void;
+    icon1?: ReactNode;
+    icon2?: ReactNode;
     action?: string;
     actionStyle?: string;
     error?: string;
     electionType?: string;
   }
 
-const ElectionTable: React.FC<ElectionTableProps>  = ({ election, handleElection, action, actionStyle, error, electionType }) => {
+const ElectionTable: React.FC<ElectionTableProps>  = ({ election, handleParticipants, handleElection, action, icon1, icon2, actionStyle, error, electionType }) => {
 
   if(!election?.length){
     return (
@@ -69,12 +73,38 @@ const ElectionTable: React.FC<ElectionTableProps>  = ({ election, handleElection
               })}
             </td>
             <td>
-              <button
+              
+              {electionType === "upcoming" && (
+                <button
                 onClick={() => handleElection && handleElection(String(entry.id))}
                 className={`pop-medium text-center py-2 text-xs sm:text-sm px-4 rounded-full ${actionStyle}`}
-              >
-                { action }
-              </button>
+                >
+                  { action }
+                </button>
+              )}
+
+              {electionType === "ongoing" && (
+                <div className="action-icon flex items-center justify-center gap-1">
+                  <Tooltip title='Participants' color='#676767'>
+                    <button
+                      onClick={() => handleParticipants && handleParticipants(String(entry.id))}
+                      className={`pop-medium text-center py-1 text-xs sm:text-sm px-1 rounded-full bg-[#676767] dark:bg-zinc-700 hover:bg-zinc-600 `}
+                      >
+                      { icon1 }
+                    </button>
+                  </Tooltip>
+                  <Tooltip title='View' color='#115e59'>
+                    <button
+                      onClick={() => handleElection && handleElection(String(entry.id))}
+                      className={`pop-medium text-center py-1 text-xs sm:text-sm px-1  ${actionStyle}`}
+                      >
+                      { icon2 }
+                    </button>
+                  </Tooltip>
+                 
+                </div>
+                
+              )}
             </td>
           </tr>
         ))}
