@@ -280,8 +280,17 @@ export default function Home(){
   const closeCandidateTable = () => {
     setRenderCandidates(false);
   };
-  
 
+  const [selectedYearLevel, setSelectedYearLevel] = useState<string | null>(null);
+  const [nameSearch, setNameSearch] = useState<string>('');
+
+  const handleYearLevelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedYearLevel(event.target.value);
+  };
+  
+  const handleNameSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNameSearch(event.target.value);
+  };
   return (
     <div className="home">
       {/* DASHBOARD */}
@@ -291,10 +300,37 @@ export default function Home(){
       {/* ELECTION PARTICIPANTS */}
       <VoteModal title="Election Participants" open={isParticipantsModalOpen} onClose={() => setIsParticipantsModalOpen(false)}>
         <div className=" dark:text-gray-100">
+          <h4 className="text-center pr-8 py-2">Voters</h4>
+          <div className="select-year-level pb-2 flex flex-col sm:flex-row sm:justify-between gap-2 sm:items-center">
+            <div className="">
+              <label className="block text-sm font-semibold mb-1 text-center">Search student</label>
+              
+              <input
+                type="text"
+                className="bg-gray-300 dark:bg-zinc-700 w-full sm:w-fit px-3 py-1 rounded-md"
+                placeholder="Enter name..."
+                onChange={handleNameSearchChange}
+                value={nameSearch}
+              />
+            </div>
+            <div className="select">
+              <label className="block text-sm text-center font-semibold mb-1">Filter</label>
+              <select
+                className="rounded-lg w-full font-semibold bg-gray-300 dark:bg-zinc-700 px-3 py-1 text-sm"
+                onChange={handleYearLevelChange}
+                value={selectedYearLevel || ''} 
+              >
+                <option value="">All</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+              </select>
+            </div>
+           
+          </div>
+         
           <table className="w-full table-auto border border-gray-400 dark:border-zinc-700">
-            <caption className="caption-top text-sm py-3 font-semibold">
-              VOTERS
-            </caption>
             <thead>
               <tr>
                 <th>Fullname</th>
@@ -302,7 +338,14 @@ export default function Home(){
               </tr>
             </thead>
             <tbody>
-              {allElections?.filter((elec: any) => elec.id === selectElectionID)[0]?.users?.map((participant:any) => (
+              {allElections
+              ?.filter((elec: any) => elec.id === selectElectionID)[0]?.users
+              ?.filter((participant: any) =>
+              (!selectedYearLevel || participant.year_level === selectedYearLevel) &&
+                ((participant.firstname && participant.firstname.toLowerCase().includes(nameSearch.toLowerCase())) ||
+                 (participant.surname && participant.surname.toLowerCase().includes(nameSearch.toLowerCase())))
+              )
+              .map((participant:any) => (
                 <tr key={participant.id} className="text-center border border-gray-400 dark:border-zinc-700 text-sm sm:text-base">
                   <td>{participant?.surname ?? "Doe"}, {participant?.firstname ?? "John"}</td>
                   <td>{participant?.year_level ?? "1st Year"}</td>
