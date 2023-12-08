@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { RiSettings2Line } from "react-icons/ri";
 import { BiHomeAlt } from "react-icons/bi";
-import { BsCalendarEvent,BsFillSunFill,BsListStars, BsMoonFill } from "react-icons/bs";
+import { BsCalendarEvent,BsFillSunFill, BsMoonFill } from "react-icons/bs";
+import { PiShieldStarBold   } from "react-icons/pi";
 import { MdOutlineHowToVote } from "react-icons/md";
 import { HiOutlineLogout } from "react-icons/hi";
 import { Outlet, NavLink } from "react-router-dom";
@@ -84,7 +85,7 @@ export default function Dashboard() {
                 className="md:hidden"
                 onClick={toggleSidebar}
               >
-                {isSidebarOpen && (<RxCross2 size={35} className="text-[#7268EF] shadow-sm rounded-lg bg-gray-600 dark:bg-zinc-700"/>)}
+                {isSidebarOpen && (<RxCross2 size={30} className="text-[#7268EF] shadow-sm rounded-lg p-1 bg-gray-600 dark:bg-zinc-700"/>)}
               </button>
             </div>
 
@@ -101,21 +102,21 @@ export default function Dashboard() {
             </div>
 
             <ul className="px-3 flex flex-col gap-4 pt-10 pop-medium tracking-wider">
-            <NavLink onClick={() => toggleSidebar()} to="/admin/dashboard" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
-              <BiHomeAlt size={25}/>
-              <h2>Dashboard</h2>
+            <NavLink onClick={() => toggleSidebar()} to="/admin/dashboard" className="flex items-center gap-1 hover:bg-[#4d5263]  text-white px-3 py-3 rounded-md">
+              <BiHomeAlt size={25} className="basis-1/4"/>
+              <h2 className="basis-3/4">Dashboard</h2>
             </NavLink>
-            <NavLink onClick={() => toggleSidebar()} to="/admin/election" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
-              <BsCalendarEvent size={20}/>
-              <h2>Election</h2>
+            <NavLink onClick={() => toggleSidebar()} to="/admin/election" className="flex items-center gap-1 hover:bg-[#4d5263] text-white px-3 py-3 rounded-md">
+              <BsCalendarEvent size={20} className="basis-1/4"/>
+              <h2 className="basis-3/4">Election</h2>
             </NavLink>
-            <NavLink onClick={() => toggleSidebar()} to="/admin/special-features" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
-              <BsListStars size={25}/>
-              <h2>Special Features</h2>
+            <NavLink onClick={() => toggleSidebar()} to="/admin/special-features" className="flex items-center gap-1 hover:bg-[#4d5263]  text-white px-3 py-3 rounded-md">
+              <PiShieldStarBold  size={25} className="basis-1/4"/>
+              <h2 className="basis-3/4">Special Features</h2>
             </NavLink>
-            <NavLink onClick={() => toggleSidebar()} to="/admin/settings" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
-              <RiSettings2Line size={25}/>
-              <h2>Settings</h2>
+            <NavLink onClick={() => toggleSidebar()} to="/admin/settings" className="flex items-center gap-1 hover:bg-[#4d5263] text-white px-3 py-3 rounded-md">
+              <RiSettings2Line size={25} className="basis-1/4"/>
+              <h2 className="basis-3/4">Settings</h2>
             </NavLink>
           </ul>
             
@@ -140,21 +141,21 @@ export default function Dashboard() {
           </div>
 
           <ul className="px-3 flex flex-col gap-4 pt-10 pop-medium tracking-wider">
-            <NavLink to="/admin/dashboard" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
-              <BiHomeAlt size={25}/>
-              <h2>Dashboard</h2>
+            <NavLink to="/admin/dashboard" className="flex items-center gap-1 hover:bg-[#4d5263]  text-white px-3 py-3 rounded-md">
+              <BiHomeAlt size={25} className="basis-1/4"/>
+              <h2 className="basis-3/4">Dashboard</h2>
             </NavLink>
-            <NavLink to="/admin/election" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
-              <BsCalendarEvent size={20}/>
-              <h2>Election</h2>
+            <NavLink to="/admin/election" className="flex items-center gap-1 hover:bg-[#4d5263] text-white px-3 py-3 rounded-md">
+              <BsCalendarEvent size={20} className="basis-1/4"/>
+              <h2 className="basis-3/4">Election</h2>
             </NavLink>
-            <NavLink to="/admin/special-features" className="flex items-center gap-3 hover:bg-[#4d5263]  text-white px-5 py-3 rounded-md">
-              <BsListStars size={25}/>
-              <h2>Special Features</h2>
+            <NavLink to="/admin/special-features" className="flex justify-start items-center gap-1 hover:bg-[#4d5263]  text-white px-3 py-3 rounded-md">
+              <PiShieldStarBold  size={25} className="basis-1/4"/>
+              <h2 className="basis-3/4">Special Features</h2>
             </NavLink>
-            <NavLink to="/admin/settings" className="flex items-center gap-3 hover:bg-[#4d5263] text-white px-5 py-3 rounded-md">
-              <RiSettings2Line size={25}/>
-              <h2>Settings</h2>
+            <NavLink to="/admin/settings" className="flex items-center gap-1 hover:bg-[#4d5263] text-white px-3 py-3 rounded-md">
+              <RiSettings2Line size={25} className="basis-1/4"/>
+              <h2 className="basis-3/4">Settings</h2>
             </NavLink>
           </ul>
           

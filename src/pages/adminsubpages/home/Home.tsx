@@ -524,13 +524,13 @@ export default function Home(){
 
         {renderOrganizations && <h2 className='text-sm pop-bold pb-3 text-sky-950 dark:text-gray-200 w-full text-center'>Active Organizations Election</h2>}
 
-        <div className="election-per-organizations px-2 sm:px-5 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="election-per-organizations px-2 pb-2 sm:px-5 sm:pb-5 grid md:grid-cols-3 lg:grid-cols-4 gap-4">
         
         {!renderOrganizations ? "" : (electionOrgs?.map((org) => (
             
             <div onClick={() => handleGetBallot(org.ballots[0])} className="single-org cursor-pointer bg-white hover:bg-[#dcdcdc] dark:hover:bg-[#6d6d6d] dark:bg-[#4a4a4a] dark:text-gray-100 rounded-lg drop-shadow-md p-2 sm:px-4 sm:pt-4 sm:pb-0 text-xs pop-medium" key={org.id}>
               <div className="org-img-container p-1 flex justify-center">
-                <img className='object-cover w-24 h-24 rounded-full' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
+                <img className='object-cover w-14 h-14 rounded-full' src={org.logo_url !== "" ? org.logo_url : "https://bit.ly/3KYDTGU"} alt={org.org_name} />
               </div>
               <h1 className='text-sm text-center py-3'>{org.org_name}</h1>
             </div>
